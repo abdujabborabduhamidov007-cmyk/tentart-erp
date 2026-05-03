@@ -348,6 +348,7 @@ textarea.fi{resize:vertical;min-height:72px;}
           <div class="ni" data-page="crm"><span class="ni-ic">👥</span>CRM — Lidlar<span class="ni-badge" id="nb-l">0</span></div>
           <div class="ni" data-page="moliya"><span class="ni-ic">💰</span>Moliya</div>
           <div class="ni" data-page="hr"><span class="ni-ic">🏭</span>Jamoa & HR</div>
+          <div class="ni" data-page="narxlar"><span class="ni-ic">💲</span>Narxlar bazasi</div>
         </div>
       </nav>
       <div class="sb-user">
@@ -480,6 +481,96 @@ textarea.fi{resize:vertical;min-height:72px;}
             <div class="sc" style="--sc-c:var(--danger)"><div class="sc-l">Maosh fondi</div><div class="sc-v" id="hr-maosh">0</div></div>
           </div>
           <div class="hr-grid" id="hr-grid"></div>
+        </div>
+
+        <!-- NARXLAR BAZASI -->
+        <div class="page" id="page-narxlar">
+          <div class="fb" style="justify-content:space-between">
+            <div style="font-size:13px;color:var(--text3)">Barcha narxlar USD → 12,500 so'mdan konvertatsiya qilingan</div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <span style="font-size:12px;color:var(--text3)">Kurs: 1 USD =</span>
+              <input type="number" id="usd-rate" value="12500" style="width:90px;padding:6px 10px;background:var(--bg2);border:1px solid var(--border2);border-radius:var(--r2);color:var(--text);font-size:13px;outline:none" oninput="renderNarxlar()">
+              <span style="font-size:12px;color:var(--text3)">so'm</span>
+            </div>
+          </div>
+
+          <!-- Tabs -->
+          <div class="tabs" id="narx-tabs">
+            <div class="tab on" onclick="narxTab('pergola',this)">Pergola</div>
+            <div class="tab" onclick="narxTab('giyotin',this)">Giyotin</div>
+            <div class="tab" onclick="narxTab('markiza',this)">Markiza</div>
+            <div class="tab" onclick="narxTab('vintent',this)">Vintent</div>
+            <div class="tab" onclick="narxTab('zip',this)">Zip parda</div>
+            <div class="tab" onclick="narxTab('kasset',this)">Kassетli markiza</div>
+            <div class="tab" onclick="narxTab('rolling',this)">Rolling roof</div>
+            <div class="tab" onclick="narxTab('tavan',this)">Tavan parda</div>
+          </div>
+
+          <!-- Pergola -->
+          <div id="narx-pergola">
+            <div class="tw" style="overflow-x:auto"><div class="th-bar"><div class="th-title">Pergola narxlari (so'm / m²)</div><div class="tc">Bo'yi × Eni</div></div><div id="tbl-pergola"></div></div>
+          </div>
+
+          <!-- Giyotin kalkulyator -->
+          <div id="narx-giyotin" style="display:none">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+              <div class="tw">
+                <div class="th-bar"><div class="th-title">Giyotin narx kalkulyatori</div></div>
+                <div style="padding:20px;display:flex;flex-direction:column;gap:14px">
+                  <div><label class="fl">Eni (m)</label><input class="fi" type="number" id="g-eni" placeholder="2.5" step="0.1" oninput="calcGiyotin()"></div>
+                  <div><label class="fl">Balandligi (m)</label><input class="fi" type="number" id="g-bal" placeholder="3.2" step="0.1" oninput="calcGiyotin()"></div>
+                  <div style="display:flex;align-items:center;gap:10px;padding:12px;background:var(--bg3);border-radius:var(--r2)">
+                    <input type="checkbox" id="g-rang" onchange="calcGiyotin()" style="width:16px;height:16px;cursor:pointer">
+                    <label for="g-rang" style="font-size:13px;cursor:pointer">Rangli oyna (+$7/m²)</label>
+                  </div>
+                  <div id="g-result" style="display:none;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:var(--r2);padding:16px"></div>
+                </div>
+              </div>
+              <div class="tw">
+                <div class="th-bar"><div class="th-title">Narx tarkibi</div></div>
+                <div style="padding:20px">
+                  <div style="font-size:12px;color:var(--text3);line-height:2;background:var(--bg3);border-radius:var(--r2);padding:14px">
+                    <div>📦 Tannarx: <strong>$1,100</strong> (fixed)</div>
+                    <div>🪟 Oyna: <strong>eni × bal × $40/m²</strong></div>
+                    <div>🔧 Ish haqi: <strong>eni × bal × $15/m²</strong></div>
+                    <div>🎨 Rang (agar): <strong>eni × bal × $7/m²</strong></div>
+                    <div style="border-top:1px solid var(--border);margin-top:8px;padding-top:8px">📈 Nadsenka: <strong>+30%</strong></div>
+                    <div style="margin-top:8px;color:var(--accent2)">💰 Jami = (Tannarx + Oyna + Ish + Rang) × 1.3</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Markiza -->
+          <div id="narx-markiza" style="display:none">
+            <div class="tw" style="overflow-x:auto"><div class="th-bar"><div class="th-title">Markiza narxlari (so'm)</div></div><div id="tbl-markiza"></div></div>
+          </div>
+
+          <!-- Vintent -->
+          <div id="narx-vintent" style="display:none">
+            <div class="tw" style="overflow-x:auto"><div class="th-bar"><div class="th-title">Vintent narxlari (so'm) — Tovar+motor+kraska+robota</div></div><div id="tbl-vintent"></div></div>
+          </div>
+
+          <!-- Zip parda -->
+          <div id="narx-zip" style="display:none">
+            <div class="tw" style="overflow-x:auto"><div class="th-bar"><div class="th-title">Zip parda narxlari (so'm) — Tovar+kraska+motor+robota</div></div><div id="tbl-zip"></div></div>
+          </div>
+
+          <!-- Kassetli markiza -->
+          <div id="narx-kasset" style="display:none">
+            <div class="tw" style="overflow-x:auto"><div class="th-bar"><div class="th-title">Kassетli markiza narxlari (so'm) — Tovar+motor+kraska+robota</div></div><div id="tbl-kasset"></div></div>
+          </div>
+
+          <!-- Rolling roof -->
+          <div id="narx-rolling" style="display:none">
+            <div class="tw" style="overflow-x:auto"><div class="th-bar"><div class="th-title">Rolling roof narxlari (so'm)</div></div><div id="tbl-rolling"></div></div>
+          </div>
+
+          <!-- Tavan parda -->
+          <div id="narx-tavan" style="display:none">
+            <div class="tw" style="overflow-x:auto"><div class="th-bar"><div class="th-title">Tavan parda narxlari (so'm)</div></div><div id="tbl-tavan"></div></div>
+          </div>
         </div>
 
       </div>
@@ -783,14 +874,15 @@ document.querySelectorAll('.ni[data-page]').forEach(el=>{
     this.classList.add('on');
     document.querySelectorAll('.page').forEach(pg=>pg.classList.remove('on'));
     document.getElementById('page-'+p).classList.add('on');
-    const T={dashboard:'Dashboard',zakazlar:'Zakazlar',kanban:'Kanban Board',crm:'CRM — Lidlar',moliya:'Moliya',hr:'Jamoa & HR'};
+    const T={dashboard:'Dashboard',zakazlar:'Zakazlar',kanban:'Kanban Board',crm:'CRM — Lidlar',moliya:'Moliya',hr:'Jamoa & HR',narxlar:'Narxlar bazasi'};
     document.getElementById('ptitle').textContent=T[p]||p;
-    const AL={zakazlar:'+ Yangi zakaz',crm:'+ Yangi lid',hr:'+ Xodim',moliya:'+ Xarajat',kanban:'',dashboard:'+ Yangi zakaz'};
+    const AL={zakazlar:'+ Yangi zakaz',crm:'+ Yangi lid',hr:'+ Xodim',moliya:'+ Xarajat',kanban:'',dashboard:'+ Yangi zakaz',narxlar:''};
     const ab=document.getElementById('tb-add-btn');
     ab.textContent=AL[p]||'+ Yangi zakaz';ab.style.display=AL[p]===''?'none':'';
     if(p==='kanban')renderKanban();
     if(p==='moliya')renderMoliya();
     if(p==='hr')renderHR();
+    if(p==='narxlar'){renderNarxTable('pergola');}
     closeSb();
   });
 });
@@ -1327,6 +1419,224 @@ function notif(ic,t,s){
 }
 
 document.getElementById('lpass')?.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+
+// ═══════════════════════════════════════
+// NARXLAR BAZASI
+// ═══════════════════════════════════════
+
+// RAW DATA (USD)
+const NARX_DATA = {
+  pergola: {
+    rows: ['2м','2.5м','3м','3.5м','4м','4.5м','5м','5.5м','6м','6.5м','7м','7.5м','8м','8.5м','9м'],
+    cols: ['3м','3.5м','4м','4.5м','5м','5.5м','6м','6.5м','7м','7.5м','8м','8.5м','9м'],
+    data: [
+      [325,305,300,285,280,270,255,250,245,245,240,235,230],
+      [280,265,260,255,250,245,230,230,225,220,215,210,205],
+      [255,250,245,230,215,210,205,205,205,200,195,195,190],
+      [240,225,220,215,205,200,195,195,190,185,180,180,175],
+      [220,215,215,210,195,185,180,180,180,175,170,170,165],
+      [210,205,200,195,185,180,175,175,175,170,165,160,155],
+      [200,195,190,185,180,175,170,165,165,165,160,155,150],
+      [195,190,185,180,175,170,165,165,165,155,155,150,150],
+      [190,185,180,175,160,160,155,155,155,150,150,null,null],
+      [185,180,175,170,160,155,155,155,155,150,null,null,null],
+      [175,170,170,165,160,155,150,150,150,null,null,null,null],
+      [170,165,165,160,155,150,145,145,null,null,null,null,null],
+      [170,165,165,160,155,145,140,null,null,null,null,null,null],
+      [165,160,165,155,150,145,null,null,null,null,null,null,null],
+      [165,165,165,155,150,145,null,null,null,null,null,null,null],
+    ]
+  },
+  markiza: {
+    rows: ['2м','2.5м','3м','3.5м'],
+    cols: ['2.5м','3м','3.5м','4м','4.5м','5м','5.5м','6м','6.5м','7м'],
+    data: [
+      [875,930,985,1040,1095,1150,1205,1360,1595,1700],
+      [null,987.5,1093.8,1150,1206.2,1322.5,1428.8,1595,1821.2,1887.5],
+      [null,null,1152.5,1210,1327.5,1395,1502.5,1770,1937.5,2005],
+      [null,null,null,1330,1438.8,1507.5,1666.2,1945,2063.8,2172.5],
+    ]
+  },
+  vintent: {
+    rows: ['1.5м','2м','2.5м','3м'],
+    cols: ['1м','1.5м','2м','2.5м','3м','3.5м','4м','4.5м','5м'],
+    data: [
+      [600,650,750,830,900,1000,1050,1100,1200],
+      [650,720,800,880,950,1050,1150,1220,1300],
+      [700,780,880,980,1060,1170,1260,1380,1450],
+      [750,850,960,1070,1170,1280,1400,1500,1600],
+    ]
+  },
+  zip: {
+    rows: ['1.5м','2м','2.5м','3м','3.5м','4м'],
+    cols: ['1м','1.5м','2м','2.5м','3м','3.5м','4м','4.5м','5м'],
+    data: [
+      [600,650,750,800,870,940,1000,1050,1150],
+      [650,720,780,850,920,1000,1080,1150,1200],
+      [750,830,900,980,1050,1130,1200,1270,1350],
+      [800,900,980,1070,1160,1250,1330,1430,1520],
+      [860,980,1070,1160,1270,1370,1450,1580,1680],
+      [930,1050,1150,1250,1380,1500,1560,1730,1850],
+    ]
+  },
+  kasset: {
+    rows: ['2м','2.5м','3м','3.5м'],
+    cols: ['3м','3.5м','4м','4.5м','5м','5.5м','6м','6.5м','7м'],
+    data: [
+      [1230,1310,1410,1500,1600,1760,1820,2140,2190],
+      [null,1420,1510,1600,1710,1870,1980,2250,1350],
+      [null,null,1600,1710,1870,1980,2300,2400,2500],
+      [null,null,null,1850,2020,2140,2460,2620,2730],
+    ]
+  },
+  rolling: {
+    rows: ['2.07м(8LAM)','2.57м(10LAM)','3.06м(12LAM)','3.55м(14LAM)','4.05м(16LAM)','4.54м(18LAM)','5.03м(20LAM)','5.53м(22LAM)','6.02м(24LAM)','6.52м(26LAM)','7.01м(28LAM)'],
+    cols: ['3м','3.5м','4м','4.5м','5м','5.5м','6м','6.5м','7м'],
+    data: [
+      [640,605,600,575,560,540,515,495,475],
+      [590,540,560,530,510,490,475,460,450],
+      [550,505,530,495,485,470,450,430,420],
+      [530,485,500,485,470,450,430,415,410],
+      [500,470,484,475,450,430,415,405,390],
+      [485,450,475,460,440,420,405,390,380],
+      [475,445,465,450,430,410,400,385,375],
+      [470,440,460,445,395,405,390,380,370],
+      [450,420,440,420,405,390,380,370,360],
+      [450,420,440,425,410,390,380,370,360],
+      [440,415,430,420,405,385,375,365,360],
+    ]
+  },
+  tavan: {
+    rows: ['1.5м','2м','2.5м','3м','3.5м','4м','4.5м'],
+    cols: ['1м','1.5м','2м','2.5м','3м'],
+    data: [
+      [null,757.5,851.2,935,1018.8,1122.5,null],
+      [null,830,915,1020,1125,1230,null],
+      [null,862.5,978.8,1095,1181.2,1287.5,null],
+      [null,915,1022.5,1150,1287.5,1395,null],
+      [null,967.5,1096.2,1235,1343.8,1452.5,null],
+      [null,1040,1170,1290,1400,1560,null],
+      [null,1102.5,1333.8,1375,1486.2,1617.5,null],
+    ]
+  }
+};
+
+// Tavan parda cols fix
+NARX_DATA.tavan = {
+  rows: ['1.5м','2м','2.5м','3м','3.5м','4м','4.5м'],
+  cols: ['1м','1.5м','2м','2.5м','3м'],
+  data: [
+    [null,757.5,851.2,935,1018.8],
+    [null,830,915,1020,1125],
+    [null,862.5,978.8,1095,1181.2],
+    [null,915,1022.5,1150,1287.5],
+    [null,967.5,1096.2,1235,1343.8],
+    [null,1040,1170,1290,1400],
+    [null,1102.5,1333.8,1375,1486.2],
+  ]
+};
+
+let curNarxTab = 'pergola';
+
+function narxTab(name, el) {
+  curNarxTab = name;
+  document.querySelectorAll('#narx-tabs .tab').forEach(t => t.classList.remove('on'));
+  el.classList.add('on');
+  ['pergola','giyotin','markiza','vintent','zip','kasset','rolling','tavan'].forEach(k => {
+    document.getElementById('narx-'+k).style.display = k === name ? '' : 'none';
+  });
+  if(name !== 'giyotin') renderNarxTable(name);
+}
+
+function getRate() {
+  return parseInt(document.getElementById('usd-rate')?.value) || 12500;
+}
+
+function fmtN(usd) {
+  if(usd === null || usd === undefined) return '';
+  const som = Math.round(usd * getRate());
+  return som.toLocaleString();
+}
+
+function renderNarxTable(key) {
+  const d = NARX_DATA[key];
+  if(!d) return;
+  const rate = getRate();
+  
+  let html = '<table class="tbl"><thead><tr>';
+  html += '<th style="background:var(--bg4);color:var(--accent2)">Bo\'yi / Eni</th>';
+  d.cols.forEach(c => html += `<th style="text-align:center">${c}</th>`);
+  html += '</tr></thead><tbody>';
+  
+  d.rows.forEach((row, ri) => {
+    html += `<tr><td style="font-weight:700;color:var(--accent2);background:var(--bg3)">${row}</td>`;
+    d.cols.forEach((col, ci) => {
+      const usd = d.data[ri] ? d.data[ri][ci] : null;
+      const som = usd ? Math.round(usd * rate) : null;
+      const display = som ? som.toLocaleString() : '';
+      const usdText = usd ? `$${usd.toLocaleString()}` : '';
+      if(som) {
+        html += `<td style="text-align:center;cursor:default" title="${usdText}">
+          <div style="font-weight:600;font-size:12px;color:var(--text)">${display}</div>
+          <div style="font-size:10px;color:var(--text3)">${usdText}</div>
+        </td>`;
+      } else {
+        html += `<td style="background:var(--bg4)"></td>`;
+      }
+    });
+    html += '</tr>';
+  });
+  
+  html += '</tbody></table>';
+  document.getElementById('tbl-'+key).innerHTML = html;
+}
+
+function calcGiyotin() {
+  const eni = parseFloat(document.getElementById('g-eni')?.value) || 0;
+  const bal = parseFloat(document.getElementById('g-bal')?.value) || 0;
+  const rang = document.getElementById('g-rang')?.checked || false;
+  const rate = getRate();
+  
+  if(!eni || !bal) { document.getElementById('g-result').style.display='none'; return; }
+  
+  const maydon = eni * bal;
+  const tannarx = 1100;
+  const oyna = maydon * 40;
+  const ish = maydon * 15;
+  const rangQ = rang ? maydon * 7 : 0;
+  const jamiBefore = tannarx + oyna + ish + rangQ;
+  const jami = jamiBefore * 1.3;
+  const jamiSom = Math.round(jami * rate);
+  
+  const el = document.getElementById('g-result');
+  el.style.display = '';
+  el.innerHTML = `
+    <div style="font-size:12px;line-height:2.2;color:var(--text2)">
+      <div style="display:flex;justify-content:space-between"><span>Maydon:</span><span>${eni} × ${bal} = <strong>${maydon.toFixed(2)} m²</strong></span></div>
+      <div style="display:flex;justify-content:space-between"><span>Tannarx:</span><span>$${tannarx.toLocaleString()}</span></div>
+      <div style="display:flex;justify-content:space-between"><span>Oyna (${maydon.toFixed(2)}m² × $40):</span><span>$${oyna.toLocaleString()}</span></div>
+      <div style="display:flex;justify-content:space-between"><span>Ish haqi (${maydon.toFixed(2)}m² × $15):</span><span>$${ish.toLocaleString()}</span></div>
+      ${rang ? `<div style="display:flex;justify-content:space-between"><span>Rang (${maydon.toFixed(2)}m² × $7):</span><span>$${rangQ.toLocaleString()}</span></div>` : ''}
+      <div style="display:flex;justify-content:space-between;color:var(--text3)"><span>Jami (nadsenkaсиз):</span><span>$${jamiBefore.toLocaleString()}</span></div>
+      <div style="border-top:1px solid var(--border);margin-top:6px;padding-top:8px;display:flex;justify-content:space-between">
+        <span style="font-weight:700;color:var(--text)">Jami narx (+30%):</span>
+        <span style="font-weight:800;color:var(--green);font-size:15px">$${Math.round(jami).toLocaleString()}</span>
+      </div>
+      <div style="text-align:right;font-size:13px;color:var(--accent2);font-weight:700;margin-top:4px">
+        = ${jamiSom.toLocaleString()} so'm
+      </div>
+    </div>
+  `;
+}
+
+function renderNarxlar() {
+  if(curNarxTab !== 'giyotin') renderNarxTable(curNarxTab);
+  else calcGiyotin();
+}
+
+// Nav update for narxlar
+const _origNav = document.querySelectorAll('.ni[data-page]');
+
 
 // ═══════════════════════════════════════
 // SHARTNOMA PDF
