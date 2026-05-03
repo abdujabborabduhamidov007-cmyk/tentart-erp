@@ -349,6 +349,7 @@ textarea.fi{resize:vertical;min-height:72px;}
           <div class="ni" data-page="moliya"><span class="ni-ic">💰</span>Moliya</div>
           <div class="ni" data-page="hr"><span class="ni-ic">🏭</span>Jamoa & HR</div>
           <div class="ni" data-page="narxlar"><span class="ni-ic">💲</span>Narxlar bazasi</div>
+          <div class="ni" data-page="kpi"><span class="ni-ic">🏆</span>KPI & Savdo</div>
         </div>
       </nav>
       <div class="sb-user">
@@ -571,6 +572,12 @@ textarea.fi{resize:vertical;min-height:72px;}
           <div id="narx-tavan" style="display:none">
             <div class="tw" style="overflow-x:auto"><div class="th-bar"><div class="th-title">Tavan parda narxlari (so'm)</div></div><div id="tbl-tavan"></div></div>
           </div>
+        </div>
+
+        <!-- KPI & SAVDO -->
+        <div class="page" id="page-kpi">
+          <div id="kpi-owner-view"></div>
+          <div id="kpi-seller-view"></div>
         </div>
 
       </div>
@@ -874,15 +881,16 @@ document.querySelectorAll('.ni[data-page]').forEach(el=>{
     this.classList.add('on');
     document.querySelectorAll('.page').forEach(pg=>pg.classList.remove('on'));
     document.getElementById('page-'+p).classList.add('on');
-    const T={dashboard:'Dashboard',zakazlar:'Zakazlar',kanban:'Kanban Board',crm:'CRM — Lidlar',moliya:'Moliya',hr:'Jamoa & HR',narxlar:'Narxlar bazasi'};
+    const T={dashboard:'Dashboard',zakazlar:'Zakazlar',kanban:'Kanban Board',crm:'CRM — Lidlar',moliya:'Moliya',hr:'Jamoa & HR',narxlar:'Narxlar bazasi',kpi:'KPI & Savdo'};
     document.getElementById('ptitle').textContent=T[p]||p;
-    const AL={zakazlar:'+ Yangi zakaz',crm:'+ Yangi lid',hr:'+ Xodim',moliya:'+ Xarajat',kanban:'',dashboard:'+ Yangi zakaz',narxlar:''};
+    const AL={zakazlar:'+ Yangi zakaz',crm:'+ Yangi lid',hr:'+ Xodim',moliya:'+ Xarajat',kanban:'',dashboard:'+ Yangi zakaz',narxlar:'',kpi:''};
     const ab=document.getElementById('tb-add-btn');
     ab.textContent=AL[p]||'+ Yangi zakaz';ab.style.display=AL[p]===''?'none':'';
     if(p==='kanban')renderKanban();
     if(p==='moliya')renderMoliya();
     if(p==='hr')renderHR();
     if(p==='narxlar'){renderNarxTable('pergola');}
+    if(p==='kpi')renderKPI();
     closeSb();
   });
 });
@@ -1634,8 +1642,173 @@ function renderNarxlar() {
   else calcGiyotin();
 }
 
-// Nav update for narxlar
-const _origNav = document.querySelectorAll('.ni[data-page]');
+// ═══════════════════════════════════════
+// KPI & SAVDO
+// ═══════════════════════════════════════
+const SOTUVCHILAR = ['Abdujabbor', 'Abdurahmon'];
+const USD_RATE_KPI = 12500;
+const MIN_PLAN = 50000; // USD
+const MAX_PLAN = 125000; // USD
+
+function calcKomissiya(usd) {
+  if(usd <= 0) return 0;
+  if(usd <= MIN_PLAN) {
+    return usd * 0.015;
+  } else {
+    return (MIN_PLAN * 0.015) + ((usd - MIN_PLAN) * 0.03);
+  }
+}
+
+function getOyZakazlar(seller, month, year) {
+  return ZZ.filter(z => {
+    if(z.masul !== seller) return false;
+    const d = new Date(z.created_at);
+    return d.getMonth() === month && d.getFullYear() === year;
+  });
+}
+
+function kpiCard(seller, month, year, isOwner) {
+  const zakazlar = getOyZakazlar(seller, month, year);
+  const jami = zakazlar.reduce((a,z) => a + z.narx, 0);
+  const usd = jami / USD_RATE_KPI;
+  const kom = calcKomissiya(usd);
+  const komSom = Math.round(kom * USD_RATE_KPI);
+  const progMin = Math.min(usd / MIN_PLAN * 100, 100);
+  const progMax = Math.min(usd / MAX_PLAN * 100, 100);
+  const zone = usd >= MAX_PLAN ? 'max' : usd >= MIN_PLAN ? 'mid' : 'min';
+  const zoneColor = zone==='max'?'var(--green)':zone==='mid'?'var(--accent2)':'var(--warn)';
+  const zoneLabel = zone==='max'?'🏆 Maksimum':zone==='mid'?'✅ Minimum oshdi':'⏳ Minimum rejada';
+  const foiz = zone==='min'?'1.5%':'3%';
+
+  return `
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:24px;flex:1;min-width:300px">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+        <div style="width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent3));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:#fff">${seller[0]}</div>
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700">${seller}</div>
+          <div style="font-size:11px;color:var(--text3)">Sotuvchi</div>
+        </div>
+        <div style="margin-left:auto;padding:4px 12px;border-radius:12px;font-size:11px;font-weight:700;background:${zone==='max'?'rgba(52,211,153,.15)':zone==='mid'?'rgba(99,102,241,.15)':'rgba(245,158,11,.15)'};color:${zoneColor}">${zoneLabel}</div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px">
+        <div style="background:var(--bg3);border-radius:var(--r2);padding:14px">
+          <div style="font-size:10px;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Oylik savdo</div>
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--text)">$${Math.round(usd).toLocaleString()}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">${fmt(jami)} so'm</div>
+        </div>
+        <div style="background:var(--bg3);border-radius:var(--r2);padding:14px">
+          <div style="font-size:10px;color:var(--text3);margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px">Komissiya (${foiz})</div>
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--green)">$${Math.round(kom).toLocaleString()}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px">${fmt(komSom)} so'm</div>
+        </div>
+      </div>
+
+      <!-- Min plan progress -->
+      <div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px">
+          <span style="color:var(--text3)">Minimum plan ($${MIN_PLAN.toLocaleString()})</span>
+          <span style="color:${progMin>=100?'var(--green)':'var(--warn)'};font-weight:700">${Math.round(progMin)}%</span>
+        </div>
+        <div style="height:8px;background:var(--bg4);border-radius:4px;overflow:hidden">
+          <div style="height:100%;width:${progMin}%;background:${progMin>=100?'var(--green)':'var(--warn)'};border-radius:4px;transition:width .5s"></div>
+        </div>
+      </div>
+
+      <!-- Max plan progress -->
+      <div style="margin-bottom:18px">
+        <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:5px">
+          <span style="color:var(--text3)">Maksimum plan ($${MAX_PLAN.toLocaleString()})</span>
+          <span style="color:${progMax>=100?'var(--green)':'var(--accent2)'};font-weight:700">${Math.round(progMax)}%</span>
+        </div>
+        <div style="height:8px;background:var(--bg4);border-radius:4px;overflow:hidden">
+          <div style="height:100%;width:${progMax}%;background:linear-gradient(90deg,var(--accent),var(--accent3));border-radius:4px;transition:width .5s"></div>
+        </div>
+      </div>
+
+      <!-- Zakazlar -->
+      <div style="border-top:1px solid var(--border);padding-top:14px">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:8px;font-weight:700;text-transform:uppercase;letter-spacing:.5px">Bu oy zakazlar (${zakazlar.length} ta)</div>
+        ${zakazlar.length ? zakazlar.slice(0,5).map(z=>`
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:12px">
+            <div>
+              <div style="font-weight:500">${z.mijoz}</div>
+              <div style="font-size:10px;color:var(--text3)">${z.mahsulot||((z.mahsulotlar||[]).map(p=>p.mahsulot).join(', '))}</div>
+            </div>
+            <div style="text-align:right">
+              <div style="color:var(--green);font-weight:600">$${Math.round(z.narx/USD_RATE_KPI).toLocaleString()}</div>
+              <div style="font-size:10px;color:var(--text3)">${badge(z.status)}</div>
+            </div>
+          </div>`).join('') + (zakazlar.length>5?`<div style="font-size:11px;color:var(--text3);padding-top:6px;text-align:center">+${zakazlar.length-5} ta yana</div>`:'')
+        : '<div style="font-size:12px;color:var(--text3);text-align:center;padding:12px">Bu oy zakaz yo\'q</div>'}
+      </div>
+    </div>
+  `;
+}
+
+function renderKPI() {
+  const now = new Date();
+  const month = now.getMonth();
+  const year = now.getFullYear();
+  const oyNomi = ['Yanvar','Fevral','Mart','Aprel','May','Iyun','Iyul','Avgust','Sentabr','Oktabr','Noyabr','Dekabr'][month];
+
+  const isOwner = curUser && ['Owner','Menejer'].includes(curUser.rol);
+  const isSeller = curUser && SOTUVCHILAR.includes(curUser.ism);
+
+  // Owner view
+  const ownerEl = document.getElementById('kpi-owner-view');
+  const sellerEl = document.getElementById('kpi-seller-view');
+
+  if(isOwner) {
+    // Owner barcha sotuvchilarni ko'radi
+    const allUsd = SOTUVCHILAR.map(s => {
+      const zakazlar = getOyZakazlar(s, month, year);
+      return zakazlar.reduce((a,z) => a + z.narx, 0) / USD_RATE_KPI;
+    });
+    const totalUsd = allUsd.reduce((a,b)=>a+b,0);
+    const totalKom = SOTUVCHILAR.reduce((a,s,i)=>a+calcKomissiya(allUsd[i]),0);
+
+    ownerEl.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+        <div>
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700">${oyNomi} ${year} — KPI Hisobot</div>
+          <div style="font-size:12px;color:var(--text3);margin-top:3px">Sotuvchilar samaradorligi</div>
+        </div>
+        <div style="display:flex;gap:10px">
+          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:10px 16px;text-align:center">
+            <div style="font-size:10px;color:var(--text3);margin-bottom:3px">JAMI SAVDO</div>
+            <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--accent2)">$${Math.round(totalUsd).toLocaleString()}</div>
+          </div>
+          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:10px 16px;text-align:center">
+            <div style="font-size:10px;color:var(--text3);margin-bottom:3px">JAMI KOMISSIYA</div>
+            <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--green)">$${Math.round(totalKom).toLocaleString()}</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        ${SOTUVCHILAR.map(s => kpiCard(s, month, year, true)).join('')}
+      </div>
+    `;
+    sellerEl.innerHTML = '';
+  } else if(isSeller) {
+    // Sotuvchi faqat o'zini ko'radi
+    ownerEl.innerHTML = '';
+    sellerEl.innerHTML = `
+      <div style="margin-bottom:20px">
+        <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700">${oyNomi} ${year} — Mening KPI'm</div>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        ${kpiCard(curUser.ism, month, year, false)}
+      </div>
+    `;
+  } else {
+    ownerEl.innerHTML = '<div class="empty"><div class="empty-ic">🔒</div><div class="empty-t">Bu bo\'lim sizga ochiq emas</div></div>';
+    sellerEl.innerHTML = '';
+  }
+}
+
+// Nav update for narxlar last line cleanup
+
 
 
 // ═══════════════════════════════════════
