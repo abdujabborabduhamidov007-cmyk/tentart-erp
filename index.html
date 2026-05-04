@@ -2030,7 +2030,7 @@ function mkTab(name, el) {
 }
 
 async function callAI(prompt, systemPrompt) {
-  const resp = await fetch('/api/claude', {
+  const resp = await fetch('/api/gemini', {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({
