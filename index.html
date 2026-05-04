@@ -2020,19 +2020,15 @@ function initMarketing() { renderMkArxiv(); }
 function mkTab(name, el) {
   ['reja','reels','post','arxiv'].forEach(k => {
     const el2 = document.getElementById('mk-'+k);
-    if(el2) el2.style.display = k===name ? '' : 'none';
-    const btn = document.getElementById('mk-tab-'+k);
-    if(btn){ btn.style.background=''; btn.style.color=''; btn.style.border='1px solid var(--border2)'; }
-  });
-  el.style.background = 'rgba(99,102,241,.15)';
-  el.style.color = 'var(--accent2)';
-  el.style.border = '1px solid var(--accent)';
-}
-
-async function callAI(prompt, systemPrompt) {
-  const resp = await fetch('/api/gemini', {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
+   const response = await fetch('/api/gemini', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                prompt: `Tizim: ${systemPrompt}\n\nFoydalanuvchi: ${fullPrompt}`
+            })
+        });
     body: JSON.stringify({
       model:'claude-sonnet-4-20250514',
       max_tokens:2500,
