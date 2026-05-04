@@ -350,6 +350,7 @@ textarea.fi{resize:vertical;min-height:72px;}
           <div class="ni" data-page="hr"><span class="ni-ic">🏭</span>Jamoa & HR</div>
           <div class="ni" data-page="narxlar"><span class="ni-ic">💲</span>Narxlar bazasi</div>
           <div class="ni" data-page="kpi"><span class="ni-ic">🏆</span>KPI & Savdo</div>
+          <div class="ni" data-page="marketing"><span class="ni-ic">🎬</span>Marketing AI</div>
         </div>
       </nav>
       <div class="sb-user">
@@ -578,6 +579,193 @@ textarea.fi{resize:vertical;min-height:72px;}
         <div class="page" id="page-kpi">
           <div id="kpi-owner-view"></div>
           <div id="kpi-seller-view"></div>
+        </div>
+
+        <!-- MARKETING AI -->
+        <div class="page" id="page-marketing">
+          <!-- Header -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+            <div>
+              <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700">🎬 Marketing AI Studio</div>
+              <div style="font-size:12px;color:var(--text3);margin-top:3px">Hormozi • Mr.Beast • McKinnon • GaryVee • Jonah Berger — @tentart.uz uchun</div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn btn-sm" onclick="mkTab('reels',this)" id="mk-tab-reels" style="background:rgba(99,102,241,.15);color:var(--accent2);border:1px solid var(--accent)">🎬 Reels Generator</button>
+              <button class="btn btn-g btn-sm" onclick="mkTab('reja',this)" id="mk-tab-reja">📅 Oylik Reja</button>
+              <button class="btn btn-g btn-sm" onclick="mkTab('post',this)" id="mk-tab-post">📸 Post Caption</button>
+              <button class="btn btn-g btn-sm" onclick="mkTab('arxiv',this)" id="mk-tab-arxiv">📁 Arxiv</button>
+            </div>
+          </div>
+
+          <!-- Expert badges -->
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px">
+            <div style="padding:4px 12px;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.2);border-radius:20px;font-size:11px;color:#f87171">🎯 Hormozi — Sotish</div>
+            <div style="padding:4px 12px;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.2);border-radius:20px;font-size:11px;color:#fbbf24">⚡ Mr.Beast — Hook</div>
+            <div style="padding:4px 12px;background:rgba(167,139,250,.1);border:1px solid rgba(167,139,250,.2);border-radius:20px;font-size:11px;color:#a78bfa">🎬 McKinnon — Montaj</div>
+            <div style="padding:4px 12px;background:rgba(34,211,238,.1);border:1px solid rgba(34,211,238,.2);border-radius:20px;font-size:11px;color:#22d3ee">📱 GaryVee — Brend</div>
+            <div style="padding:4px 12px;background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);border-radius:20px;font-size:11px;color:#34d399">🔬 Berger — Viral</div>
+          </div>
+
+          <!-- REELS GENERATOR -->
+          <div id="mk-reels">
+            <div style="display:grid;grid-template-columns:380px 1fr;gap:16px">
+              <!-- Left: Input -->
+              <div style="display:flex;flex-direction:column;gap:12px">
+                <div class="tw" style="padding:18px">
+                  <div class="th-title" style="margin-bottom:14px">Reels parametrlari</div>
+                  <div style="display:flex;flex-direction:column;gap:10px">
+                    <div>
+                      <label class="fl">Mavzu / G'oya</label>
+                      <input class="fi" id="reels-mavzu" placeholder="Masalan: 4x6 pergola montaj jarayoni">
+                    </div>
+                    <div>
+                      <label class="fl">Mahsulot</label>
+                      <select class="fi" id="reels-mahsulot">
+                        <option>Pergola</option><option>Giyotin oyna</option><option>Markiza</option>
+                        <option>Zip parda</option><option>Rolling roof</option><option>Tavan parda</option>
+                        <option>Umumiy Tentart</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="fl">Kontent turi</label>
+                      <select class="fi" id="reels-tur">
+                        <option>Montaj jarayoni (Before/After)</option>
+                        <option>Tayyor loyiha showcase</option>
+                        <option>Mijoz sharhi / testimonial</option>
+                        <option>Ta'lim / qanday tanlanadi</option>
+                        <option>Narx oshkoraligi</option>
+                        <option>Brend story / kompaniya</option>
+                        <option>Muammo-Yechim formati</option>
+                        <option>Mavsumiy aksiya</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="fl">Maqsad auditoriya</label>
+                      <select class="fi" id="reels-auditoriya">
+                        <option>Uy egalari (terras, balkon)</option>
+                        <option>Biznes egasi (kafe, restoran)</option>
+                        <option>Qurilish qilayotganlar</option>
+                        <option>Hashamat yoqtiradigan xonadon</option>
+                        <option>Umumiy — hammaga</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="fl">Qo'shimcha (ixtiyoriy)</label>
+                      <textarea class="fi" id="reels-extra" placeholder="Loyiha tafsilotlari, rang, o'lcham, joylashuv..." style="min-height:56px"></textarea>
+                    </div>
+                    <button class="btn btn-a" onclick="genReels()" id="reels-btn" style="font-family:'Syne',sans-serif;font-weight:700">
+                      ✨ Expert Panel Ishlasin
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Expert info -->
+                <div class="tw" style="padding:14px">
+                  <div style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">AI Expert Panel</div>
+                  <div style="font-size:11px;color:var(--text2);line-height:2">
+                    <div>🎯 <strong>Hormozi</strong> — Pain point + irresistible offer</div>
+                    <div>⚡ <strong>Mr.Beast</strong> — 3 sonlik hook formula</div>
+                    <div>🎬 <strong>McKinnon</strong> — Shot by shot montaj</div>
+                    <div>📱 <strong>GaryVee</strong> — Authentik brend ovozi</div>
+                    <div>🔬 <strong>Berger</strong> — Viral trigger analizi</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Right: Result -->
+              <div id="reels-result-wrap">
+                <div class="tw" style="height:100%;min-height:400px;display:flex;align-items:center;justify-content:center">
+                  <div class="empty">
+                    <div class="empty-ic">🎬</div>
+                    <div class="empty-t">Expert panel tayyor</div>
+                    <div style="font-size:12px;color:var(--text3);margin-top:6px">Parametrlarni to'ldiring va bosing</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- OYLIK REJA -->
+          <div id="mk-reja" style="display:none">
+            <div style="display:grid;grid-template-columns:380px 1fr;gap:16px">
+              <div class="tw" style="padding:18px">
+                <div class="th-title" style="margin-bottom:14px">Oylik reja sozlamalari</div>
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <div>
+                    <label class="fl">Oy</label>
+                    <select class="fi" id="mk-oy">
+                      <option>Yanvar</option><option>Fevral</option><option>Mart</option>
+                      <option>Aprel</option><option>May</option><option>Iyun</option>
+                      <option>Iyul</option><option>Avgust</option><option>Sentabr</option>
+                      <option>Oktabr</option><option>Noyabr</option><option>Dekabr</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="fl">Asosiy kampaniya mavzusi</label>
+                    <input class="fi" id="mk-mavzu" placeholder="Masalan: yozgi terrasalar, yangi model...">
+                  </div>
+                  <div>
+                    <label class="fl">Posting chastotasi</label>
+                    <select class="fi" id="mk-chastota">
+                      <option value="20reels10post">20 Reels + 10 Post (standart)</option>
+                      <option value="15reels15post">15 Reels + 15 Post</option>
+                      <option value="25reels5post">25 Reels + 5 Post (Reels heavy)</option>
+                    </select>
+                  </div>
+                  <button class="btn btn-a" onclick="genReja()" id="mk-reja-btn" style="font-family:'Syne',sans-serif;font-weight:700">
+                    📅 Reja Tuzsin
+                  </button>
+                </div>
+              </div>
+              <div id="mk-reja-result">
+                <div class="tw" style="height:100%;min-height:400px;display:flex;align-items:center;justify-content:center">
+                  <div class="empty"><div class="empty-ic">📅</div><div class="empty-t">Oylik reja bu yerda chiqadi</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- POST CAPTION -->
+          <div id="mk-post" style="display:none">
+            <div style="display:grid;grid-template-columns:380px 1fr;gap:16px">
+              <div class="tw" style="padding:18px">
+                <div class="th-title" style="margin-bottom:14px">Post parametrlari</div>
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <div>
+                    <label class="fl">Post mavzusi</label>
+                    <input class="fi" id="post-mavzu" placeholder="Masalan: yozgi pergola aksiyasi">
+                  </div>
+                  <div>
+                    <label class="fl">Post turi</label>
+                    <select class="fi" id="post-tur">
+                      <option>Mahsulot taqdimoti</option><option>Tayyor loyiha</option>
+                      <option>Mijoz sharhi</option><option>Aksiya / taklif</option>
+                      <option>Ta'lim / maslahat</option><option>Kompaniya yangiligi</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="fl">Kalit so'zlar</label>
+                    <input class="fi" id="post-keys" placeholder="hashamat, yoz, terras...">
+                  </div>
+                  <button class="btn btn-a" onclick="genPost()" id="post-btn" style="font-family:'Syne',sans-serif;font-weight:700">
+                    📸 Caption Yozdirish
+                  </button>
+                </div>
+              </div>
+              <div id="post-result-wrap">
+                <div class="tw" style="height:100%;min-height:400px;display:flex;align-items:center;justify-content:center">
+                  <div class="empty"><div class="empty-ic">📸</div><div class="empty-t">Caption bu yerda chiqadi</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ARXIV -->
+          <div id="mk-arxiv" style="display:none">
+            <div id="mk-arxiv-list">
+              <div class="empty"><div class="empty-ic">📁</div><div class="empty-t">Hali saqlangan kontent yo'q</div></div>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -893,9 +1081,9 @@ document.querySelectorAll('.ni[data-page]').forEach(el=>{
     this.classList.add('on');
     document.querySelectorAll('.page').forEach(pg=>pg.classList.remove('on'));
     document.getElementById('page-'+p).classList.add('on');
-    const T={dashboard:'Dashboard',zakazlar:'Zakazlar',kanban:'Kanban Board',crm:'CRM — Lidlar',moliya:'Moliya',hr:'Jamoa & HR',narxlar:'Narxlar bazasi',kpi:'KPI & Savdo'};
+    const T={dashboard:'Dashboard',zakazlar:'Zakazlar',kanban:'Kanban Board',crm:'CRM — Lidlar',moliya:'Moliya',hr:'Jamoa & HR',narxlar:'Narxlar bazasi',kpi:'KPI & Savdo',marketing:'Marketing AI'};
     document.getElementById('ptitle').textContent=T[p]||p;
-    const AL={zakazlar:'+ Yangi zakaz',crm:'+ Yangi lid',hr:'+ Xodim',moliya:'+ Xarajat',kanban:'',dashboard:'+ Yangi zakaz',narxlar:'',kpi:''};
+    const AL={zakazlar:'+ Yangi zakaz',crm:'+ Yangi lid',hr:'+ Xodim',moliya:'+ Xarajat',kanban:'',dashboard:'+ Yangi zakaz',narxlar:'',kpi:'',marketing:''};
     const ab=document.getElementById('tb-add-btn');
     ab.textContent=AL[p]||'+ Yangi zakaz';ab.style.display=AL[p]===''?'none':'';
     if(p==='kanban')renderKanban();
@@ -903,6 +1091,7 @@ document.querySelectorAll('.ni[data-page]').forEach(el=>{
     if(p==='hr')renderHR();
     if(p==='narxlar'){renderNarxTable('pergola');}
     if(p==='kpi')renderKPI();
+    if(p==='marketing')initMarketing();
     closeSb();
   });
 });
@@ -1820,6 +2009,301 @@ function renderKPI() {
 }
 
 // Nav update for narxlar last line cleanup
+
+// ═══════════════════════════════════════
+// MARKETING AI — EXPERT PANEL
+// ═══════════════════════════════════════
+let mkArxiv = [];
+
+function initMarketing() { renderMkArxiv(); }
+
+function mkTab(name, el) {
+  ['reja','reels','post','arxiv'].forEach(k => {
+    const el2 = document.getElementById('mk-'+k);
+    if(el2) el2.style.display = k===name ? '' : 'none';
+    const btn = document.getElementById('mk-tab-'+k);
+    if(btn){ btn.style.background=''; btn.style.color=''; btn.style.border='1px solid var(--border2)'; }
+  });
+  el.style.background = 'rgba(99,102,241,.15)';
+  el.style.color = 'var(--accent2)';
+  el.style.border = '1px solid var(--accent)';
+}
+
+async function callAI(prompt, systemPrompt) {
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      model:'claude-sonnet-4-20250514',
+      max_tokens:2500,
+      system: systemPrompt,
+      messages:[{role:'user', content: prompt}]
+    })
+  });
+  const data = await resp.json();
+  return data.content?.[0]?.text || 'Xatolik yuz berdi';
+}
+
+function mkResultCard(title, content, type, saveTitle) {
+  const escaped = content.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return `
+    <div class="tw">
+      <div class="th-bar">
+        <div class="th-title">${title}</div>
+        <div style="display:flex;gap:6px">
+          <button onclick="navigator.clipboard.writeText(\`${content.replace(/`/g,'\\`')}\`);notif('📋','Nusxa olindi!','')" class="btn btn-g btn-sm">📋 Nusxa</button>
+          <button onclick="mkSave('${type}',\`${saveTitle.replace(/`/g,'\\`')}\`,\`${content.replace(/`/g,'\\`')}\`)" class="btn btn-a btn-sm">💾 Saqlash</button>
+        </div>
+      </div>
+      <div style="padding:18px;font-size:13px;color:var(--text2);line-height:1.85;white-space:pre-wrap;max-height:600px;overflow-y:auto">${escaped}</div>
+    </div>`;
+}
+
+async function genReels() {
+  const mavzu = document.getElementById('reels-mavzu').value.trim();
+  const mahsulot = document.getElementById('reels-mahsulot').value;
+  const tur = document.getElementById('reels-tur').value;
+  const auditoriya = document.getElementById('reels-auditoriya').value;
+  const extra = document.getElementById('reels-extra').value;
+  if(!mavzu){notif('⚠️','Xato','Mavzu kiriting');return;}
+
+  const btn = document.getElementById('reels-btn');
+  btn.disabled=true; btn.textContent='⏳ Expert panel ishlayapti...';
+  document.getElementById('reels-result-wrap').innerHTML=`
+    <div class="tw" style="padding:30px;display:flex;flex-direction:column;align-items:center;gap:16px;min-height:400px;justify-content:center">
+      <div class="spinner" style="width:32px;height:32px;border-width:3px"></div>
+      <div style="font-size:13px;color:var(--text3);text-align:center">
+        <div style="margin-bottom:6px">Expert panel ishlayapti...</div>
+        <div style="font-size:11px">Hormozi + Mr.Beast + McKinnon + GaryVee + Berger</div>
+      </div>
+    </div>`;
+
+  const system = `Siz dunyo bo'yicha eng yaxshi Instagram marketing ekspertlari panelisiniz.
+Panel a'zolari:
+- Alex Hormozi: sotish psixologiyasi, pain point, irresistible offer, "$100M Offers" metodologiyasi
+- Mr. Beast: birinchi 3 sonlik hook formula, curiosity gap, thumbnail psychology  
+- Peter McKinnon: cinematik videografiya, shot composition, visual storytelling, montaj ritmikasi
+- Gary Vaynerchuk: authentik brend ovozi, community building, long-term brand equity
+- Jonah Berger: "Contagious" kitobidan STEPPS framework (Social currency, Triggers, Emotion, Public, Practical value, Stories)
+
+Siz Tentart.uz uchun ishlaysiz:
+- O'zbekistondagi premium pergola, giyotin oyna, markiza, zip parda ishlab chiqaruvchisi
+- Instagram: @tentart.uz, 90K+ obunachi
+- Brend: qora/oltin, hashamatli, professional. Tagline: "Har loyiha — bizning imzomiz"
+- Narx segmenti: o'rta-yuqori (premium)
+- Asosiy bozor: Toshkent va O'zbekiston bo'ylab
+
+BARCHA JAVOBLAR O'ZBEK TILIDA bo'lsin. Emoji ishlating.`;
+
+  const prompt = `Bu Reels uchun to'liq professional paket tayyorla:
+
+MAVZU: ${mavzu}
+MAHSULOT: ${mahsulot}
+TUR: ${tur}
+AUDITORIYA: ${auditoriya}
+${extra?`QO'SHIMCHA: ${extra}`:''}
+
+Quyidagi formatda yoz:
+
+━━━━━━━━━━━━━━━━━━━━━━
+⚡ MR.BEAST HOOK FORMULA (0-3 son)
+━━━━━━━━━━━━━━━━━━━━━━
+[Birinchi kadr nima ko'rinadi]
+SCREEN TEXT: [Ekranda yoziladigan matn]
+VOICEOVER: "[Aynan nima deyiladi]"
+Nima uchun bu hook ishlaydi: [qisqa izoh]
+
+━━━━━━━━━━━━━━━━━━━━━━
+🎯 HORMOZI SKRIPT (3-27 son)
+━━━━━━━━━━━━━━━━━━━━━━
+[Pain point — muammoni aniq ko'rsat]
+[Agitate — muammoni kuchaytir]
+[Solution — Tentart yechimi]
+[Proof — isbotlash]
+[Offer — nima qilish kerak]
+
+VOICEOVER matni (to'liq, aynan gapiriladigan so'zlar):
+"..."
+
+━━━━━━━━━━━━━━━━━━━━━━
+🎬 McKINNON SHOT LIST
+━━━━━━━━━━━━━━━━━━━━━━
+[Har bir shot: vaqt | kadr turi | nima ko'rinadi | harakat]
+Son 0-3: ...
+Son 3-8: ...
+Son 8-15: ...
+Son 15-22: ...
+Son 22-27: ...
+Son 27-30: ...
+
+Montaj tempo tavsiyasi: [tez/o'rta/sekin va qachon]
+Musiqa mood: [qanday musiqa]
+Transition effektlari: [qaysi joyda nima]
+
+━━━━━━━━━━━━━━━━━━━━━━
+📱 GARYVEE CAPTION
+━━━━━━━━━━━━━━━━━━━━━━
+[150-200 so'z, authentik, brend ovozi, emoji bilan]
+CTA: [aniq harakat chaqiruvi]
+
+HASHTAG (25 ta):
+[o'zbek + rus + ingliz aralash]
+
+━━━━━━━━━━━━━━━━━━━━━━
+🔬 BERGER VIRAL ANALIZ
+━━━━━━━━━━━━━━━━━━━━━━
+Viral ball: [1-10] / 10
+STEPPS tahlil:
+• Social Currency: [baholash]
+• Trigger: [baholash]  
+• Emotion: [baholash]
+• Public: [baholash]
+• Practical Value: [baholash]
+• Story: [baholash]
+
+Viral bo'lishi uchun: [2-3 konkret tavsiya]
+Ehtimoliy reach: [past/o'rta/yuqori] + sababi
+
+━━━━━━━━━━━━━━━━━━━━━━
+📋 VN UCHUN QISQA CHEAT SHEET
+━━━━━━━━━━━━━━━━━━━━━━
+[Siz VN'da video yozayotganda faqat shu qismni ko'rasiz]
+AYTILADIGAN SO'ZLAR (qisqa, aniq):
+[Har bir shot uchun aytiladigan gap]`;
+
+  try {
+    const result = await callAI(prompt, system);
+    const saveTitle = `Reels: ${mavzu} (${mahsulot})`;
+    document.getElementById('reels-result-wrap').innerHTML = mkResultCard('🎬 Expert Panel Natijasi — '+mavzu, result, 'reels', saveTitle);
+  } catch(e) {
+    document.getElementById('reels-result-wrap').innerHTML = `<div class="tw" style="padding:20px;color:var(--danger)">Xatolik: ${e.message}</div>`;
+  }
+  btn.disabled=false; btn.textContent='✨ Expert Panel Ishlasin';
+}
+
+async function genReja() {
+  const oy = document.getElementById('mk-oy').value;
+  const mavzu = document.getElementById('mk-mavzu').value;
+  const chastota = document.getElementById('mk-chastota').value;
+  const btn = document.getElementById('mk-reja-btn');
+  btn.disabled=true; btn.textContent='⏳ Reja tuzilmoqda...';
+  document.getElementById('mk-reja-result').innerHTML=`<div class="tw" style="padding:30px;display:flex;align-items:center;gap:16px;justify-content:center;min-height:300px"><div class="spinner" style="width:28px;height:28px;border-width:3px"></div><span style="color:var(--text3)">${oy} oyi uchun strategik reja tuzilmoqda...</span></div>`;
+
+  const system = `Siz Tentart.uz uchun senior SMM strategisti va kontent planner sifatida ishlaysiz.
+Tentart.uz — Toshkentdagi premium pergola va oyna tizimlari ishlab chiqaruvchisi. @tentart.uz, 90K+ obunachi.
+GaryVee, Later.com va Hootsuite metodologiyalarini qo'llaysiz.
+Barcha javoblar O'ZBEK TILIDA.`;
+
+  const prompt = `${oy} oyi uchun @tentart.uz Instagram kontent rejasi tuz.
+
+Format: ${chastota}
+${mavzu?`Asosiy kampaniya: ${mavzu}`:''}
+
+Reja quyidagilarni o'z ichiga olsin:
+
+1. OY STRATEGIYASI (3-4 jumla) — bu oyning asosiy maqsadi va yo'nalishi
+
+2. HAFTALIK TAQSIMLASH:
+1-hafta | 2-hafta | 3-hafta | 4-hafta — har birida nechta Reels, nechta post
+
+3. KONTENT JADVALI (30 kunlik):
+KUN | TURI | MAVZU | HOOK G'OYA | MAQSAD (reach/engagement/sotish)
+
+4. MAVZULAR MIX (foizda):
+- Before/After: X%
+- Ta'lim: X%
+- Brend story: X%
+- Mijoz sharhi: X%
+- Mahsulot: X%
+
+5. MAVSUMIY IMKONIYATLAR — ${oy} oyida nima trend bo'ladi
+
+6. TOP 5 REELS G'OYA — bu oy eng viral bo'lishi mumkin`;
+
+  try {
+    const result = await callAI(prompt, system);
+    document.getElementById('mk-reja-result').innerHTML = mkResultCard(`📅 ${oy} Oyi Kontent Rejasi`, result, 'reja', `${oy} oyi kontent rejasi`);
+  } catch(e) {
+    document.getElementById('mk-reja-result').innerHTML=`<div class="tw" style="padding:20px;color:var(--danger)">Xatolik: ${e.message}</div>`;
+  }
+  btn.disabled=false; btn.textContent='📅 Reja Tuzsin';
+}
+
+async function genPost() {
+  const mavzu = document.getElementById('post-mavzu').value.trim();
+  const tur = document.getElementById('post-tur').value;
+  const keys = document.getElementById('post-keys').value;
+  if(!mavzu){notif('⚠️','Xato','Mavzu kiriting');return;}
+  const btn = document.getElementById('post-btn');
+  btn.disabled=true; btn.textContent='⏳ AI yozmoqda...';
+  document.getElementById('post-result-wrap').innerHTML=`<div class="tw" style="padding:30px;display:flex;align-items:center;gap:16px;justify-content:center;min-height:300px"><div class="spinner" style="width:28px;height:28px;border-width:3px"></div><span style="color:var(--text3)">Caption yozilmoqda...</span></div>`;
+
+  const system = `Siz Tentart.uz uchun Instagram caption mutaxassisisiniz. 
+GaryVee authentik ovozi + Hormozi persuasion + Berger virality principles.
+Tentart.uz — premium pergola va oyna tizimlari. @tentart.uz, 90K+ obunachi.
+Barcha javoblar O'ZBEK TILIDA.`;
+
+  const prompt = `@tentart.uz uchun Instagram post caption yoz.
+
+Mavzu: ${mavzu}
+Tur: ${tur}
+${keys?`Kalit so'zlar: ${keys}`:''}
+
+FORMAT:
+
+📌 ASOSIY CAPTION (150-200 so'z):
+[Birinchi jumla — hook, davom etishni majbur qiladi]
+[Asosiy kontent — authentik, qiymat beradi]
+[Storytelling elementi]
+[CTA — aniq, majburlovchi]
+
+📊 A/B TEST VARIANT (qisqa, 50-70 so'z):
+[Muqobil variant]
+
+#️⃣ HASHTAG (25 ta):
+[O'zbek + rus + ingliz + niche + brend]
+
+💡 OPTIMAL JOYLASH VAQTI: [kun va soat]
+🎯 MAQSAD METRIKA: [nima o'lchaymiz]`;
+
+  try {
+    const result = await callAI(prompt, system);
+    document.getElementById('post-result-wrap').innerHTML = mkResultCard(`📸 Caption — ${mavzu}`, result, 'post', `Post: ${mavzu}`);
+  } catch(e) {
+    document.getElementById('post-result-wrap').innerHTML=`<div class="tw" style="padding:20px;color:var(--danger)">Xatolik: ${e.message}</div>`;
+  }
+  btn.disabled=false; btn.textContent='📸 Caption Yozdirish';
+}
+
+function mkSave(type, title, content) {
+  mkArxiv.unshift({id:Date.now(), type, title, content, sana:new Date().toLocaleDateString('uz-UZ')});
+  notif('✅','Arxivga saqlandi!', mkArxiv.length+' ta kontent');
+  renderMkArxiv();
+}
+
+function renderMkArxiv() {
+  const el = document.getElementById('mk-arxiv-list');
+  if(!el) return;
+  if(!mkArxiv.length){
+    el.innerHTML='<div class="empty"><div class="empty-ic">📁</div><div class="empty-t">Hali saqlangan kontent yo\'q</div></div>';
+    return;
+  }
+  const icons={reja:'📅',reels:'🎬',post:'📸'};
+  el.innerHTML = mkArxiv.map((item,i)=>`
+    <div class="tw" style="margin-bottom:12px">
+      <div class="th-bar">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:20px">${icons[item.type]||'📄'}</span>
+          <div><div class="th-title">${item.title}</div><div style="font-size:11px;color:var(--text3)">${item.sana} • ${item.type}</div></div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button onclick="navigator.clipboard.writeText(\`${mkArxiv[i].content.replace(/`/g,'\\`')}\`);notif('📋','Nusxa olindi!','')" class="btn btn-g btn-sm">📋</button>
+          <button onclick="mkArxiv.splice(${i},1);renderMkArxiv()" class="btn btn-sm" style="color:var(--danger);border:1px solid rgba(248,113,113,.3)">🗑</button>
+        </div>
+      </div>
+      <div style="padding:16px;font-size:12px;color:var(--text2);line-height:1.8;white-space:pre-wrap;max-height:180px;overflow-y:auto">${item.content.substring(0,500)}${item.content.length>500?'...':''}</div>
+    </div>`).join('');
+}
 
 
 
