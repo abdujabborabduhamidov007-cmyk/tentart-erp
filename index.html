@@ -830,8 +830,20 @@ async function startApp(user){
   document.getElementById('su-av').textContent=curUser.ism[0].toUpperCase();
   document.getElementById('su-name').textContent=curUser.ism;
   document.getElementById('su-role').textContent=curUser.rol;
-  if(!['Owner','Menejer'].includes(curUser.rol)){
-    document.getElementById('sb-biznes').style.display='none';
+  
+  const biznesRols=['Owner','Menejer'];
+  const narxlarRols=['Owner','Menejer','Operator','Kassir','Zamershik'];
+  const kpiViewRols=['Owner','Menejer','Operator','Kassir','Zamershik'];
+  
+  if(!biznesRols.includes(curUser.rol)){
+    // Moliya va HR ni yashir
+    document.querySelectorAll('.ni[data-page="moliya"], .ni[data-page="hr"]').forEach(el=>el.style.display='none');
+  }
+  if(!narxlarRols.includes(curUser.rol)){
+    document.querySelector('.ni[data-page="narxlar"]')?.style.setProperty('display','none');
+  }
+  if(!kpiViewRols.includes(curUser.rol)){
+    document.querySelector('.ni[data-page="kpi"]')?.style.setProperty('display','none');
   }
   document.getElementById('login').style.display='none';
   document.getElementById('app').style.display='block';
