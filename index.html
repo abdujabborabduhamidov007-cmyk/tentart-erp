@@ -965,6 +965,8 @@ textarea.fi{resize:vertical;min-height:72px;}
 // ═══════════════════════════════════════
 const SURL='https://zheszanbqkcckxwnrycu.supabase.co';
 const SKEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoZXN6YW5icWtjY2t4d25yeWN1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0OTQ3MzksImV4cCI6MjA5MzA3MDczOX0.uzQVIB8gwJ_MnX3-i45d_CwCuhhI3rtS98642kdeKvc';
+// Gemini API Key - shu yerga o'z keyingizni kiriting:
+window.GEMINI_API_KEY = 'YOUR_GEMINI_API_KEY';
 const {createClient}=supabase;
 const db=createClient(SURL,SKEY);
 const BUCKET='zakaz-files';
@@ -2020,24 +2022,30 @@ function initMarketing() { renderMkArxiv(); }
 function mkTab(name, el) {
   ['reja','reels','post','arxiv'].forEach(k => {
     const el2 = document.getElementById('mk-'+k);
-   const response = await fetch('/api/gemini', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                prompt: `Tizim: ${systemPrompt}\n\nFoydalanuvchi: ${fullPrompt}`
-            })
-        });
+    if(el2) el2.style.display = k===name ? '' : 'none';
+    const btn = document.getElementById('mk-tab-'+k);
+    if(btn){ btn.style.background=''; btn.style.color=''; btn.style.border='1px solid var(--border2)'; }
+  });
+  el.style.background = 'rgba(99,102,241,.15)';
+  el.style.color = 'var(--accent2)';
+  el.style.border = '1px solid var(--accent)';
+}
+
+async function callAI(prompt, systemPrompt) {
+  const GEMINI_KEY = 'AIzaSyD-placeholder'; // Vercel env dan keladi
+  const fullPrompt = systemPrompt ? systemPrompt + '\n\n' + prompt : prompt;
+  
+  const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${window.GEMINI_API_KEY||''}`, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
     body: JSON.stringify({
-      model:'claude-sonnet-4-20250514',
-      max_tokens:2500,
-      system: systemPrompt,
-      messages:[{role:'user', content: prompt}]
+      contents:[{parts:[{text: fullPrompt}]}],
+      generationConfig:{maxOutputTokens:2500, temperature:0.9}
     })
   });
   const data = await resp.json();
-  return data.content?.[0]?.text || 'Xatolik yuz berdi';
+  if(data.error) throw new Error(data.error.message);
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || 'Xatolik yuz berdi';
 }
 
 function mkResultCard(title, content, type, saveTitle) {
