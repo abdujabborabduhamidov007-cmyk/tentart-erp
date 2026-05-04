@@ -2032,7 +2032,7 @@ function mkTab(name, el) {
 }
 
 async function callAI(prompt, systemPrompt) {
-  const GEMINI_KEY = 'AIzaSyD-placeholder'; // Vercel env dan keladi
+  const GEMINI_KEY = 'AIzaSyCvYSvg-oQzft9YkhzfDoUrokMoEzg7Vj0'; // Vercel env dan keladi
   const fullPrompt = systemPrompt ? systemPrompt + '\n\n' + prompt : prompt;
   
   const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${window.GEMINI_API_KEY||''}`, {
