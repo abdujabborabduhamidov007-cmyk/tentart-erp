@@ -8,24 +8,25 @@ export default async function handler(req, res) {
  
   try {
     const { prompt, systemPrompt } = req.body;
-    const fullPrompt = systemPrompt ? systemPrompt + '\n\n' + prompt : prompt;
-    
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: fullPrompt }] }],
-          generationConfig: { maxOutputTokens: 2500, temperature: 0.9 }
-        })
-      }
-    );
+ 
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': process.env.ANTHROPIC_API_KEY,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 2500,
+        system: systemPrompt || '',
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
  
     const data = await response.json();
-    if (data.error) throw new Error(data.error.message);
-    
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Xatolik';
+    if(data.error) throw new Error(data.error.message);
+    const text = data.content?.[0]?.text || 'Xatolik';
     return res.status(200).json({ text });
   } catch (error) {
     return res.status(500).json({ error: error.message });
