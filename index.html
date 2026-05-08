@@ -393,6 +393,7 @@ textarea.fi{resize:vertical;min-height:72px;}
           <div class="ni" data-page="narxlar"><span class="ni-ic">💲</span>Narxlar bazasi</div>
           <div class="ni" data-page="kpi"><span class="ni-ic">🏆</span>KPI & Savdo</div>
           <div class="ni" data-page="marketing"><span class="ni-ic">🎬</span>Marketing AI</div>
+          <div class="ni" data-page="video"><span class="ni-ic">🎥</span>Video Studio</div>
         </div>
       </nav>
       <div class="sb-user">
@@ -810,6 +811,162 @@ textarea.fi{resize:vertical;min-height:72px;}
           </div>
         </div>
 
+        <!-- VIDEO STUDIO -->
+        <div class="page" id="page-video">
+          <!-- Header -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+            <div>
+              <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700">🎥 Video Studio</div>
+              <div style="font-size:12px;color:var(--text3);margin-top:3px">Skript → Shot list → Yuklash → AI tahlil → CapCut tayyor ro'yxat</div>
+            </div>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn-sm" onclick="vsTab('checklist',this)" id="vs-tab-checklist" style="background:rgba(201,147,58,.12);color:var(--accent2);border:1px solid var(--accent)">📋 Shot Checklist</button>
+              <button class="btn btn-g btn-sm" onclick="vsTab('upload',this)" id="vs-tab-upload">📤 Klip Yuklash</button>
+              <button class="btn btn-g btn-sm" onclick="vsTab('match',this)" id="vs-tab-match">🤖 AI Moslashtirish</button>
+            </div>
+          </div>
+
+          <!-- PIPELINE STEPS -->
+          <div style="display:flex;align-items:center;gap:0;margin-bottom:24px;overflow-x:auto;padding-bottom:4px">
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;background:rgba(201,147,58,.1);border:1px solid var(--accent);border-radius:var(--r2);white-space:nowrap">
+              <span style="font-size:18px">✍️</span>
+              <div><div style="font-size:11px;font-weight:700;color:var(--accent2)">1-QADAM</div><div style="font-size:12px">Skript yaratish</div></div>
+            </div>
+            <div style="width:24px;height:2px;background:var(--border);flex-shrink:0"></div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);white-space:nowrap">
+              <span style="font-size:18px">📋</span>
+              <div><div style="font-size:11px;font-weight:700;color:var(--text3)">2-QADAM</div><div style="font-size:12px">Shot list olish</div></div>
+            </div>
+            <div style="width:24px;height:2px;background:var(--border);flex-shrink:0"></div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);white-space:nowrap">
+              <span style="font-size:18px">📱</span>
+              <div><div style="font-size:11px;font-weight:700;color:var(--text3)">3-QADAM</div><div style="font-size:12px">iPhone'da suratga olish</div></div>
+            </div>
+            <div style="width:24px;height:2px;background:var(--border);flex-shrink:0"></div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);white-space:nowrap">
+              <span style="font-size:18px">📤</span>
+              <div><div style="font-size:11px;font-weight:700;color:var(--text3)">4-QADAM</div><div style="font-size:12px">Kliplarni yuklash</div></div>
+            </div>
+            <div style="width:24px;height:2px;background:var(--border);flex-shrink:0"></div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);white-space:nowrap">
+              <span style="font-size:18px">🤖</span>
+              <div><div style="font-size:11px;font-weight:700;color:var(--text3)">5-QADAM</div><div style="font-size:12px">AI moslashtirish</div></div>
+            </div>
+            <div style="width:24px;height:2px;background:var(--border);flex-shrink:0"></div>
+            <div style="display:flex;align-items:center;gap:10px;padding:10px 16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);white-space:nowrap">
+              <span style="font-size:18px">✂️</span>
+              <div><div style="font-size:11px;font-weight:700;color:var(--text3)">6-QADAM</div><div style="font-size:12px">CapCut'da montaj</div></div>
+            </div>
+          </div>
+
+          <!-- SHOT CHECKLIST -->
+          <div id="vs-checklist">
+            <div style="display:grid;grid-template-columns:420px 1fr;gap:16px">
+              <div class="tw" style="padding:18px">
+                <div class="th-title" style="margin-bottom:14px">📋 Shot Checklist Generatsiya</div>
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <div>
+                    <label class="fl">Reels skripti yoki mavzusi</label>
+                    <textarea class="fi" id="vs-skript" placeholder="Marketing AI'dan skriptni bu yerga joylashtiring yoki qisqacha mavzuni yozing...&#10;&#10;Masalan: Pergola 6x5 montaj jarayoni, before/after, Toshkent" style="min-height:120px"></textarea>
+                  </div>
+                  <div>
+                    <label class="fl">Mahsulot</label>
+                    <select class="fi" id="vs-mahsulot">
+                      <option>Pergola</option><option>Giyotin oyna</option><option>Markiza</option>
+                      <option>Zip parda</option><option>Rolling roof</option><option>Umumiy Tentart</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="fl">Reels davomiyligi</label>
+                    <select class="fi" id="vs-davom">
+                      <option value="30">30 soniya</option>
+                      <option value="60">60 soniya</option>
+                      <option value="90">90 soniya</option>
+                    </select>
+                  </div>
+                  <button class="btn btn-a" onclick="genShotChecklist()" id="vs-checklist-btn" style="font-family:'Syne',sans-serif;font-weight:700">
+                    📋 Shot List Yaratish
+                  </button>
+                  <div style="background:var(--bg3);border-radius:var(--r2);padding:12px;font-size:12px;color:var(--text3);line-height:1.8">
+                    💡 <strong style="color:var(--text2)">Maslahat:</strong> Avval Marketing AI'da to'liq Reels skriptini yarating, keyin uni bu yerga joylashtiring. Shunda shot list aniqroq chiqadi.
+                  </div>
+                </div>
+              </div>
+              <div id="vs-checklist-result">
+                <div class="tw" style="height:100%;min-height:400px;display:flex;align-items:center;justify-content:center">
+                  <div class="empty">
+                    <div class="empty-ic">📋</div>
+                    <div class="empty-t">Shot list bu yerda chiqadi</div>
+                    <div style="font-size:12px;color:var(--text3);margin-top:6px">Skript kiriting va "Shot List Yaratish" bosing</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- KLIP YUKLASH -->
+          <div id="vs-upload" style="display:none">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+              <div class="tw" style="padding:18px">
+                <div class="th-title" style="margin-bottom:6px">📤 Kliplarni Yuklash</div>
+                <div style="font-size:12px;color:var(--text3);margin-bottom:14px">iPhone'dan suratga olingan kliplarni yuklang</div>
+                <div style="border:2px dashed var(--border);border-radius:var(--r2);padding:30px;text-align:center;cursor:pointer;transition:all .2s;position:relative;margin-bottom:14px" 
+                     ondragover="event.preventDefault();this.style.borderColor='var(--accent)'" 
+                     ondragleave="this.style.borderColor='var(--border)'"
+                     ondrop="vsVideoDrop(event)">
+                  <input type="file" accept="video/*" multiple style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%" onchange="vsVideoChange(event)">
+                  <div style="font-size:36px;margin-bottom:10px">🎬</div>
+                  <div style="font-size:14px;font-weight:500;margin-bottom:4px">Video kliplarni yuklang</div>
+                  <div style="font-size:12px;color:var(--text3)">MP4, MOV • iPhone kliplari • Maks 500MB</div>
+                </div>
+                <div id="vs-file-list" style="display:flex;flex-direction:column;gap:6px"></div>
+                <button class="btn btn-a" style="width:100%;margin-top:12px;font-family:'Syne',sans-serif;font-weight:700" onclick="vsUploadAll()">
+                  ☁️ Supabase'ga Yuklash
+                </button>
+              </div>
+              <div class="tw" style="padding:18px">
+                <div class="th-title" style="margin-bottom:12px">✅ Yuklangan Kliplar</div>
+                <div id="vs-uploaded-list">
+                  <div class="empty" style="padding:30px"><div class="empty-ic">🎬</div><div class="empty-t" style="font-size:13px">Hali klip yuklanmagan</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- AI MOSLASHTIRISH -->
+          <div id="vs-match" style="display:none">
+            <div style="display:grid;grid-template-columns:420px 1fr;gap:16px">
+              <div class="tw" style="padding:18px">
+                <div class="th-title" style="margin-bottom:14px">🤖 AI Moslashtirish</div>
+                <div style="font-size:12px;color:var(--text3);margin-bottom:14px">AI har klipni shot list bilan moslashtiradi va CapCut uchun tartib chiqaradi</div>
+                <div style="display:flex;flex-direction:column;gap:10px">
+                  <div>
+                    <label class="fl">Shot list (2-qadamdan)</label>
+                    <textarea class="fi" id="vs-shotlist-input" placeholder="Shot listni bu yerga joylashtiring..." style="min-height:100px"></textarea>
+                  </div>
+                  <div style="background:var(--bg3);border-radius:var(--r2);padding:12px;font-size:12px;color:var(--text2);line-height:1.8">
+                    <div style="font-weight:700;margin-bottom:4px">Yuklangan kliplar:</div>
+                    <div id="vs-clips-count" style="color:var(--accent2)">0 ta klip yuklangan</div>
+                  </div>
+                  <button class="btn btn-a" onclick="vsMatchClips()" id="vs-match-btn" style="font-family:'Syne',sans-serif;font-weight:700">
+                    🤖 AI Moslashtirsin
+                  </button>
+                </div>
+              </div>
+              <div id="vs-match-result">
+                <div class="tw" style="height:100%;min-height:400px;display:flex;align-items:center;justify-content:center">
+                  <div class="empty">
+                    <div class="empty-ic">🤖</div>
+                    <div class="empty-t">CapCut ro'yxati bu yerda chiqadi</div>
+                    <div style="font-size:12px;color:var(--text3);margin-top:6px">Kliplarni yuklab, shot list kiritib bosing</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
       </div>
     </main>
   </div>
@@ -1123,9 +1280,9 @@ document.querySelectorAll('.ni[data-page]').forEach(el=>{
     this.classList.add('on');
     document.querySelectorAll('.page').forEach(pg=>pg.classList.remove('on'));
     document.getElementById('page-'+p).classList.add('on');
-    const T={dashboard:'Dashboard',zakazlar:'Zakazlar',kanban:'Kanban Board',crm:'CRM — Lidlar',moliya:'Moliya',hr:'Jamoa & HR',narxlar:'Narxlar bazasi',kpi:'KPI & Savdo',marketing:'Marketing AI'};
+    const T={dashboard:'Dashboard',zakazlar:'Zakazlar',kanban:'Kanban Board',crm:'CRM — Lidlar',moliya:'Moliya',hr:'Jamoa & HR',narxlar:'Narxlar bazasi',kpi:'KPI & Savdo',marketing:'Marketing AI',video:'Video Studio'};
     document.getElementById('ptitle').textContent=T[p]||p;
-    const AL={zakazlar:'+ Yangi zakaz',crm:'+ Yangi lid',hr:'+ Xodim',moliya:'+ Xarajat',kanban:'',dashboard:'+ Yangi zakaz',narxlar:'',kpi:'',marketing:''};
+    const AL={zakazlar:'+ Yangi zakaz',crm:'+ Yangi lid',hr:'+ Xodim',moliya:'+ Xarajat',kanban:'',dashboard:'+ Yangi zakaz',narxlar:'',kpi:'',marketing:'',video:''};
     const ab=document.getElementById('tb-add-btn');
     ab.textContent=AL[p]||'+ Yangi zakaz';ab.style.display=AL[p]===''?'none':'';
     if(p==='kanban')renderKanban();
@@ -1134,6 +1291,7 @@ document.querySelectorAll('.ni[data-page]').forEach(el=>{
     if(p==='narxlar'){renderNarxTable('pergola');}
     if(p==='kpi')renderKPI();
     if(p==='marketing')initMarketing();
+    if(p==='video')initVideoStudio();
     closeSb();
   });
 });
@@ -2053,8 +2211,255 @@ function renderKPI() {
 // Nav update for narxlar last line cleanup
 
 // ═══════════════════════════════════════
-// MARKETING AI — EXPERT PANEL
+// VIDEO STUDIO
 // ═══════════════════════════════════════
+let vsClips = []; // Pending upload kliplar
+let vsUploadedClips = []; // Yuklangan kliplar
+const VS_BUCKET = 'video-clips';
+
+function initVideoStudio() {
+  renderVsUploadedList();
+  updateVsClipsCount();
+}
+
+function vsTab(name, el) {
+  ['checklist','upload','match'].forEach(k => {
+    const el2 = document.getElementById('vs-'+k);
+    if(el2) el2.style.display = k===name ? '' : 'none';
+    const btn = document.getElementById('vs-tab-'+k);
+    if(btn){ btn.style.background=''; btn.style.color=''; btn.style.border='1px solid var(--border)'; }
+  });
+  el.style.background = 'rgba(201,147,58,.12)';
+  el.style.color = 'var(--accent2)';
+  el.style.border = '1px solid var(--accent)';
+  if(name==='match') updateVsClipsCount();
+}
+
+// SHOT CHECKLIST
+async function genShotChecklist() {
+  const skript = document.getElementById('vs-skript').value.trim();
+  const mahsulot = document.getElementById('vs-mahsulot').value;
+  const davom = document.getElementById('vs-davom').value;
+  if(!skript){ notif('⚠️','Xato','Skript yoki mavzu kiriting'); return; }
+
+  const btn = document.getElementById('vs-checklist-btn');
+  btn.disabled=true; btn.textContent='⏳ AI ishlayapti...';
+  document.getElementById('vs-checklist-result').innerHTML=`
+    <div class="tw" style="padding:30px;display:flex;flex-direction:column;align-items:center;gap:16px;min-height:400px;justify-content:center">
+      <div class="spinner" style="width:32px;height:32px;border-width:3px"></div>
+      <div style="font-size:13px;color:var(--text3);text-align:center">Shot list tayyorlanmoqda...</div>
+    </div>`;
+
+  const system = `Siz professional videograf va montajchi sifatida ishlaysiz. 
+Tentart.uz — premium pergola va oyna tizimlari ishlab chiqaruvchisi.
+Sizning vazifangiz: berilgan Reels skriptidan iPhone bilan suratga olish uchun aniq shot checklist yaratish.
+Barcha javoblar O'ZBEK TILIDA.`;
+
+  const prompt = `Quyidagi Reels skripti/mavzusi asosida iPhone bilan suratga olish uchun ANIQ SHOT CHECKLIST yarat.
+
+MAHSULOT: ${mahsulot}
+DAVOMIYLIK: ${davom} soniya
+SKRIPT/MAVZU: ${skript}
+
+Quyidagi formatda yoz — har bir shot uchun:
+
+━━━━━━━━━━━━━━━━━━━━━━
+📱 SHOT CHECKLIST — ${mahsulot} (${davom} son)
+━━━━━━━━━━━━━━━━━━━━━━
+
+Har bir shot uchun:
+☐ SHOT [N] — [Son oralig'i]
+   📍 Joylashuv: [qayerda turish kerak]
+   📐 Kadr: [Wide/Medium/Close-up/Drone]
+   🎬 Nima ko'rinishi kerak: [aniq tavsif]
+   ⏱ Taxminiy uzunlik: [X soniya]
+   💡 Maslahat: [qanday yaxshi olish mumkin]
+
+Oxirida:
+📦 KERAKLI JIHOZLAR: [tripod, qo'shimcha nur va h.k.]
+⏰ JAMI SURATGA OLISH VAQTI: [taxminan]
+💡 PRO MASLAHAT: [montaj uchun muhim eslatma]`;
+
+  try {
+    const result = await callAI(prompt, system);
+    document.getElementById('vs-checklist-result').innerHTML = `
+      <div class="tw">
+        <div class="th-bar">
+          <div class="th-title">📋 Shot Checklist — ${mahsulot}</div>
+          <div style="display:flex;gap:6px">
+            <button onclick="navigator.clipboard.writeText(document.getElementById('vs-checklist-text').innerText);notif('📋','Nusxa olindi!','')" class="btn btn-g btn-sm">📋 Nusxa</button>
+            <button onclick="document.getElementById('vs-shotlist-input').value=document.getElementById('vs-checklist-text').innerText;vsTab('match',document.getElementById('vs-tab-match'));notif('✅','Shot list moslashtirish bo\\'limiga o\\'tkazildi','')" class="btn btn-a btn-sm">→ Moslashtirish</button>
+          </div>
+        </div>
+        <div id="vs-checklist-text" style="padding:18px;font-size:13px;color:var(--text2);line-height:1.9;white-space:pre-wrap;max-height:600px;overflow-y:auto">${result}</div>
+      </div>`;
+  } catch(e) {
+    document.getElementById('vs-checklist-result').innerHTML = `<div class="tw" style="padding:20px;color:var(--danger)">Xatolik: ${e.message}</div>`;
+  }
+  btn.disabled=false; btn.textContent='📋 Shot List Yaratish';
+}
+
+// VIDEO YUKLASH
+function vsVideoChange(e) {
+  Array.from(e.target.files).forEach(f => {
+    if(f.size > 500*1024*1024){ notif('⚠️','Fayl katta',f.name+' — maks 500MB'); return; }
+    vsClips.push(f);
+  });
+  renderVsFileList();
+}
+
+function vsVideoDrop(e) {
+  e.preventDefault();
+  Array.from(e.dataTransfer.files).forEach(f => {
+    if(f.type.startsWith('video/')) vsClips.push(f);
+  });
+  renderVsFileList();
+}
+
+function renderVsFileList() {
+  const el = document.getElementById('vs-file-list');
+  if(!vsClips.length){ el.innerHTML=''; return; }
+  el.innerHTML = vsClips.map((f,i) => `
+    <div class="file-item">
+      <span class="file-item-ic">🎬</span>
+      <span class="file-item-name">${f.name}</span>
+      <span class="file-item-size">${fsize(f.size)}</span>
+      <span class="file-item-rm" onclick="vsClips.splice(${i},1);renderVsFileList()">✕</span>
+    </div>`).join('');
+}
+
+async function vsUploadAll() {
+  if(!vsClips.length){ notif('⚠️','Xato','Avval klip tanlang'); return; }
+  
+  document.getElementById('upload-overlay').classList.add('on');
+  
+  for(let i=0; i<vsClips.length; i++) {
+    const f = vsClips[i];
+    document.getElementById('upload-msg').textContent = `${i+1}/${vsClips.length} — ${f.name}`;
+    const path = `reels/${Date.now()}_${f.name.replace(/[^a-zA-Z0-9._-]/g,'_')}`;
+    try {
+      const { error } = await db.storage.from(VS_BUCKET).upload(path, f, {upsert:true});
+      if(error) throw error;
+      const { data } = db.storage.from(VS_BUCKET).getPublicUrl(path);
+      vsUploadedClips.push({
+        name: f.name,
+        path,
+        url: data.publicUrl,
+        size: f.size,
+        duration: null,
+        uploadedAt: new Date().toLocaleDateString('uz-UZ')
+      });
+    } catch(e) {
+      notif('⚠️','Yuklash xatosi', f.name+': '+e.message);
+    }
+  }
+  
+  document.getElementById('upload-overlay').classList.remove('on');
+  vsClips = [];
+  renderVsFileList();
+  renderVsUploadedList();
+  updateVsClipsCount();
+  notif('✅','Yuklandi!', vsUploadedClips.length+' ta klip tayyor');
+}
+
+function renderVsUploadedList() {
+  const el = document.getElementById('vs-uploaded-list');
+  if(!el) return;
+  if(!vsUploadedClips.length) {
+    el.innerHTML = '<div class="empty" style="padding:30px"><div class="empty-ic">🎬</div><div class="empty-t" style="font-size:13px">Hali klip yuklanmagan</div></div>';
+    return;
+  }
+  el.innerHTML = vsUploadedClips.map((c,i) => `
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--bg3);border-radius:var(--r2);margin-bottom:6px;font-size:12px">
+      <span style="font-size:20px">🎬</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${c.name}</div>
+        <div style="font-size:10px;color:var(--text3)">${fsize(c.size)} • ${c.uploadedAt}</div>
+      </div>
+      <div style="display:flex;gap:4px">
+        <div class="ib" onclick="window.open('${c.url}','_blank')" title="Ko'rish">👁</div>
+        <div class="ib" style="color:var(--danger)" onclick="vsUploadedClips.splice(${i},1);renderVsUploadedList();updateVsClipsCount()">🗑</div>
+      </div>
+    </div>`).join('');
+}
+
+function updateVsClipsCount() {
+  const el = document.getElementById('vs-clips-count');
+  if(el) el.textContent = vsUploadedClips.length + ' ta klip yuklangan';
+}
+
+// AI MOSLASHTIRISH
+async function vsMatchClips() {
+  const shotlist = document.getElementById('vs-shotlist-input').value.trim();
+  if(!shotlist){ notif('⚠️','Xato','Shot listni kiriting'); return; }
+  if(!vsUploadedClips.length){ notif('⚠️','Xato','Avval kliplarni yuklang'); return; }
+
+  const btn = document.getElementById('vs-match-btn');
+  btn.disabled=true; btn.textContent='⏳ AI moslashtirmoqda...';
+  document.getElementById('vs-match-result').innerHTML=`
+    <div class="tw" style="padding:30px;display:flex;flex-direction:column;align-items:center;gap:16px;min-height:400px;justify-content:center">
+      <div class="spinner" style="width:32px;height:32px;border-width:3px"></div>
+      <div style="font-size:13px;color:var(--text3);text-align:center">AI kliplarni shot list bilan moslashtirmoqda...</div>
+    </div>`;
+
+  const clipNames = vsUploadedClips.map((c,i) => `${i+1}. ${c.name} (${fsize(c.size)})`).join('\n');
+
+  const system = `Siz professional video montajchi sifatida ishlaysiz. 
+Sizning vazifangiz: berilgan klip nomlari va shot list asosida CapCut uchun tayyor montaj tartibini yaratish.
+Barcha javoblar O'ZBEK TILIDA.`;
+
+  const prompt = `Quyidagi kliplar va shot list asosida CapCut'da montaj qilish uchun ANIQ TARTIB chiqar.
+
+YUKLANGAN KLIPLAR:
+${clipNames}
+
+SHOT LIST:
+${shotlist}
+
+Quyidagi formatda javob ber:
+
+━━━━━━━━━━━━━━━━━━━━━━
+✂️ CAPCUT MONTAJ TARTIBI
+━━━━━━━━━━━━━━━━━━━━━━
+
+Har bir pozitsiya uchun:
+▶ POZITSIYA [N] — [Son oralig'i]
+   📁 Klip: [klip nomi]
+   ✂️ Klipdan qaysi qism: [boshlanish - tugash taxminan]
+   🎯 Maqsad: [bu shot nima uchun]
+   ⚡ Transition: [keyingisiga o'tishda effekt]
+
+━━━━━━━━━━━━━━━━━━━━━━
+📝 CAPCUT SOZLAMALARI
+━━━━━━━━━━━━━━━━━━━━━━
+Aspect ratio: 9:16 (Reels)
+Resolution: 1080x1920
+FPS: 30
+Musiqa: [tavsiya]
+Color grade: [tavsiya]
+Text overlay: [qayerda nima yozish]
+
+━━━━━━━━━━━━━━━━━━━━━━
+⏱ JAMI MONTAJ VAQTI
+━━━━━━━━━━━━━━━━━━━━━━
+Taxminiy: [X daqiqa]`;
+
+  try {
+    const result = await callAI(prompt, system);
+    document.getElementById('vs-match-result').innerHTML = `
+      <div class="tw">
+        <div class="th-bar">
+          <div class="th-title">✂️ CapCut Montaj Tartibi</div>
+          <button onclick="navigator.clipboard.writeText(document.getElementById('vs-match-text').innerText);notif('📋','Nusxa olindi!','')" class="btn btn-g btn-sm">📋 Nusxa</button>
+        </div>
+        <div id="vs-match-text" style="padding:18px;font-size:13px;color:var(--text2);line-height:1.9;white-space:pre-wrap;max-height:600px;overflow-y:auto">${result}</div>
+      </div>`;
+    notif('✅','Tayyor!','CapCut montaj tartibi chiqdi');
+  } catch(e) {
+    document.getElementById('vs-match-result').innerHTML = `<div class="tw" style="padding:20px;color:var(--danger)">Xatolik: ${e.message}</div>`;
+  }
+  btn.disabled=false; btn.textContent='🤖 AI Moslashtirsin';
+}
 let mkArxiv = [];
 
 function initMarketing() { renderMkArxiv(); }
