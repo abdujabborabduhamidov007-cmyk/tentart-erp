@@ -391,6 +391,7 @@ textarea.fi{resize:vertical;min-height:72px;}
           <div class="ni" data-page="moliya"><span class="ni-ic">💰</span>Moliya</div>
           <div class="ni" data-page="hr"><span class="ni-ic">🏭</span>Jamoa & HR</div>
           <div class="ni" data-page="narxlar"><span class="ni-ic">💲</span>Narxlar bazasi</div>
+          <div class="ni" data-page="kp"><span class="ni-ic">📄</span>Kommersiya Taklifi</div>
           <div class="ni" data-page="kpi"><span class="ni-ic">🏆</span>KPI & Savdo</div>
           <div class="ni" data-page="marketing"><span class="ni-ic">🎬</span>Marketing AI</div>
           <div class="ni" data-page="video"><span class="ni-ic">🎥</span>Video Studio</div>
@@ -967,6 +968,81 @@ textarea.fi{resize:vertical;min-height:72px;}
 
         </div>
 
+        <!-- KOMMERSIYA TAKLIFI -->
+        <div class="page" id="page-kp">
+          <!-- Header -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+            <div>
+              <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700">📄 Kommersiya Taklifi</div>
+              <div style="font-size:12px;color:var(--text3);margin-top:3px">Mijoz va mahsulot ma'lumotlaridan professional KP yarating</div>
+            </div>
+            <div style="display:flex;gap:8px" id="kp-actions-top"></div>
+          </div>
+
+          <!-- FORM VIEW -->
+          <div id="kp-form-view">
+            <div style="display:grid;grid-template-columns:1fr;gap:16px">
+              <!-- Mijoz -->
+              <div class="tw">
+                <div class="th-bar"><div class="th-title">Mijoz ma'lumotlari</div></div>
+                <div style="padding:18px;display:grid;grid-template-columns:1fr 1fr;gap:14px">
+                  <div><label class="fl">Mijoz ismi *</label><input class="fi" id="kp-name" placeholder="Abdulloh Karimov"></div>
+                  <div><label class="fl">Telefon</label><input class="fi" id="kp-phone" placeholder="+998 90 123 45 67"></div>
+                  <div style="grid-column:1 / -1"><label class="fl">Manzil / obyekt</label><input class="fi" id="kp-address" placeholder="Toshkent, Yunusobod tumani, kafé binosi"></div>
+                </div>
+              </div>
+
+              <!-- Mahsulotlar -->
+              <div class="tw">
+                <div class="th-bar">
+                  <div class="th-title">Mahsulotlar</div>
+                  <button class="btn btn-a btn-sm" onclick="kpAddItem()">+ Mahsulot qo'shish</button>
+                </div>
+                <div id="kp-items" style="padding:14px;display:flex;flex-direction:column;gap:12px"></div>
+              </div>
+
+              <!-- Qo'shimcha izoh -->
+              <div class="tw">
+                <div class="th-bar"><div class="th-title">Qo'shimcha izoh (ixtiyoriy)</div></div>
+                <div style="padding:18px">
+                  <textarea class="fi" id="kp-note" rows="3" style="resize:vertical;min-height:70px" placeholder="KP ga qo'shilishi kerak bo'lgan maxsus shartlar, chegirmalar..."></textarea>
+                </div>
+              </div>
+
+              <!-- Jami summa + Generate -->
+              <div class="tw" style="background:linear-gradient(145deg,rgba(99,102,241,.06),rgba(99,102,241,.02));border:1px solid rgba(99,102,241,.2)">
+                <div style="padding:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px">
+                  <div>
+                    <div style="font-size:11px;color:var(--text3);letter-spacing:1px;text-transform:uppercase">Jami summa</div>
+                    <div style="font-family:'Syne',sans-serif;font-size:28px;font-weight:700;color:var(--accent2);margin-top:4px" id="kp-total-uzs">0 so'm</div>
+                    <div style="font-size:12px;color:var(--text3);margin-top:2px" id="kp-total-usd">≈ $0</div>
+                  </div>
+                  <button class="btn btn-a" id="kp-gen-btn" onclick="kpGenerate()" style="padding:12px 28px;font-size:14px">✦ KP yaratish</button>
+                </div>
+                <div id="kp-error" style="display:none;margin:0 20px 16px;padding:10px 14px;background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.3);border-radius:var(--r2);color:var(--danger);font-size:13px"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- PREVIEW VIEW -->
+          <div id="kp-preview-view" style="display:none">
+            <div class="tw" style="margin-bottom:16px">
+              <div style="padding:16px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+                <div>
+                  <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:700">✅ KP tayyor</div>
+                  <div style="font-size:12px;color:var(--text3);margin-top:3px" id="kp-summary"></div>
+                </div>
+                <div style="display:flex;gap:8px">
+                  <button class="btn btn-g btn-sm" onclick="kpBackToForm()">← Orqaga</button>
+                  <button class="btn btn-g btn-sm" onclick="kpDownload()">💾 HTML yuklash</button>
+                  <button class="btn btn-a btn-sm" onclick="kpPrint()">🖨 Chop etish / PDF</button>
+                </div>
+              </div>
+            </div>
+            <iframe id="kp-iframe" style="width:100%;border:1px solid var(--border2);border-radius:var(--r);background:#fff;min-height:700px"></iframe>
+          </div>
+        </div>
+
       </div>
     </main>
   </div>
@@ -1280,15 +1356,16 @@ document.querySelectorAll('.ni[data-page]').forEach(el=>{
     this.classList.add('on');
     document.querySelectorAll('.page').forEach(pg=>pg.classList.remove('on'));
     document.getElementById('page-'+p).classList.add('on');
-    const T={dashboard:'Dashboard',zakazlar:'Zakazlar',kanban:'Kanban Board',crm:'CRM — Lidlar',moliya:'Moliya',hr:'Jamoa & HR',narxlar:'Narxlar bazasi',kpi:'KPI & Savdo',marketing:'Marketing AI',video:'Video Studio'};
+    const T={dashboard:'Dashboard',zakazlar:'Zakazlar',kanban:'Kanban Board',crm:'CRM — Lidlar',moliya:'Moliya',hr:'Jamoa & HR',narxlar:'Narxlar bazasi',kp:'Kommersiya Taklifi',kpi:'KPI & Savdo',marketing:'Marketing AI',video:'Video Studio'};
     document.getElementById('ptitle').textContent=T[p]||p;
-    const AL={zakazlar:'+ Yangi zakaz',crm:'+ Yangi lid',hr:'+ Xodim',moliya:'+ Xarajat',kanban:'',dashboard:'+ Yangi zakaz',narxlar:'',kpi:'',marketing:'',video:''};
+    const AL={zakazlar:'+ Yangi zakaz',crm:'+ Yangi lid',hr:'+ Xodim',moliya:'+ Xarajat',kanban:'',dashboard:'+ Yangi zakaz',narxlar:'',kp:'',kpi:'',marketing:'',video:''};
     const ab=document.getElementById('tb-add-btn');
     ab.textContent=AL[p]||'+ Yangi zakaz';ab.style.display=AL[p]===''?'none':'';
     if(p==='kanban')renderKanban();
     if(p==='moliya')renderMoliya();
     if(p==='hr')renderHR();
     if(p==='narxlar'){renderNarxTable('pergola');}
+    if(p==='kp')initKP();
     if(p==='kpi')renderKPI();
     if(p==='marketing')initMarketing();
     if(p==='video')initVideoStudio();
@@ -2917,6 +2994,232 @@ function printShartnoma(id){
   const w=window.open('','_blank','width=900,height=700');
   w.document.write(html);
   w.document.close();
+}
+
+// ═══════════════════════════════════════
+// KOMMERSIYA TAKLIFI (KP)
+// ═══════════════════════════════════════
+const KP_PRODUCTS = ['Pergola','Giyotin','Markiza','Vintent','Zip parda','Kassetli markiza','Rolling roof','Tavan parda','Boshqa'];
+let kpItems = [];
+let kpInited = false;
+let kpHtmlCache = '';
+
+function kpGetRate(){
+  const v = parseFloat(document.getElementById('usd-rate')?.value);
+  return (v && v>0) ? v : 12500;
+}
+function initKP(){
+  if(kpInited) return;
+  kpInited = true;
+  kpItems = [{ id:Date.now(), product:'Pergola', width:'', height:'', qty:1, price:0, comment:'' }];
+  kpRenderItems();
+}
+function kpAddItem(){
+  kpItems.push({ id:Date.now()+Math.random(), product:'Markiza', width:'', height:'', qty:1, price:0, comment:'' });
+  kpRenderItems();
+}
+function kpRemoveItem(id){
+  if(kpItems.length<=1) return;
+  kpItems = kpItems.filter(it=>it.id!=id);
+  kpRenderItems();
+}
+function kpUpdateItem(id,key,val){
+  const it = kpItems.find(x=>x.id==id); if(!it) return;
+  it[key] = val;
+  kpUpdateTotals();
+}
+function kpRenderItems(){
+  const root = document.getElementById('kp-items');
+  if(!root) return;
+  root.innerHTML = kpItems.map(it=>`
+    <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px;position:relative">
+      ${kpItems.length>1 ? `<button onclick="kpRemoveItem('${it.id}')" style="position:absolute;top:10px;right:12px;background:none;border:none;color:var(--text3);font-size:18px;cursor:pointer;line-height:1" title="O'chirish">✕</button>` : ''}
+      <div style="display:grid;grid-template-columns:1.4fr 0.7fr 0.7fr 0.7fr 1fr;gap:10px;margin-bottom:10px">
+        <div>
+          <label class="fl">Mahsulot</label>
+          <select class="fi" onchange="kpUpdateItem('${it.id}','product',this.value)">
+            ${KP_PRODUCTS.map(p=>`<option value="${p}" ${p===it.product?'selected':''}>${p}</option>`).join('')}
+          </select>
+        </div>
+        <div>
+          <label class="fl">Eni (m)</label>
+          <input class="fi" type="number" step="0.1" placeholder="3.5" value="${it.width}" oninput="kpUpdateItem('${it.id}','width',this.value)">
+        </div>
+        <div>
+          <label class="fl">Uzunligi (m)</label>
+          <input class="fi" type="number" step="0.1" placeholder="5.0" value="${it.height}" oninput="kpUpdateItem('${it.id}','height',this.value)">
+        </div>
+        <div>
+          <label class="fl">Soni</label>
+          <input class="fi" type="number" min="1" placeholder="1" value="${it.qty}" oninput="kpUpdateItem('${it.id}','qty',this.value)">
+        </div>
+        <div>
+          <label class="fl">Narx (so'm)</label>
+          <input class="fi" type="number" min="0" step="1000" placeholder="0" value="${it.price}" oninput="kpUpdateItem('${it.id}','price',this.value)">
+        </div>
+      </div>
+      <div>
+        <label class="fl">Izoh (ixtiyoriy)</label>
+        <input class="fi" placeholder="Rang, model, qo'shimcha talablar..." value="${it.comment.replace(/"/g,'&quot;')}" oninput="kpUpdateItem('${it.id}','comment',this.value)">
+      </div>
+    </div>`).join('');
+  kpUpdateTotals();
+}
+function kpUpdateTotals(){
+  const totalUZS = kpItems.reduce((s,it)=>s+(parseFloat(it.price)||0),0);
+  const rate = kpGetRate();
+  const totalUSD = totalUZS / rate;
+  document.getElementById('kp-total-uzs').textContent = totalUZS.toLocaleString('en-US') + " so'm";
+  document.getElementById('kp-total-usd').textContent = '≈ $' + totalUSD.toLocaleString('en-US',{maximumFractionDigits:0});
+}
+function kpShowError(msg){
+  const el = document.getElementById('kp-error');
+  el.textContent = msg;
+  el.style.display = msg ? '' : 'none';
+}
+async function kpGenerate(){
+  const name = document.getElementById('kp-name').value.trim();
+  if(!name){ kpShowError('Mijoz ismini kiriting'); return; }
+  const hasInvalid = kpItems.some(it=>!it.price || parseFloat(it.price)<=0);
+  if(hasInvalid){ kpShowError('Har bir mahsulot uchun narx kiriting'); return; }
+  kpShowError('');
+
+  const btn = document.getElementById('kp-gen-btn');
+  btn.disabled = true;
+  const origText = btn.textContent;
+  btn.textContent = '⏳ Tayyorlanmoqda...';
+
+  const rate = kpGetRate();
+  const totalUZS = kpItems.reduce((s,it)=>s+(parseFloat(it.price)||0),0);
+  const totalUSD = totalUZS / rate;
+  const payload = {
+    client: {
+      name,
+      phone: document.getElementById('kp-phone').value.trim(),
+      address: document.getElementById('kp-address').value.trim(),
+      note: document.getElementById('kp-note').value.trim()
+    },
+    items: kpItems.map(it=>{
+      const w = parseFloat(it.width)||0, h = parseFloat(it.height)||0, q = parseInt(it.qty)||1;
+      const area = (w>0 && h>0) ? +(w*h*q).toFixed(2) : null;
+      const price_uzs = parseFloat(it.price)||0;
+      return {
+        product: it.product,
+        width: it.width || null,
+        height: it.height || null,
+        qty: q,
+        area,
+        price_uzs,
+        price_usd: +(price_uzs / rate).toFixed(2),
+        comment: it.comment || null
+      };
+    }),
+    total_uzs: totalUZS,
+    total_usd: +totalUSD.toFixed(2),
+    usd_rate: rate,
+    date: new Date().toLocaleDateString('uz-UZ',{year:'numeric',month:'long',day:'numeric'}),
+    kp_number: 'TT-' + Date.now().toString().slice(-6)
+  };
+
+  const systemPrompt = `Sen Tentart.uz kompaniyasining Kommersiya Taklifi (KP) tayyorlovchi yordamchisisan.
+
+KOMPANIYA:
+- Nomi: Tentart.uz
+- Brending: indigo (#6366f1) + dark theme (#0d0d17, #141420). Shrift: Syne (sarlavhalar uchun), Instrument Sans (matn).
+- Telefon: +998 99 123 45 67
+- Manzil: Toshkent, O'zbekiston
+- Veb-sayt: tentart.uz
+
+MUHIM NARX QOIDASI:
+- Narxlar kvadratga (m²) hisoblanmaydi.
+- Har bir mahsulot uchun foydalanuvchi to'g'ridan-to'g'ri JAMI narxni kiritadi (price_uzs va price_usd).
+- KP'da HECH QACHON "kvadrat narxi" yoki "X so'm/m²" yozma. Faqat mahsulot to'liq narxi va umumiy jami summa ko'rsatiladi.
+- O'lcham (width × height) va son faqat ma'lumot uchun (texnik xarakteristika).
+
+VAZIFANG:
+Foydalanuvchidan JSON ma'lumot olib, to'liq professional KP HTML hujjati yaratasan. HTML <!DOCTYPE html> bilan boshlanib, <html><head><style>...</style></head><body>...</body></html> ichiga olinadi. Print-friendly (A4) bo'lsin.
+
+KP TARKIBI:
+1. Sarlavha: Tentart.uz brandi (matn logo), sana, KP raqami
+2. Mijoz ma'lumotlari (ism majburiy; telefon/manzil agar berilgan bo'lsa)
+3. Mahsulotlar jadvali — ustunlari: №, Nomi, O'lcham (eni × uzunligi), Soni, Izoh (bor bo'lsa), Narx (so'm), Narx (USD). KVADRAT NARXI USTUNI YO'Q.
+4. Jami summa: so'm va USD (kurs bilan)
+5. To'lov shartlari: 50% oldindan, 50% montajdan keyin
+6. Kafolat: 2 yil
+7. Amal qilish muddati: 14 kun
+8. Imzo joyi: Tentart.uz vakili va Mijoz
+
+DIZAYN:
+- Asosiy rang: indigo (#6366f1), aksent: oltinrang (#a78bfa)
+- Background oq, matn qora — chop etish uchun
+- Sarlavhalar uchun Syne yoki Georgia
+- Toza, professional jadval ko'rinishi
+- A4 sahifa hajmiga moslangan
+
+Faqat JSON formatida javob ber, boshqa hech narsa yozma:
+{"kp_html": "COMPLETE_HTML_HERE", "summary": "1-2 ta jumlada qisqacha"}`;
+
+  try {
+    const resp = await fetch('/api/claude', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        prompt: JSON.stringify(payload),
+        systemPrompt,
+        maxTokens: 8000,
+        model: 'claude-sonnet-4-6'
+      })
+    });
+    const data = await resp.json();
+    if(data.error) throw new Error(data.error);
+    let text = (data.text || '').trim();
+    text = text.replace(/^```json\s*/i,'').replace(/^```\s*/,'').replace(/```\s*$/,'').trim();
+    let parsed;
+    try { parsed = JSON.parse(text); }
+    catch(e){
+      const m = text.match(/\{[\s\S]*\}/);
+      if(m) parsed = JSON.parse(m[0]);
+      else throw new Error('Model JSON qaytarmadi');
+    }
+    if(!parsed.kp_html) throw new Error('kp_html topilmadi');
+
+    kpHtmlCache = parsed.kp_html;
+    document.getElementById('kp-summary').textContent = parsed.summary || '';
+    const ifr = document.getElementById('kp-iframe');
+    ifr.srcdoc = parsed.kp_html;
+    ifr.onload = ()=>{
+      try { const b = ifr.contentDocument?.body; if(b) ifr.style.height = (b.scrollHeight + 40) + 'px'; } catch(_){}
+    };
+    document.getElementById('kp-form-view').style.display = 'none';
+    document.getElementById('kp-preview-view').style.display = '';
+    if(typeof notif==='function') notif('✅','KP tayyor','Preview pastda');
+  } catch(e){
+    kpShowError('Xatolik: ' + (e.message||e));
+  } finally {
+    btn.disabled = false;
+    btn.textContent = origText;
+  }
+}
+function kpBackToForm(){
+  document.getElementById('kp-preview-view').style.display = 'none';
+  document.getElementById('kp-form-view').style.display = '';
+}
+function kpPrint(){
+  if(!kpHtmlCache) return;
+  const w = window.open('','_blank');
+  w.document.write(kpHtmlCache);
+  w.document.close();
+  setTimeout(()=>w.print(), 400);
+}
+function kpDownload(){
+  if(!kpHtmlCache) return;
+  const blob = new Blob([kpHtmlCache], {type:'text/html;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'KP-' + Date.now() + '.html';
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
 }
 </script>
 </body>
