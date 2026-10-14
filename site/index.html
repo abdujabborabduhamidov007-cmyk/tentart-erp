@@ -16,7 +16,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"HomeAndConstructionBusiness","name":"Tentart","url":"https://www.tentart.uz","description":"Pergola, markiza, gilotina oynalar va sirpanma eshiklar — o'z ishlab chiqarish, 3 yil kafolat, bepul zamer.","areaServed":"Toshkent","sameAs":["https://www.instagram.com/tentart.uz/","https://t.me/Tentart_maneger"]}
+{"@context":"https://schema.org","@type":"HomeAndConstructionBusiness","name":"Tentart","url":"https://www.tentart.uz","description":"Pergola, markiza, gilotina oynalar va sirpanma eshiklar — o'z ishlab chiqarish, 3 yil kafolat, bepul zamer.","areaServed":"Toshkent","telephone":"+998979200001","sameAs":["https://www.instagram.com/tentart.uz/","https://t.me/Tentart_maneger"]}
 </script>
 <style>
 :root{
@@ -57,6 +57,9 @@ nav ul{display:flex;gap:28px;list-style:none}
 nav a{text-decoration:none;font-size:14px;font-weight:600;color:var(--on-ink2)}
 nav a:hover{color:var(--on-ink)}
 .hd .btn{min-height:44px;padding:0 20px;font-size:14px}
+.hd-tel{color:var(--on-ink);text-decoration:none;font-weight:700;font-size:15px;white-space:nowrap;margin-left:auto}
+.hd-tel:hover{color:var(--gold)}
+.hd .btn{margin-left:0}
 .menu-btn{display:none;background:none;border:1px solid var(--ink3);color:var(--on-ink);width:44px;height:44px;border-radius:12px;font-size:20px;cursor:pointer}
 
 /* HERO */
@@ -160,6 +163,7 @@ footer{background:var(--ink);color:var(--on-ink2);padding:64px 0 32px}
   nav.open a{display:block;padding:12px 0;font-size:17px}
   .menu-btn{display:inline-flex;align-items:center;justify-content:center}
   .hd .btn{display:none}
+  .hd-tel{font-size:14px}
   .hero .wrap{grid-template-columns:1fr;padding-top:48px;padding-bottom:56px}
   .hero-art{max-width:340px;justify-self:center;order:-1}
   .stats{grid-template-columns:repeat(2,1fr)}
@@ -171,10 +175,12 @@ footer{background:var(--ink);color:var(--on-ink2);padding:64px 0 32px}
   .zamer .wrap,.track .box{grid-template-columns:1fr;gap:36px}
   .ft{grid-template-columns:1fr}
   section{padding:72px 0}
-  .sticky-cta{display:flex;position:fixed;left:16px;right:16px;bottom:16px;z-index:40;box-shadow:0 12px 30px rgba(0,0,0,.3)}
+  .sticky-cta{display:flex;gap:8px;position:fixed;left:16px;right:16px;bottom:16px;z-index:40}
+  .sticky-cta .btn{box-shadow:0 12px 30px rgba(0,0,0,.3)}
   footer{padding-bottom:96px}
 }
 @media(max-width:560px){
+  .hd-tel{display:none}
   .wrap{padding:0 16px}
   .prods,.grid-w,.steps,.r2{grid-template-columns:1fr}
   form.card,.track .box{padding:24px}
@@ -198,6 +204,7 @@ footer{background:var(--ink);color:var(--on-ink2);padding:64px 0 32px}
         <li><a href="#zakazim">Zakazim qayerda?</a></li>
       </ul>
     </nav>
+    <a href="tel:+998979200001" class="hd-tel">+998 97 920-00-01</a>
     <a href="#zamer" class="btn btn-gold">Bepul zamer</a>
     <button class="menu-btn" aria-label="Menyuni ochish" aria-expanded="false" aria-controls="nav" onclick="toggleNav(this)">☰</button>
   </div>
@@ -312,7 +319,7 @@ footer{background:var(--ink);color:var(--on-ink2);padding:64px 0 32px}
           <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>O'z ishlab chiqarishimiz — vositachisiz</li>
           <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>3 yil rasmiy kafolat</li>
         </ul>
-        <p style="margin-top:28px;color:var(--on-ink2)">Tezroq yozishni xohlaysizmi? <a href="https://t.me/Tentart_maneger" target="_blank" rel="noopener" style="color:var(--gold);font-weight:700">Telegram: @Tentart_maneger</a></p>
+        <p style="margin-top:28px;color:var(--on-ink2)">Tezroq bog'lanmoqchimisiz? <a href="tel:+998979200001" style="color:var(--gold);font-weight:700">+998 97 920-00-01</a> yoki <a href="https://t.me/Tentart_maneger" target="_blank" rel="noopener" style="color:var(--gold);font-weight:700">Telegram: @Tentart_maneger</a></p>
       </div>
       <form class="card" id="zamer-form" novalidate>
         <div id="zf-fields" style="display:flex;flex-direction:column;gap:16px">
@@ -368,6 +375,7 @@ footer{background:var(--ink);color:var(--on-ink2);padding:64px 0 32px}
       </div>
       <div>
         <h4>Bog'lanish</h4>
+        <a href="tel:+998979200001">+998 97 920-00-01</a>
         <a href="https://t.me/Tentart_maneger" target="_blank" rel="noopener">Telegram: @Tentart_maneger</a>
         <a href="https://www.instagram.com/tentart.uz/" target="_blank" rel="noopener">Instagram: @tentart.uz</a>
       </div>
@@ -385,7 +393,7 @@ footer{background:var(--ink);color:var(--on-ink2);padding:64px 0 32px}
   </div>
 </footer>
 
-<a href="#zamer" class="btn btn-gold sticky-cta">Bepul zamerga yozilish</a>
+<div class="sticky-cta"><a href="tel:+998979200001" class="btn btn-ink" aria-label="Qo'ng'iroq qilish">Qo'ng'iroq</a><a href="#zamer" class="btn btn-gold" style="flex:1">Bepul zamer</a></div>
 
 <script>
 (function(){
@@ -429,7 +437,7 @@ footer{background:var(--ink);color:var(--on-ink2);padding:64px 0 32px}
       await rpc('zamer_ariza',{p_ism:d.ism,p_tel:d.tel,p_manzil:d.manzil,p_turi:d.turi,p_izoh:d.izoh});
       $('#zf-fields').style.display='none';$('#zf-done').style.display='flex';
     }catch(err){
-      msg.textContent=err.message+'. Telegram orqali yozishingiz ham mumkin: @Tentart_maneger';msg.className='msg err';
+      msg.textContent=err.message+'. Qo\'ng\'iroq qiling: +998 97 920-00-01';msg.className='msg err';
     }finally{btn.disabled=false;btn.textContent='Arizani yuborish';}
   });
 
