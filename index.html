@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Tentart ERP</title>
+<meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -416,6 +417,7 @@ textarea.fi{resize:vertical;min-height:80px;}
         </div>
         <div class="sb-sec">
           <div class="sb-sec-t">O'sish</div>
+          <div class="ni" data-page="sayt" role="button" tabindex="0"><span class="ni-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"/></svg></span>tentart.uz sayti</div>
           <div class="ni" data-page="marketing" role="button" tabindex="0"><span class="ni-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M12 3l1.8 4.7L18.5 9.5l-4.7 1.8L12 16l-1.8-4.7L5.5 9.5l4.7-1.8z"/><path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8z"/></svg></span>Marketing AI</div>
           <div class="ni" data-page="video" role="button" tabindex="0"><span class="ni-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="M16 10l6-3v10l-6-3z"/></svg></span>Video Studio</div>
         </div>
@@ -442,6 +444,25 @@ textarea.fi{resize:vertical;min-height:80px;}
         <button class="btn btn-a" id="tb-add-btn" onclick="openAdd()">+ Yangi zakaz</button>
       </div>
       <div class="content">
+
+        <!-- ===== v6: MIJOZLAR SAYTI ===== -->
+        <div class="page" id="page-sayt">
+          <section class="sg" id="st-stats" aria-label="Sayt ko'rsatkichlari"></section>
+          <div class="grid2" style="margin-bottom:0">
+            <form class="panel col1 qf" onsubmit="return false">
+              <h3 style="font-size:26px">Ishni saytga qo'shish</h3>
+              <div><label class="fl" for="st-file">Rasm</label><input class="fi" type="file" id="st-file" accept="image/*" style="padding:10px"></div>
+              <div><label class="fl" for="st-sar">Sarlavha</label><input class="fi" id="st-sar" placeholder="Masalan: White Villa terrasasi"></div>
+              <div class="r2">
+                <div><label class="fl" for="st-mah">Mahsulot</label><select class="fi" id="st-mah"><option>Pergola</option><option>Markiza</option><option>Gilotina oyna</option><option>Sirpanma eshik</option><option value="">Boshqa</option></select></div>
+                <div><label class="fl" for="st-joy">Joy</label><input class="fi" id="st-joy" placeholder="Chorvoq"></div>
+              </div>
+              <button type="button" class="bp" id="st-save" onclick="kbPortSave()">Saytga qo'shish</button>
+              <p class="muted" style="font-size:12px">Rasm darhol tentart.uz dagi "Ishlarimiz" bo'limida chiqadi. Mijozning yuzi yoki uy raqami ko'rinmasin.</p>
+            </form>
+            <div class="panel col2"><div class="panel-h"><h3>Saytdagi ishlar</h3><a class="btn btn-g btn-sm" href="https://tentart.uz/#ishlarimiz" target="_blank" rel="noopener">Saytni ochish ↗</a></div><div id="st-list"></div></div>
+          </div>
+        </div>
 
         <!-- ===== v6: BOSH PANEL ===== -->
         <div class="page on" id="page-bosh">
@@ -1416,6 +1437,7 @@ async function startApp(user){
     // Moliya, HR va jamoa davomatini yashir
     document.querySelectorAll('.ni[data-page="moliya"], .ni[data-page="hr"], .ni[data-page="jamoa"]').forEach(el=>el.style.display='none');
   }
+  if(!['Owner','Menejer'].includes(curUser.rol)){document.querySelector('.ni[data-page="sayt"]')?.style.setProperty('display','none');}
   if(!['Owner','Menejer','Kassir'].includes(curUser.rol)){
     document.querySelector('.ni[data-page="kassa"]')?.style.setProperty('display','none');
   }
@@ -1482,9 +1504,9 @@ document.querySelectorAll('.ni[data-page]').forEach(el=>{
     this.classList.add('on');
     document.querySelectorAll('.page').forEach(pg=>pg.classList.remove('on'));
     document.getElementById('page-'+p).classList.add('on');
-    const T={bosh:'Bosh panel',voronka:'Zamer voronkasi',kassa:'Kassa',jamoa:'Jamoa va davomat',dashboard:'Zakaz statistikasi',zakazlar:'Zakazlar',kanban:'Kanban',crm:'CRM — lidlar',moliya:'Moliya',hr:'Xodimlar kartasi',narxlar:'Narxlar bazasi',kp:'Kommersiya taklifi',kpi:'KPI va savdo',marketing:'Marketing AI',video:'Video Studio'};
+    const T={sayt:'tentart.uz sayti',bosh:'Bosh panel',voronka:'Zamer voronkasi',kassa:'Kassa',jamoa:'Jamoa va davomat',dashboard:'Zakaz statistikasi',zakazlar:'Zakazlar',kanban:'Kanban',crm:'CRM — lidlar',moliya:'Moliya',hr:'Xodimlar kartasi',narxlar:'Narxlar bazasi',kp:'Kommersiya taklifi',kpi:'KPI va savdo',marketing:'Marketing AI',video:'Video Studio'};
     document.getElementById('ptitle').textContent=T[p]||p;
-    const AL={bosh:'+ Yangi zakaz',voronka:'+ Yangi zamer',kassa:'',jamoa:'',zakazlar:'+ Yangi zakaz',crm:'+ Yangi lid',hr:'+ Xodim',moliya:'+ Xarajat',kanban:'',dashboard:'+ Yangi zakaz',narxlar:'',kp:'',kpi:'',marketing:'',video:''};
+    const AL={sayt:'',bosh:'+ Yangi zakaz',voronka:'+ Yangi zamer',kassa:'',jamoa:'',zakazlar:'+ Yangi zakaz',crm:'+ Yangi lid',hr:'+ Xodim',moliya:'+ Xarajat',kanban:'',dashboard:'+ Yangi zakaz',narxlar:'',kp:'',kpi:'',marketing:'',video:''};
     const ab=document.getElementById('tb-add-btn');
     ab.textContent=AL[p]||'+ Yangi zakaz';ab.style.display=AL[p]===''?'none':'';
     if(document.body.classList.contains('narxsiz')&&p!=='voronka')ab.style.display='none';

@@ -62,9 +62,11 @@
   };
   const empName = (id) => KB.emp.find((e) => String(e.telegram_id) === String(id))?.full_name || (id ? 'ID ' + id : '—');
   const initials = (n) => String(n || '?').split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
-  const tag = (manba) => manba === 'sayt'
-    ? '<span class="tag b-sayt">SAYT</span>'
-    : '<span class="tag b-bot">BOT</span>';
+  const tag = (manba) => manba === 'sayt-mijoz'
+    ? '<span class="tag" style="background:#1A1A1A;color:#C9A96E">MIJOZ</span>'
+    : manba === 'sayt'
+      ? '<span class="tag b-sayt">SAYT</span>'
+      : '<span class="tag b-bot">BOT</span>';
   const ym = (d) => d.getFullYear() + '-' + pad(d.getMonth() + 1);
   const toast = (ic, t, s) => (typeof notif === 'function' ? notif(ic, t, s) : null);
   const canEdit = () => ['Owner', 'Menejer', 'Kassir', 'Operator', 'Zamershik'].includes(CU()?.rol);
@@ -113,7 +115,7 @@
   let rtTimer = null;
   const DESC = {
     cashflow: (r) => (r.type === 'prixod' ? 'Prixod' : 'Rasxod') + ' · ' + money(r.amount, r.currency) + (r.currency === 'USD' ? '' : " so'm"),
-    zakazlar: (r) => 'Zamer/zakaz · ' + (r.mijoz_ism || ''),
+    zakazlar: (r) => (r.manba === 'sayt-mijoz' ? 'Saytdan yangi ariza · ' : 'Zamer/zakaz · ') + (r.mijoz_ism || ''),
     davomat: (r) => 'Davomat · ' + empName(r.telegram_id),
     reports: (r) => 'Kunlik hisobot · ' + empName(r.telegram_id),
     almashtirishlar: () => 'Valyuta almashtirildi',
@@ -277,13 +279,14 @@
 
   // ---------- ZAMER VORONKASI ----------
   function renderVoronka() {
-    const chips = [['hammasi', 'Hammasi'], ['bugun', 'Bugun'], ['sayt', 'Saytda kiritilgan'], ['bot', 'Botdan kelgan']];
+    const chips = [['hammasi', 'Hammasi'], ['bugun', 'Bugun'], ['mijoz', 'Mijozlar saytidan'], ['sayt', 'ERP\'da kiritilgan'], ['bot', 'Botdan kelgan']];
     $('v-chips').innerHTML = chips.map(([k, l]) => `<button class="chip${KB.vFilter === k ? ' on' : ''}" data-f="${k}" aria-pressed="${KB.vFilter === k}">${l}</button>`).join('');
     const qq = ($('v-q').value || '').toLowerCase();
     const list = KB.zak.filter((z) => {
       if (KB.vFilter === 'bugun' && ymd(ts(z.created_at)) !== today()) return false;
       if (KB.vFilter === 'sayt' && z.manba !== 'sayt') return false;
-      if (KB.vFilter === 'bot' && z.manba === 'sayt') return false;
+      if (KB.vFilter === 'mijoz' && z.manba !== 'sayt-mijoz') return false;
+      if (KB.vFilter === 'bot' && (z.manba || 'bot') !== 'bot') return false;
       if (qq && ![z.mijoz_ism, z.telefon, z.manzil, z.turi, '#' + z.id].join(' ').toLowerCase().includes(qq)) return false;
       return true;
     });
@@ -342,8 +345,9 @@
       <div><div class="di-l">Telefon</div><div class="di-v">${z.telefon ? `<a href="tel:${esc(z.telefon)}">${esc(z.telefon)}</a>` : '—'}</div></div>
       <div><div class="di-l">Manzil</div><div class="di-v">${esc(z.manzil || '—')}</div></div>
       <div><div class="di-l">Holat</div><div class="di-v"><span class="badge b-tasd">${esc(st?.l || z.status)}</span> ${tag(z.manba)}</div></div>
-      <div><div class="di-l">Kiritgan</div><div class="di-v">${esc(empName(z.created_by))}</div></div>
+      <div><div class="di-l">Kiritgan</div><div class="di-v">${z.manba === 'sayt-mijoz' ? 'Mijoz o\'zi (tentart.uz)' : esc(empName(z.created_by))}</div></div>
       <div><div class="di-l">Sana</div><div class="di-v">${esc(when(z.created_at))}</div></div>
+      ${z.izoh ? `<div style="grid-column:1/-1"><div class="di-l">Mijoz izohi</div><div class="di-v" style="white-space:pre-line">${esc(z.izoh)}</div></div>` : ''}
     </div>
     <div class="fg fin"><label class="fl" for="vd-narx">Narx (so'm)</label><input class="fi" id="vd-narx" inputmode="numeric" value="${z.narx ? Math.round(z.narx) : ''}" placeholder="KP narxi"></div>`;
     const btn = (k, l, cls) => `<button class="btn ${cls}" onclick="kbSetZStatus(${z.id},'${k}')">${l}</button>`;
@@ -535,6 +539,62 @@
     reload();
   };
 
+  // ---------- SAYT (tentart.uz portfolio) ----------
+  KB.port = [];
+  async function loadPortfolio() {
+    const { data, error } = await db.from('sayt_portfolio').select('*').order('tartib').order('id', { ascending: false });
+    if (error) throw error;
+    KB.port = data || [];
+  }
+  async function renderSayt() {
+    try { await loadPortfolio(); } catch (e) { toast('⚠️', 'Portfolio yuklanmadi', e.message); }
+    const arizalar = KB.zak.filter((z) => z.manba === 'sayt-mijoz');
+    const bugun = arizalar.filter((z) => ymd(ts(z.created_at)) === today()).length;
+    $('st-stats').innerHTML = `<div class="sc dark"><div class="sc-l">Saytdan kelgan arizalar</div><div class="sc-v">${arizalar.length}</div><div class="sc-s">bugun: ${bugun}</div></div>
+      <div class="sc"><div class="sc-l">Zakazga aylangan</div><div class="sc-v">${arizalar.filter((z) => z.status === 'zakaz').length}</div><div class="sc-s">saytdan kelganlardan</div></div>
+      <div class="sc"><div class="sc-l">Portfolioda</div><div class="sc-v">${KB.port.filter((p) => p.korinadi).length}</div><div class="sc-s">saytda ko'rinadigan ish</div></div>`;
+    $('st-list').innerHTML = KB.port.length ? KB.port.map((p) => `<div style="display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:16px;align-items:center;padding:12px 0;border-top:1px solid #ECE4D4">
+        <img src="${esc(p.rasm_url)}" alt="" style="width:96px;height:72px;object-fit:cover;border-radius:10px;background:var(--bg3)">
+        <div style="min-width:0"><div style="font-weight:700">${esc(p.sarlavha)}</div><div class="muted" style="font-size:13px">${esc([p.mahsulot, p.joy].filter(Boolean).join(' · '))}</div></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end">
+          <button class="btn btn-g btn-sm" onclick="kbPortToggle(${p.id},${!p.korinadi})">${p.korinadi ? 'Yashirish' : 'Ko\'rsatish'}</button>
+          <button class="btn btn-danger btn-sm" onclick="kbPortDel(${p.id})">O'chirish</button>
+        </div></div>`).join('')
+      : '<div class="empty"><div class="empty-t">Hali ish qo\'shilmagan</div><div>Qo\'shilgan ishlar tentart.uz dagi "Ishlarimiz" bo\'limida chiqadi.</div></div>';
+  }
+  window.kbPortSave = async function () {
+    const f = $('st-file').files[0];
+    const sarlavha = $('st-sar').value.trim();
+    if (!f) return toast('⚠️', 'Rasm tanlang', '');
+    if (!sarlavha) return toast('⚠️', 'Sarlavha yozing', '');
+    if (f.size > 8 * 1024 * 1024) return toast('⚠️', 'Rasm juda katta', '8 MB dan kichik bo\'lsin');
+    const btn = $('st-save'); btn.disabled = true; btn.textContent = 'Yuklanmoqda…';
+    try {
+      const ext = (f.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const path = 'portfolio/' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + ext;
+      const up = await db.storage.from('sayt').upload(path, f, { contentType: f.type, upsert: false });
+      if (up.error) throw up.error;
+      const url = db.storage.from('sayt').getPublicUrl(path).data.publicUrl;
+      const { error } = await db.from('sayt_portfolio').insert({ sarlavha, joy: $('st-joy').value.trim() || null, mahsulot: $('st-mah').value || null, rasm_url: url, tartib: 0 });
+      if (error) throw error;
+      ['st-sar', 'st-joy'].forEach((i) => ($(i).value = '')); $('st-file').value = '';
+      toast('✅', 'Saytga qo\'shildi', sarlavha);
+      renderSayt();
+    } catch (e) { toast('❌', 'Saqlanmadi', e.message); }
+    finally { btn.disabled = false; btn.textContent = 'Saytga qo\'shish'; }
+  };
+  window.kbPortToggle = async function (id, v) {
+    const { error } = await db.from('sayt_portfolio').update({ korinadi: v }).eq('id', id);
+    if (error) return toast('❌', 'Xatolik', error.message);
+    renderSayt();
+  };
+  window.kbPortDel = async function (id) {
+    if (!confirm('Bu ish saytdan o\'chirilsinmi?')) return;
+    const { error } = await db.from('sayt_portfolio').delete().eq('id', id);
+    if (error) return toast('❌', 'Xatolik', error.message);
+    renderSayt();
+  };
+
   // ---------- umumiy ----------
   function renderAllKB() {
     kbRenderBosh();
@@ -550,6 +610,7 @@
     if (p === 'voronka') renderVoronka();
     if (p === 'kassa') renderKassa();
     if (p === 'jamoa') renderJamoa();
+    if (p === 'sayt') renderSayt();
   }
 
   function bindOnce() {
