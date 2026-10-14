@@ -344,6 +344,7 @@ textarea.fi{resize:vertical;min-height:80px;}
 .r2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .scroll-x{overflow-x:auto;}
 .muted{color:var(--text2);}
+.narxsiz .fin{display:none!important;}
 .pos{color:var(--green);font-weight:700;}.neg{color:var(--danger);font-weight:700;}
 
 /* MOBILE */
@@ -567,7 +568,7 @@ textarea.fi{resize:vertical;min-height:80px;}
           <div class="tw">
             <div class="th-bar"><div class="th-title">Zakazlar ro'yxati</div><div class="tc" id="z-tc">0 ta</div></div>
             <div style="overflow-x:auto">
-            <table class="tbl"><thead><tr><th>ID</th><th>Mijoz</th><th>Mahsulotlar</th><th>Narx</th><th>Oldinpul</th><th>Qoldiq</th><th>Fayllar</th><th>Status</th><th>Deadline</th><th>Mas'ul</th><th></th></tr></thead>
+            <table class="tbl"><thead><tr><th>ID</th><th>Mijoz</th><th>Mahsulotlar</th><th class="fin">Narx</th><th class="fin">Oldinpul</th><th class="fin">Qoldiq</th><th>Fayllar</th><th>Status</th><th>Deadline</th><th>Mas'ul</th><th></th></tr></thead>
             <tbody id="z-tbody"><tr><td colspan="11"><div class="loading"><div class="spinner"></div>Yuklanmoqda...</div></td></tr></tbody></table>
             </div>
           </div>
@@ -1253,12 +1254,12 @@ textarea.fi{resize:vertical;min-height:80px;}
     <div class="mh">
       <div class="mt" id="det-t">Zakaz</div>
       <div style="display:flex;gap:8px">
-        <button class="btn btn-g btn-sm" onclick="editCur()">✏️</button>
+        <button class="btn btn-g btn-sm fin" onclick="editCur()" aria-label="Tahrirlash">✏️</button>
         <div class="mc" onclick="cm('m-detail')">✕</div>
       </div>
     </div>
     <div class="mb" id="det-body"></div>
-    <div class="mf"><button class="btn btn-g" onclick="cm('m-detail')">Yopish</button><button class="btn btn-g" onclick="printShartnoma(curZId)" style="color:var(--accent2);border-color:var(--accent)">📄 Shartnoma</button><button class="btn btn-a" id="det-next" onclick="nextSt()">Keyingi →</button></div>
+    <div class="mf"><button class="btn btn-g" onclick="cm('m-detail')">Yopish</button><button class="btn btn-g fin" onclick="printShartnoma(curZId)" style="color:var(--accent2);border-color:var(--accent)">📄 Shartnoma</button><button class="btn btn-a" id="det-next" onclick="nextSt()">Keyingi →</button></div>
   </div>
 </div>
 
@@ -1418,6 +1419,14 @@ async function startApp(user){
   if(!['Owner','Menejer','Kassir'].includes(curUser.rol)){
     document.querySelector('.ni[data-page="kassa"]')?.style.setProperty('display','none');
   }
+  // Ustalar va operator: faqat zakaz ma'lumotlari, narx va pul ko'rinmaydi
+  if(['Usta','Operator'].includes(curUser.rol)){
+    document.body.classList.add('narxsiz');
+    const ruxsat=['voronka','zakazlar','kanban'];
+    document.querySelectorAll('.ni[data-page]').forEach(el=>{if(!ruxsat.includes(el.dataset.page))el.style.display='none';});
+    document.querySelectorAll('.sb-sec').forEach(sec=>{if(![...sec.querySelectorAll('.ni')].some(n=>n.style.display!=='none'))sec.style.display='none';});
+    setTimeout(()=>goPage('zakazlar'),0);
+  }
   if(!narxlarRols.includes(curUser.rol)){
     document.querySelector('.ni[data-page="narxlar"]')?.style.setProperty('display','none');
   }
@@ -1478,6 +1487,7 @@ document.querySelectorAll('.ni[data-page]').forEach(el=>{
     const AL={bosh:'+ Yangi zakaz',voronka:'+ Yangi zamer',kassa:'',jamoa:'',zakazlar:'+ Yangi zakaz',crm:'+ Yangi lid',hr:'+ Xodim',moliya:'+ Xarajat',kanban:'',dashboard:'+ Yangi zakaz',narxlar:'',kp:'',kpi:'',marketing:'',video:''};
     const ab=document.getElementById('tb-add-btn');
     ab.textContent=AL[p]||'+ Yangi zakaz';ab.style.display=AL[p]===''?'none':'';
+    if(document.body.classList.contains('narxsiz')&&p!=='voronka')ab.style.display='none';
     if(p==='kanban')renderKanban();
     if(window.kbRenderPage)kbRenderPage(p);
     if(p==='moliya')renderMoliya();
@@ -1696,7 +1706,7 @@ function addMat(){
 function renderMatList(){
   const el=document.getElementById('mat-list');
   if(!matList.length){el.innerHTML='<div style="font-size:12px;color:var(--text3);padding:6px 0">Material yo\'q</div>';return;}
-  el.innerHTML=matList.map((m,i)=>`<div class="mat-row"><span>${m.nom}</span><span>${m.miq} ${m.bir}</span><span>${fmt(m.narx)}</span><span style="color:var(--green);font-weight:600">${fmt(m.miq*m.narx)}</span><div class="ib" onclick="matList.splice(${i},1);renderMatList()">🗑</div></div>`).join('');
+  el.innerHTML=matList.map((m,i)=>`<div class="mat-row"><span>${m.nom}</span><span>${m.miq} ${m.bir}</span><span class="fin">${fmt(m.narx)}</span><span class="fin" style="color:var(--green);font-weight:600">${fmt(m.miq*m.narx)}</span><div class="ib" onclick="matList.splice(${i},1);renderMatList()">🗑</div></div>`).join('');
 }
 
 async function saveZ(){
@@ -1768,7 +1778,7 @@ function openDetail(id){
         <div><div style="font-size:10px;color:var(--text3);margin-bottom:3px">MAHSULOT ${i+1}</div><div style="font-weight:600">${p.mahsulot}</div></div>
         <div><div style="font-size:10px;color:var(--text3);margin-bottom:3px">O'LCHAM</div><div>${p.olcham||'—'}</div></div>
         <div><div style="font-size:10px;color:var(--text3);margin-bottom:3px">RANG</div><div>${p.rang||'—'}</div></div>
-        <div><div style="font-size:10px;color:var(--text3);margin-bottom:3px">NARX</div><div style="color:var(--green);font-weight:600">${fmt(p.narx)} so'm</div></div>
+        <div class="fin"><div style="font-size:10px;color:var(--text3);margin-bottom:3px">NARX</div><div style="color:var(--green);font-weight:600">${fmt(p.narx)} so'm</div></div>
       </div>`).join('')}
     </div>`;
   }
@@ -1778,24 +1788,26 @@ function openDetail(id){
     <div class="dg">
       <div><div class="di-l">Mijoz</div><div class="di-v" style="font-weight:600">${z.mijoz}</div></div>
       <div><div class="di-l">Telefon</div><div class="di-v">${z.tel||'—'}</div></div>
-      <div><div class="di-l">Jami narx</div><div class="di-v big">${fmt(z.narx)} so'm</div></div>
-      <div><div class="di-l">Oldinpul</div><div class="di-v" style="color:var(--green);font-weight:600">${fmt(z.oldinpul)} so'm</div></div>
-      <div><div class="di-l">Qoldiq</div><div class="di-v" style="color:${q>0?'var(--warn)':'var(--green)'};font-weight:600">${fmt(q)} so'm</div></div>
+      <div class="fin"><div class="di-l">Jami narx</div><div class="di-v big">${fmt(z.narx)} so'm</div></div>
+      <div class="fin"><div class="di-l">Oldinpul</div><div class="di-v" style="color:var(--green);font-weight:600">${fmt(z.oldinpul)} so'm</div></div>
+      <div class="fin"><div class="di-l">Qoldiq</div><div class="di-v" style="color:${q>0?'var(--warn)':'var(--green)'};font-weight:600">${fmt(q)} so'm</div></div>
       <div><div class="di-l">Montaj</div><div class="di-v" style="${dlcls(z.montaj)}">${fdate(z.montaj)}</div></div>
       <div><div class="di-l">Manzil</div><div class="di-v">${z.manzil||'—'}</div></div>
       <div><div class="di-l">Mas'ul</div><div class="di-v">${z.masul||'—'}</div></div>
       <div><div class="di-l">Usta</div><div class="di-v">${z.usta||'—'}</div></div>
       <div><div class="di-l">Ish soati</div><div class="di-v">${z.soat||0} soat</div></div>
     </div>
-    <div style="margin-bottom:20px"><div class="di-l" style="margin-bottom:6px">To'lov — ${z.narx?Math.round(z.oldinpul/z.narx*100):0}%</div><div class="prog"><div class="prog-f" style="width:${z.narx?Math.round(z.oldinpul/z.narx*100):0}%"></div></div></div>
+    <div class="fin" style="margin-bottom:20px"><div class="di-l" style="margin-bottom:6px">To'lov — ${z.narx?Math.round(z.oldinpul/z.narx*100):0}%</div><div class="prog"><div class="prog-f" style="width:${z.narx?Math.round(z.oldinpul/z.narx*100):0}%"></div></div></div>
     ${prodsHtml}
     ${z.izoh?`<div style="background:var(--bg3);border-radius:var(--r2);padding:14px;font-size:13px;color:var(--text2);margin-bottom:16px">📝 ${z.izoh}</div>`:''}
-    ${mats.length?`<div class="fst">Materiallar</div>${mats.map(m=>`<div class="mat-row"><span>${m.nom}</span><span>${m.miq} ${m.bir}</span><span>${fmt(m.narx)}</span><span style="color:var(--green);font-weight:600">${fmt(m.miq*m.narx)}</span><span></span></div>`).join('')}<div style="text-align:right;font-size:13px;font-weight:600;margin-top:8px;color:var(--green)">Jami: ${fmt(mt)} so'm</div>`:''}
+    ${mats.length?`<div class="fst">Materiallar</div>${mats.map(m=>`<div class="mat-row"><span>${m.nom}</span><span>${m.miq} ${m.bir}</span><span>${fmt(m.narx)}</span><span style="color:var(--green);font-weight:600">${fmt(m.miq*m.narx)}</span><span></span></div>`).join('')}<div class="fin" style="text-align:right;font-size:13px;font-weight:600;margin-top:8px;color:var(--green)">Jami: ${fmt(mt)} so'm</div>`:''}
     ${renderUploadedFiles(z.fayllar)}
   `;
   const ns=STATS[si+1];
   const nb=document.getElementById('det-next');
   if(ns){nb.textContent='→ '+ns;nb.style.display='';}else nb.style.display='none';
+  // To'lov holatini faqat pul bilan ishlaydiganlar belgilaydi
+  if(ns==="To'landi"&&document.body.classList.contains('narxsiz'))nb.style.display='none';
   om('m-detail');
 }
 
@@ -1871,14 +1883,14 @@ function renderZ(){
       <td class="t-id">${z.id}</td>
       <td><div class="t-name">${z.mijoz}</div><div class="t-sub">${z.tel||''}</div></td>
       <td style="font-size:12px">${prodText}</td>
-      <td>${fmt(z.narx)}</td>
-      <td style="color:var(--green)">${fmt(z.oldinpul)}</td>
-      <td style="color:${q>0?'var(--warn)':'var(--green)'}">${fmt(q)}</td>
+      <td class="fin">${fmt(z.narx)}</td>
+      <td class="fin" style="color:var(--green)">${fmt(z.oldinpul)}</td>
+      <td class="fin" style="color:${q>0?'var(--warn)':'var(--green)'}">${fmt(q)}</td>
       <td>${filesCount?`<span style="font-size:12px;color:var(--accent2)">📎 ${filesCount}</span>`:'—'}</td>
       <td>${badge(z.status)}</td>
       <td style="${dlcls(z.montaj)}">${fdate(z.montaj)}</td>
       <td>${z.masul||'—'}</td>
-      <td><div class="t-act"><div class="ib" onclick="openDetail('${z.id}')">👁</div><div class="ib" onclick="editZ('${z.id}')">✏️</div><div class="ib" onclick="delZ('${z.id}')" style="color:var(--danger)">🗑</div></div></td>
+      <td><div class="t-act"><div class="ib" onclick="openDetail('${z.id}')">👁</div><div class="ib fin" onclick="editZ('${z.id}')">✏️</div><div class="ib fin" onclick="delZ('${z.id}')" style="color:var(--danger)">🗑</div></div></td>
     </tr>`;}).join('');
 }
 
@@ -1889,7 +1901,7 @@ function renderKanban(){
     <div class="kc-body">${cards.length?cards.map(z=>{
       const prods=z.mahsulotlar||[];
       const prodText=prods.length?prods.map(p=>p.mahsulot).join(' + '):(z.mahsulot||'');
-      return `<div class="kcard" onclick="openDetail('${z.id}')"><div class="kc-id">${z.id}</div><div class="kc-name">${z.mijoz}</div><div class="kc-prod">${prodText}</div><div class="kc-ft"><div class="kc-price">${fmtm(z.narx)} so'm</div><div style="${dlcls(z.montaj)};font-size:9px">${fdate(z.montaj)}</div></div></div>`;
+      return `<div class="kcard" onclick="openDetail('${z.id}')"><div class="kc-id">${z.id}</div><div class="kc-name">${z.mijoz}</div><div class="kc-prod">${prodText}</div><div class="kc-ft"><div class="kc-price fin">${fmtm(z.narx)} so'm</div><div style="${dlcls(z.montaj)};font-size:9px">${fdate(z.montaj)}</div></div></div>`;
     }).join(''):'<div style="text-align:center;padding:16px;font-size:11px;color:var(--text3)">Bo\'sh</div>'}</div></div>`;
   }).join('');
 }

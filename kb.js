@@ -127,7 +127,7 @@
         KB.lastEvent = new Date();
         const el = $('sync-last');
         if (el) el.textContent = 'Oxirgi amal: ' + hm(KB.lastEvent);
-        if (p.eventType === 'INSERT' && row.manba !== 'sayt' && DESC[p.table]) toast('🤖', 'Botda yangi amal', DESC[p.table](row));
+        if (p.eventType === 'INSERT' && row.manba !== 'sayt' && DESC[p.table] && !document.body.classList.contains('narxsiz')) toast('🤖', 'Botda yangi amal', DESC[p.table](row));
         clearTimeout(rtTimer);
         rtTimer = setTimeout(() => reload(true), 500);
       })
@@ -291,12 +291,12 @@
       const cards = list.filter((z) => z.status === st.k);
       const sum = cards.reduce((a, z) => a + n0(z.narx), 0);
       return `<div class="kc"><div class="kc-h"><span style="width:9px;height:9px;border-radius:50%;background:${st.c}"></span><div class="kc-ht">${st.l}</div><div class="kc-hc">${cards.length}</div></div>
-        <div class="kc-sum">${sum ? esc(mln(sum)) + " so'm" : '&nbsp;'}</div>
+        <div class="kc-sum fin">${sum ? esc(mln(sum)) + " so'm" : '&nbsp;'}</div>
         <div class="kc-body">${cards.length ? cards.slice(0, 60).map((z) => `<button class="kcard" style="text-align:left;font:inherit;color:inherit" onclick="kbOpenVD(${z.id})">
           <div style="display:flex;justify-content:space-between;align-items:center"><span class="kc-id">#${z.id}</span>${tag(z.manba)}</div>
           <div class="kc-name">${esc(z.turi)}</div>
           <div class="kc-prod">${esc(z.mijoz_ism)}${z.manzil ? ' · ' + esc(z.manzil) : ''}</div>
-          <div class="kc-ft"><span class="kc-price">${z.narx ? esc(mln(z.narx)) : '—'}</span><span class="muted">${esc(when(z.created_at))}</span></div>
+          <div class="kc-ft"><span class="kc-price fin">${z.narx ? esc(mln(z.narx)) : '—'}</span><span class="muted" style="font-size:12px">${esc(z.telefon || '')}</span><span class="muted">${esc(when(z.created_at))}</span></div>
         </button>`).join('') : '<div class="muted" style="text-align:center;padding:16px;font-size:13px">Bo\'sh</div>'}</div></div>`;
     }).join('');
     const open = KB.zak.filter((z) => z.status === 'zamer' || z.status === 'kp_tayyor').length;
@@ -345,9 +345,9 @@
       <div><div class="di-l">Kiritgan</div><div class="di-v">${esc(empName(z.created_by))}</div></div>
       <div><div class="di-l">Sana</div><div class="di-v">${esc(when(z.created_at))}</div></div>
     </div>
-    <div class="fg"><label class="fl" for="vd-narx">Narx (so'm)</label><input class="fi" id="vd-narx" inputmode="numeric" value="${z.narx ? Math.round(z.narx) : ''}" placeholder="KP narxi"></div>`;
+    <div class="fg fin"><label class="fl" for="vd-narx">Narx (so'm)</label><input class="fi" id="vd-narx" inputmode="numeric" value="${z.narx ? Math.round(z.narx) : ''}" placeholder="KP narxi"></div>`;
     const btn = (k, l, cls) => `<button class="btn ${cls}" onclick="kbSetZStatus(${z.id},'${k}')">${l}</button>`;
-    $('vd-f').innerHTML = canEdit()
+    $('vd-f').innerHTML = canEdit() && !document.body.classList.contains('narxsiz')
       ? [z.status !== 'rad_etildi' ? btn('rad_etildi', 'Rad etildi', 'btn-danger') : '',
         z.status !== 'zamer' ? btn('zamer', '← Zamerga', 'btn-g') : '',
         z.status !== 'kp_tayyor' ? btn('kp_tayyor', 'KP tayyor', 'btn-g') : '',
