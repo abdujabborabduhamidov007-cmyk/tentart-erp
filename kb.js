@@ -156,6 +156,10 @@
       const v = n0(r.prixod) - n0(r.rasxod);
       if (r.currency === 'USD') usd += v; else uzs += v;
     });
+    // Kassa qoldig'ini faqat moliya bilan ishlaydiganlar ko'radi
+    const finRol = ['Owner', 'Menejer', 'Kassir'].includes(CU()?.rol);
+    const kCard = $('k-kassa').closest('.sc');
+    if (kCard) kCard.style.display = finRol ? '' : 'none';
     $('k-kassa').innerHTML = esc(mln(uzs).replace(' mln', '')) + (Math.abs(uzs) >= 1e6 ? '<small>mln</small>' : '');
     $('k-kassa-s').textContent = '+ $' + money(usd, 'USD').replace('$', '') + ' · naqd va karta';
 
