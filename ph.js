@@ -50,6 +50,9 @@
       }
       const { data: ish } = await db.from('ishlar').select('*').order('id');
       PH.ish = ish || []; PH.agg = null;
+      const [d1, d2, d3, d4] = await Promise.all([db.from('ih_davr').select('*').order('id'), db.from('ih_ishchi').select('*').order('tartib').order('id'),
+        db.from('ih_ish').select('*').order('tartib').order('id'), db.from('oylik_xodim').select('*').order('tartib').order('id')]);
+      PH.ihD = d1.data || []; PH.ihW = d2.data || []; PH.ihJ = d3.data || []; PH.oyl = d4.data || [];
       PH.loaded = true;
     } catch (e) { console.error(e); toast('⚠️', 'Pul harakati yuklanmadi', e.message || ''); }
     PH.loading = false;
@@ -63,7 +66,7 @@
     phRender();
   }
   window.phRenderPage = async function (p) {
-    if (p !== 'ph' && p !== 'qoldiq' && p !== 'ishlar') return;
+    if (!['ph', 'qoldiq', 'ishlar', 'ishhaqqi'].includes(p)) return;
     if (!PH.loaded) { $('ph-tbody') && ($('ph-tbody').innerHTML = '<tr><td colspan="9"><div class="empty"><div class="empty-t">Yuklanmoqda…</div></div></td></tr>'); await phStart(); }
     else phRender();
   };
@@ -72,6 +75,7 @@
     if (p === 'ph') renderPH();
     if (p === 'qoldiq') renderQoldiq();
     if (p === 'ishlar') renderIshlar();
+    if (p === 'ishhaqqi') renderIH();
   }
 
   // ---------- Pul harakati ----------
@@ -409,6 +413,170 @@
     PH.ish.push(data); PH.ishOpen = data.id; toast('✅', "Ro'yxatga qo'shildi", data.nom); renderIshlar();
   };
 
+  // ---------- Ish haqqi ----------
+  PH.ihTab = 'ustalar'; PH.ihSel = null;
+  const ihWorkers = (d) => PH.ihW.filter((w) => w.davr_id === d.id);
+  const ihJobs = (d) => PH.ihJ.filter((j) => j.davr_id === d.id);
+  function jobCalc(j, ws) {
+    const it = j.ishtirok || {};
+    const names = [...new Set([...ws.filter((w) => n0(w.foiz) > 0).map((w) => w.ism), ...Object.keys(it)])];
+    const pool = j.summa != null ? n0(j.summa) : n0(j.kv) * n0(j.stavka);
+    const ps = names.map((nm) => { const w = ws.find((x) => x.ism === nm) || {}; const o = it[nm] || {}; const f = o.foiz != null ? n0(o.foiz) : n0(w.foiz); return { ism: nm, foiz: f, kun: n0(o.kun) }; }).filter((x) => x.foiz > 0);
+    ps.forEach((x) => { x.asl = pool * x.foiz; x.bir = n0(j.ish_kuni) > 0 ? x.asl / n0(j.ish_kuni) : 0; x.olib = x.kun * x.bir; x.qosh = 0; });
+    // Excel qoidasi: ishlamagan kun uchun ushlangan pul, undan kam kun qolgan ustalarga teng bo'linadi
+    ps.forEach((k) => { if (k.olib > 0) { const r = ps.filter((x) => x.kun < k.kun); r.forEach((x) => { x.qosh += k.olib / r.length; }); } });
+    ps.forEach((x) => { x.oladi = x.asl - x.olib + x.qosh; });
+    return { pool, ps };
+  }
+  function davrCalc(d) {
+    const ws = ihWorkers(d); const js = ihJobs(d).map((j) => ({ j, c: jobCalc(j, ws) }));
+    const sum = {}; js.forEach(({ c }) => c.ps.forEach((x) => { sum[x.ism] = (sum[x.ism] || 0) + x.oladi; }));
+    const av = (ism) => !d.avans_ledger ? 0 : PH.rows.filter((r) => key(r.oluvchi) === key(ism) && (!d.boshlanish || r.sana >= d.boshlanish) && (!d.tugash || r.sana <= d.tugash)).reduce((s, r) => s + n0(r.summa_usd), 0);
+    const names = [...new Set([...ws.map((w) => w.ism), ...Object.keys(sum)])];
+    const rows = names.map((nm) => { const w = ws.find((x) => x.ism === nm) || { ism: nm, foiz: 0, eski_qoldiq: 0, eski_avans: 0 }; const s = sum[nm] || 0; const a = av(nm);
+      return { w, summa: s, avans: a, qoldiq: s + n0(w.eski_qoldiq) - a - n0(w.eski_avans) }; });
+    return { ws, js, rows };
+  }
+  function oylCalc(o) {
+    const curM = +today().slice(5, 7);
+    const summa = (o.summa_qolda != null ? n0(o.summa_qolda) : n0(o.stavka) * (o.oylar != null ? o.oylar : curM)) + n0(o.tuzatish);
+    const avans = o.avans_qolda != null ? n0(o.avans_qolda) : PH.rows.filter((r) => r.turi === 'rasxod' && key(r.oluvchi) === key(o.ledger_ism || o.ism)).reduce((s, r) => s + n0(r.summa_usd), 0);
+    return { summa, avans, qoldiq: summa + n0(o.eski) - avans - n0(o.eski_berilgan) };
+  }
+  window.phIhCalc = { davrCalc, oylCalc, jobCalc };
+  const inpS = (tbl, id, f, v, w, step) => `<input class="fs" style="width:${w || 90}px;min-height:34px;text-align:right" inputmode="decimal" value="${v == null ? '' : esc(+(+v).toFixed(step == null ? 2 : step))}" onchange="phIhSet('${tbl}',${id},'${f}',this.value)">`;
+  function renderIH() {
+    if (!$('ih-body')) return;
+    document.querySelectorAll('#ih-tab button').forEach((b) => b.classList.toggle('on', b.dataset.v === PH.ihTab));
+    if (PH.ihTab === 'oylik') return renderOylik();
+    const ds = [...PH.ihD].sort((a, b) => (a.yopilgan - b.yopilgan) || String(b.boshlanish).localeCompare(String(a.boshlanish)));
+    if (!PH.ihSel || !ds.find((d) => d.id === PH.ihSel)) PH.ihSel = (ds[0] || {}).id;
+    const d = ds.find((x) => x.id === PH.ihSel);
+    let h = `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">${ds.map((x) => `<button class="chip ${x.id === PH.ihSel ? 'on' : ''}" onclick="PH.ihSel=${x.id};phRenderPage('ishhaqqi')">${esc(x.nom)} · ${x.boshlanish ? esc(sanaF(x.boshlanish)) + ' dan' : ''}${x.yopilgan ? ' · yopilgan' : ''}</button>`).join('')}<button class="chip" onclick="phIhNewDavr()">+ Yangi davr</button></div>`;
+    if (!d) { $('ih-body').innerHTML = h + '<div class="empty"><div class="empty-t">Davr yo\'q</div></div>'; return; }
+    const c = davrCalc(d);
+    const tot = (k) => c.rows.reduce((s, r) => s + n0(r[k]), 0);
+    const tolash = c.rows.filter((r) => r.qoldiq > 0).reduce((s, r) => s + r.qoldiq, 0), ortiq = c.rows.filter((r) => r.qoldiq < 0).reduce((s, r) => s + r.qoldiq, 0);
+    h += `<section class="sg"><div class="sc dark"><div class="sc-l">Ish haqqi (bitgan ishlar)</div><div class="sc-v">${esc(fUSD(tot('summa')))}</div><div class="sc-s">${c.js.length} ta ish</div></div>
+      <div class="sc"><div class="sc-l">Avans berilgan${d.avans_ledger ? ' (Pul harakatidan)' : ''}</div><div class="sc-v">${esc(fUSD(tot('avans')))}</div><div class="sc-s">${d.boshlanish ? esc(sanaF(d.boshlanish)) + ' dan' : ''}${d.tugash ? ' ' + esc(sanaF(d.tugash)) + ' gacha' : ''}</div></div>
+      <div class="sc"><div class="sc-l">To'lash kerak</div><div class="sc-v pos" style="font-weight:600">${esc(fUSD(tolash))}</div><div class="sc-s">ustalarga qolgan qarz</div></div>
+      <div class="sc"><div class="sc-l">Ortiqcha berilgan</div><div class="sc-v ${ortiq < 0 ? 'neg' : ''}" style="font-weight:600">${esc(fUSD(ortiq))}</div><div class="sc-s">keyingi ishdan ushlanadi</div></div></section>`;
+    h += `<div class="panel" style="margin-bottom:16px"><div class="panel-h" style="flex-wrap:wrap;gap:10px"><h3>${esc(d.nom)} — ustalar</h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:13px">
+        <label>Boshlanish <input type="date" class="fs" value="${esc(d.boshlanish || '')}" onchange="phIhSet('ih_davr',${d.id},'boshlanish',this.value||null)"></label>
+        <label>Tugash <input type="date" class="fs" value="${esc(d.tugash || '')}" onchange="phIhSet('ih_davr',${d.id},'tugash',this.value||null)"></label>
+        <label><input type="checkbox" ${d.avans_ledger ? 'checked' : ''} onchange="phIhSet('ih_davr',${d.id},'avans_ledger',this.checked)"> avansni Pul harakatidan olish</label>
+        ${!d.yopilgan ? `<button class="btn btn-g btn-sm" onclick="phIhClose(${d.id})">Davrni yopib, yangisini ochish</button>` : ''}
+      </div></div>
+      <div class="scroll-x"><table class="tbl" style="min-width:860px"><thead><tr><th>Usta</th><th style="text-align:right">Ulush %</th><th style="text-align:right">Ish haqqi</th><th style="text-align:right">Eski qoldiq</th><th style="text-align:right">Avans</th><th style="text-align:right">Eski avans</th><th style="text-align:right">Qoldiq</th></tr></thead><tbody>
+      ${c.rows.map((r) => `<tr><td class="t-name">${esc(r.w.ism)}</td>
+        <td style="text-align:right">${r.w.id ? inpS('ih_ishchi', r.w.id, 'foiz%', n0(r.w.foiz) * 100, 70, 1) : '—'}</td>
+        <td style="text-align:right">${esc(fUSD(r.summa))}</td>
+        <td style="text-align:right">${r.w.id ? inpS('ih_ishchi', r.w.id, 'eski_qoldiq', r.w.eski_qoldiq) : '—'}</td>
+        <td style="text-align:right">${esc(fUSD(r.avans))}</td>
+        <td style="text-align:right">${r.w.id ? inpS('ih_ishchi', r.w.id, 'eski_avans', r.w.eski_avans) : '—'}</td>
+        <td style="text-align:right;background:#F3EDE2" class="${r.qoldiq < 0 ? 'neg' : 'pos'}">${esc(fUSD(r.qoldiq))}</td></tr>`).join('')}
+      <tr><td><b>Jami</b></td><td style="text-align:right" class="muted">${Math.round(c.ws.reduce((s, w) => s + n0(w.foiz), 0) * 1000) / 10}%</td><td style="text-align:right"><b>${esc(fUSD(tot('summa')))}</b></td><td></td><td style="text-align:right"><b>${esc(fUSD(tot('avans')))}</b></td><td></td><td style="text-align:right"><b>${esc(fUSD(tot('qoldiq')))}</b></td></tr>
+      </tbody></table></div>
+      <div style="display:flex;gap:8px"><input class="fs" id="ih-new-w" placeholder="Yangi usta ismi"><button class="btn btn-g btn-sm" onclick="phIhAddW(${d.id})">+ Usta</button></div></div>`;
+    h += `<div class="panel"><div class="panel-h"><h3>Bitgan ishlar</h3></div>
+      <form onsubmit="return false" style="display:grid;grid-template-columns:2fr repeat(3,1fr) auto;gap:8px;align-items:end">
+        <div><label class="fl">Ish nomi</label><input class="fi" id="ihj-nom" list="ihj-noms" placeholder="masalan: Chortoq pergola"><datalist id="ihj-noms">${PH.ish.map((i) => `<option value="${esc(i.nom)}">`).join('')}</datalist></div>
+        <div><label class="fl">KV</label><input class="fi" id="ihj-kv" inputmode="decimal"></div>
+        <div><label class="fl">$ / kv</label><input class="fi" id="ihj-st" inputmode="decimal" value="10"></div>
+        <div><label class="fl">Ish kuni</label><input class="fi" id="ihj-kun" inputmode="decimal" value="0"></div>
+        <button type="button" class="btn btn-a" onclick="phIhAddJ(${d.id})">+ Qo'shish</button></form>
+      ${c.js.length ? c.js.map(({ j, c: jc }) => `<div style="border:1px solid var(--border);border-radius:14px;padding:14px;margin-top:12px;background:#fff">
+        <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:13px"><b style="font-size:16px;margin-right:auto">${esc(j.nom)}</b>
+          KV ${inpS('ih_ish', j.id, 'kv', j.kv, 70)} × $ ${inpS('ih_ish', j.id, 'stavka', j.stavka, 60)} = <b>${esc(fUSD(jc.pool))}</b> · ish kuni ${inpS('ih_ish', j.id, 'ish_kuni', j.ish_kuni, 60, 1)}
+          <button class="btn btn-danger btn-sm" style="min-height:30px" onclick="phIhDelJ(${j.id})">×</button></div>
+        <div class="scroll-x"><table class="tbl" style="min-width:640px;margin-top:6px"><thead><tr><th>Usta</th><th style="text-align:right">%</th><th style="text-align:right">Ishlamagan kun</th><th style="text-align:right">Asl summa</th><th style="text-align:right">Ushlandi</th><th style="text-align:right">Qo'shildi</th><th style="text-align:right">Oladi</th></tr></thead><tbody>
+        ${jc.ps.map((x) => `<tr><td>${esc(x.ism)}</td><td style="text-align:right">${(x.foiz * 100).toFixed(1)}%</td><td style="text-align:right"><input class="fs" style="width:60px;min-height:30px;text-align:right" inputmode="decimal" value="${x.kun || ''}" onchange="phIhKun(${j.id},${esc(JSON.stringify(x.ism))},this.value)"></td>
+          <td style="text-align:right">${esc(fUSD(x.asl))}</td><td style="text-align:right" class="${x.olib ? 'neg' : 'muted'}">${x.olib ? '−' + esc(fUSD(x.olib)) : '—'}</td><td style="text-align:right" class="${x.qosh ? 'pos' : 'muted'}">${x.qosh ? '+' + esc(fUSD(x.qosh)) : '—'}</td><td style="text-align:right"><b>${esc(fUSD(x.oladi))}</b></td></tr>`).join('')}
+        </tbody></table></div></div>`).join('') : '<div class="muted" style="margin-top:10px">Bu davrda hali bitgan ish kiritilmagan.</div>'}
+      <p class="muted" style="font-size:12px;margin-top:10px">Hisob Excel'dagidek: ish summasi = KV × $/kv; har bir usta foiziga qarab oladi; ishlamagan kunlari uchun (bir kunlik × kun) ushlanadi va bu pul undan kam kun qolgan ustalarga teng bo'linadi.</p></div>`;
+    $('ih-body').innerHTML = h;
+  }
+  function renderOylik() {
+    const rows = PH.oyl.map((o) => ({ o, c: oylCalc(o) }));
+    const t = (k) => rows.reduce((s, r) => s + n0(r.c[k]), 0);
+    $('ih-body').innerHTML = `<section class="sg"><div class="sc dark"><div class="sc-l">Hisoblangan oylik</div><div class="sc-v">${esc(fUSD(t('summa')))}</div><div class="sc-s">${rows.length} xodim · ${OYLAR[+today().slice(5, 7) - 1].toLowerCase()} holatiga</div></div>
+      <div class="sc"><div class="sc-l">Berilgan (avans)</div><div class="sc-v">${esc(fUSD(t('avans')))}</div><div class="sc-s">Pul harakatidan</div></div>
+      <div class="sc"><div class="sc-l">Qoldiq (to'lanadigan)</div><div class="sc-v pos" style="font-weight:600">${esc(fUSD(rows.filter((r) => r.c.qoldiq > 0).reduce((s, r) => s + r.c.qoldiq, 0)))}</div></div>
+      <div class="sc"><div class="sc-l">Ortiqcha berilgan</div><div class="sc-v neg" style="font-weight:600">${esc(fUSD(rows.filter((r) => r.c.qoldiq < 0).reduce((s, r) => s + r.c.qoldiq, 0)))}</div></div></section>
+      <div class="panel"><div class="panel-h"><h3>Oylik xodimlar</h3></div>
+      <div class="scroll-x"><table class="tbl" style="min-width:1000px"><thead><tr><th>Xodim</th><th style="text-align:right">Oylik $</th><th style="text-align:right">Oylar</th><th style="text-align:right">Tuzatish</th><th style="text-align:right">Yoki qat'iy summa</th><th style="text-align:right">Hisoblangan</th><th style="text-align:right">Eski</th><th style="text-align:right">Avans</th><th style="text-align:right">Eski berilgan</th><th style="text-align:right">Qoldiq</th></tr></thead><tbody>
+      ${rows.map(({ o, c }) => `<tr><td class="t-name">${esc(o.ism)}</td>
+        <td style="text-align:right">${inpS('oylik_xodim', o.id, 'stavka', o.stavka, 70)}</td>
+        <td style="text-align:right"><input class="fs" style="width:60px;min-height:34px;text-align:right" value="${o.oylar == null ? '' : o.oylar}" placeholder="${+today().slice(5, 7)}" title="Bo'sh bo'lsa — joriy oy raqami (Excel'dagi MONTH(TODAY()))" onchange="phIhSet('oylik_xodim',${o.id},'oylar',this.value)"></td>
+        <td style="text-align:right">${inpS('oylik_xodim', o.id, 'tuzatish', o.tuzatish, 70)}</td>
+        <td style="text-align:right">${inpS('oylik_xodim', o.id, 'summa_qolda', o.summa_qolda, 80)}</td>
+        <td style="text-align:right"><b>${esc(fUSD(c.summa))}</b></td>
+        <td style="text-align:right">${inpS('oylik_xodim', o.id, 'eski', o.eski, 80)}</td>
+        <td style="text-align:right">${o.avans_qolda != null ? inpS('oylik_xodim', o.id, 'avans_qolda', o.avans_qolda, 80) + '<div class="t-sub">qo\'lda</div>' : esc(fUSD(c.avans))}</td>
+        <td style="text-align:right">${inpS('oylik_xodim', o.id, 'eski_berilgan', o.eski_berilgan, 80)}</td>
+        <td style="text-align:right;background:#F3EDE2" class="${c.qoldiq < 0 ? 'neg' : 'pos'}">${esc(fUSD(c.qoldiq))}</td></tr>`).join('')}
+      </tbody></table></div>
+      <div style="display:flex;gap:8px"><input class="fs" id="oyl-new" placeholder="Yangi xodim ismi (Pul harakatidagi 'Kimga' bilan bir xil)"  style="min-width:320px"><button class="btn btn-g btn-sm" onclick="phOylAdd()">+ Xodim</button></div>
+      <p class="muted" style="font-size:12px">Excel'dagidek: hisoblangan = (oylik × oylar yoki qat'iy summa) + tuzatish (masalan Xushnud: 400 × oy − 200). Oylar bo'sh bo'lsa — joriy oy raqami. Avans — Pul harakatida "Kimga" shu xodim bo'lgan rasxodlar. Qoldiq = hisoblangan + eski − avans − eski berilgan.</p></div>`;
+  }
+  window.phIhSet = async function (tbl, id, f, v) {
+    let val = v;
+    if (f === 'foiz%') { f = 'foiz'; val = v === '' ? 0 : num0(v) / 100; }
+    else if (typeof v === 'string' && !['boshlanish', 'tugash'].includes(f)) val = v.trim() === '' ? (['summa_qolda', 'avans_qolda', 'oylar', 'stavka', 'summa', 'kv'].includes(f) ? null : 0) : num0(v);
+    if (f === 'oylar' && val != null) val = Math.round(val);
+    const { error } = await db.from(tbl).update({ [f]: val }).eq('id', id);
+    if (error) { toast('⚠️', 'Saqlanmadi', error.message); return; }
+    const arr = tbl === 'ih_davr' ? PH.ihD : tbl === 'ih_ishchi' ? PH.ihW : tbl === 'ih_ish' ? PH.ihJ : PH.oyl;
+    const r = arr.find((x) => x.id === id); if (r) r[f] = val;
+    renderIH();
+  };
+  const num0 = (v) => { const x = parseFloat(String(v).replace(/\s/g, '').replace(',', '.')); return isFinite(x) ? x : 0; };
+  window.phIhKun = async function (jid, ism, v) {
+    const j = PH.ihJ.find((x) => x.id === jid); if (!j) return;
+    const it = { ...(j.ishtirok || {}) }; it[ism] = { ...(it[ism] || {}), kun: num0(v) }; if (!it[ism].kun && it[ism].foiz == null) delete it[ism];
+    const { error } = await db.from('ih_ish').update({ ishtirok: it }).eq('id', jid);
+    if (error) { toast('⚠️', 'Saqlanmadi', error.message); return; }
+    j.ishtirok = it; renderIH();
+  };
+  window.phIhAddW = async function (did) {
+    const nm = $('ih-new-w').value.trim(); if (!nm) return;
+    const { data, error } = await db.from('ih_ishchi').insert({ davr_id: did, ism: nm, foiz: 0, tartib: 99 }).select().single();
+    if (error) { toast('⚠️', "Qo'shilmadi", error.message); return; } PH.ihW.push(data); renderIH();
+  };
+  window.phIhAddJ = async function (did) {
+    const nom = $('ihj-nom').value.trim(); if (!nom) { toast('⚠️', 'Ish nomini yozing', ''); return; }
+    const row = { davr_id: did, nom, kv: num0($('ihj-kv').value) || null, stavka: num0($('ihj-st').value) || 10, ish_kuni: num0($('ihj-kun').value), tartib: ihJobs({ id: did }).length + 1 };
+    const { data, error } = await db.from('ih_ish').insert(row).select().single();
+    if (error) { toast('⚠️', "Qo'shilmadi", error.message); return; } PH.ihJ.push(data); renderIH();
+  };
+  window.phIhDelJ = async function (jid) {
+    if (!confirm("Bu ish o'chirilsinmi?")) return;
+    const { error } = await db.from('ih_ish').delete().eq('id', jid); if (error) { toast('⚠️', "O'chmadi", error.message); return; }
+    PH.ihJ = PH.ihJ.filter((x) => x.id !== jid); renderIH();
+  };
+  window.phIhNewDavr = async function () {
+    const bolim = prompt("Bo'lim nomi (Pergola yoki Oyna):", 'Pergola'); if (!bolim) return;
+    const { data, error } = await db.from('ih_davr').insert({ bolim, nom: bolim, boshlanish: today() }).select().single();
+    if (error) { toast('⚠️', 'Ochilmadi', error.message); return; } PH.ihD.push(data); PH.ihSel = data.id; renderIH();
+  };
+  window.phIhClose = async function (did) {
+    const d = PH.ihD.find((x) => x.id === did); if (!d) return;
+    if (!confirm(`"${d.nom}" davri bugun yopilsin va har bir ustaning qoldig'i yangi davrga "eski qoldiq" bo'lib o'tsinmi?`)) return;
+    const c = davrCalc(d);
+    const { data: nd, error } = await db.from('ih_davr').insert({ bolim: d.bolim, nom: d.bolim, boshlanish: today() }).select().single();
+    if (error) { toast('⚠️', 'Ochilmadi', error.message); return; }
+    const ws = c.rows.map((r, i) => ({ davr_id: nd.id, ism: r.w.ism, foiz: n0(r.w.foiz), eski_qoldiq: Math.round(r.qoldiq * 100) / 100, eski_avans: 0, tartib: i + 1 }));
+    const { data: nw } = await db.from('ih_ishchi').insert(ws).select();
+    await db.from('ih_davr').update({ yopilgan: true, tugash: today() }).eq('id', did);
+    d.yopilgan = true; d.tugash = today(); PH.ihD.push(nd); PH.ihW.push(...(nw || [])); PH.ihSel = nd.id; toast('✅', 'Yangi davr ochildi', ''); renderIH();
+  };
+  window.phOylAdd = async function () {
+    const nm = $('oyl-new').value.trim(); if (!nm) return;
+    const { data, error } = await db.from('oylik_xodim').insert({ ism: nm, ledger_ism: nm, tartib: 99 }).select().single();
+    if (error) { toast('⚠️', "Qo'shilmadi", error.message); return; } PH.oyl.push(data); renderIH();
+  };
+
   // ---------- hodisalar ----------
   document.addEventListener('click', (e) => {
     const t = e.target.closest('#ph-turi button'); if (t) { PH.f.turi = t.dataset.v; PH.limit = 300; renderPH(); return; }
@@ -416,7 +584,8 @@
     const m = e.target.closest('#ph-mode button'); if (m) { phMode(m.dataset.m); return; }
     const q = e.target.closest('#qd-tur button'); if (q) { phQd('tur', q.dataset.v); return; }
     const ir = e.target.closest('#ish-r button'); if (ir) { PH.ishF.r = ir.dataset.v; renderIshlar(); return; }
-    const ih = e.target.closest('#ish-h button'); if (ih) { PH.ishF.h = ih.dataset.v; renderIshlar(); }
+    const ih = e.target.closest('#ish-h button'); if (ih) { PH.ishF.h = ih.dataset.v; renderIshlar(); return; }
+    const it = e.target.closest('#ih-tab button'); if (it) { PH.ihTab = it.dataset.v; renderIH(); }
   });
   document.addEventListener('change', (e) => {
     if (e.target.id === 'ph-oy') { PH.f.oy = e.target.value; PH.limit = 300; renderPH(); }
