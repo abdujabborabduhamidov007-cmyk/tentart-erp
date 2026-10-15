@@ -80,8 +80,8 @@ body.ro .wr{display:none!important}
 .bal-c{flex:1;background:var(--ink2);border-radius:12px;padding:9px 12px}
 .bal-c span{display:block;font-size:11px;color:#BFB4A0;font-weight:600}
 .bal-c b{font-size:15.5px}
-.bal-act{display:flex;gap:8px;margin-top:12px}
-.bal-act .btn{flex:1;background:var(--ink2);color:#F5F0E8;border:1px solid var(--ink3)}
+.bal-act{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px}
+.bal-act .btn{padding:0 6px;font-size:12.5px;background:var(--ink2);color:#F5F0E8;border:1px solid var(--ink3)}
 .bal-act .btn.gold{background:var(--gold);color:var(--ink);border:none}
 .pform{background:var(--ink2);border-radius:14px;padding:12px;margin-top:10px}
 .pform .f{background:#fff}
@@ -135,7 +135,7 @@ body.ro .wr{display:none!important}
 /* list */
 .list{margin-top:10px}
 .dh{font-size:11.5px;font-weight:800;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin:12px 2px 6px;display:flex;justify-content:space-between}
-.it{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--border);border-radius:12px;padding:9px 10px 9px 12px;margin-bottom:6px}
+.it{color:var(--text);display:flex;align-items:center;gap:10px;background:#fff;border:1px solid var(--border);border-radius:12px;padding:9px 10px 9px 12px;margin-bottom:6px}
 .it-dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
 .it-m{flex:1;min-width:0}
 .it-t{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -150,11 +150,18 @@ body.ro .wr{display:none!important}
 .tbl{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px}
 .tbl th{text-align:right;font-size:11px;color:var(--text3);font-weight:800;padding:6px 4px;border-bottom:1px solid var(--border)}
 .tbl th:first-child,.tbl td:first-child{text-align:left}
-.tbl td{text-align:right;padding:8px 4px;border-bottom:1px solid var(--bg3);font-variant-numeric:tabular-nums}
+.tbl td{text-align:right;padding:8px 4px;white-space:nowrap;font-size:12.5px;border-bottom:1px solid var(--bg3);font-variant-numeric:tabular-nums}
 .tbl tr:last-child td{border-bottom:none;font-weight:800}
 .auto{font-size:12px;color:var(--text3);margin-top:6px}
 .auto b{color:var(--accent2)}
 .ai{white-space:pre-wrap;font-size:13.5px;line-height:1.6;margin-top:10px;color:var(--text2)}
+.tq{display:inline-block;font-size:10.5px;font-weight:800;padding:2px 6px;border-radius:6px;margin-left:4px;vertical-align:1px}
+.tq.ok{background:#E3EFE6;color:var(--green)}.tq.wait{background:var(--bg3);color:var(--text3)}.tq.q{background:#F6E2DD;color:var(--danger)}
+.it-q{font-size:12px;color:var(--danger);margin-top:3px;font-weight:600}
+.nz-b{display:flex;gap:4px}.ph .btn{white-space:nowrap}.ph .cs{margin:0}.nz-b button{min-width:38px;height:36px;border-radius:9px;font-weight:800;font-size:15px}
+.nz-ok{background:#E3EFE6;color:var(--green)}.nz-q{background:#F6E2DD;color:var(--danger)}
+.ph{display:flex;align-items:center;gap:8px;margin:16px 2px 6px}.ph b{font-size:15px}.ph .sp{flex:1}
+.banner{background:#F6E2DD;border:1px solid #E7BFB5;border-radius:16px;padding:12px 14px;margin-top:12px;font-size:13.5px;color:var(--danger);font-weight:600}
 .tag{font-size:10.5px;font-weight:800;letter-spacing:.06em;padding:2px 6px;border-radius:6px;background:var(--bg3);color:var(--text2);margin-left:4px;vertical-align:1px}
 
 /* sheet */
@@ -203,16 +210,29 @@ body.ro .wr{display:none!important}
         </div>
         <div class="bal-act wr">
           <button class="btn gold sm" onclick="togg('gf-in')">+ Prixod</button>
+          <button class="btn sm" onclick="togg('gf-gv')">Pul berish</button>
           <button class="btn sm" onclick="togg('gf-cv')">$ → so'm</button>
           <button class="btn sm" onclick="togg('g-hist')">Tarix</button>
         </div>
         <div class="pform hide" id="gf-in">
+          <div class="pills" style="margin-bottom:10px"><button class="pill on" id="gs-1" onclick="gsSw(1)">Mijoz / tashqaridan</button><button class="pill" id="gs-2" onclick="gsSw(2)">Xodimdan oldim</button></div>
+          <div id="gs-kim" class="hide" style="margin-bottom:10px"><label class="lab">Kimdan oldingiz</label><select class="f" id="gi-k"></select><div class="pv">Bu ichki o'tkazma — kassaga qayta tushmaydi, berganning daftarida ham ko'rinadi.</div></div>
           <div class="row">
             <div><label class="lab">Summa (so'm)</label><input class="f num" id="gi-s" type="number" inputmode="decimal" placeholder="5000000"></div>
             <div><label class="lab">Sana</label><input class="f" id="gi-d" type="date"></div>
           </div>
-          <label class="lab mt">Izoh</label><input class="f" id="gi-i" placeholder="masalan: kassadan olindi">
+          <div class="row mt"><div><label class="lab">Izoh</label><input class="f" id="gi-i" placeholder="masalan: T-1042 avans"></div><div style="flex:0 0 36%"><label class="lab">To'lov</label><select class="f" id="gi-pt"><option value="naqd">Naqd</option><option value="karta">Karta</option></select></div></div>
           <button class="btn gold full mt" onclick="addKirim('umumiy','gi')">Prixodni saqlash</button>
+        </div>
+        <div class="pform hide" id="gf-gv">
+          <label class="lab">Kimga beryapsiz</label><select class="f" id="gg-k"></select>
+          <div class="row mt">
+            <div><label class="lab">Summa (so'm)</label><input class="f num" id="gg-s" type="number" inputmode="decimal" placeholder="3000000"></div>
+            <div><label class="lab">To'lov</label><select class="f" id="gg-pt"><option value="naqd">Naqd</option><option value="karta">Karta</option></select></div>
+          </div>
+          <div class="row mt"><div><label class="lab">Izoh</label><input class="f" id="gg-i" placeholder="masalan: material uchun"></div><div style="flex:0 0 40%"><label class="lab">Sana</label><input class="f" id="gg-d" type="date"></div></div>
+          <div class="pv">Pul sizning qoldig'ingizdan ayriladi va oluvchining daftariga avtomatik tushadi.</div>
+          <button class="btn gold full mt" onclick="pulBer()">Pulni berish</button>
         </div>
         <div class="pform hide" id="gf-cv">
           <div id="gcv"></div>
@@ -226,9 +246,10 @@ body.ro .wr{display:none!important}
   <div class="wrap">
     <div class="tabs">
       <div class="seg" role="tablist">
+        <button data-t="nazorat" id="t-naz" class="hide" onclick="setTab('nazorat')">Nazorat</button>
         <button data-t="obyekt" onclick="setTab('obyekt')">Obyektlar</button>
         <button data-t="ishga_oid" onclick="setTab('ishga_oid')">Ishga oid</button>
-        <button data-t="shaxsiy" onclick="setTab('shaxsiy')">Shaxsiy</button>
+        <button data-t="shaxsiy" id="t-sh" onclick="setTab('shaxsiy')">Shaxsiy</button>
       </div>
       <div class="per" id="perbar">
         <span>Davr:</span><select id="oy" onchange="S.oy=this.value;render()"></select>
@@ -282,7 +303,9 @@ const C={
 const ISHCHILI=['avans','taksi','abed'];
 const OYLAR=['yanvar','fevral','mart','aprel','may','iyun','iyul','avgust','sentabr','oktabr','noyabr','dekabr'];
 
-const S={user:null,prof:null,view:null,tab:'obyekt',oy:null,Y:[],O:[],I:[],soz:null,obj:null,showClosed:false,ishKat:'avans',profs:[]};
+const S={user:null,prof:null,view:null,tab:'obyekt',oy:null,Y:[],O:[],I:[],soz:null,obj:null,showClosed:false,ishKat:'avans',profs:[],ALL:[],AO:[],AI:[],nzF:'kutilmoqda'};
+const boss=()=>['Owner','Kassir'].includes(S.prof&&S.prof.rol);
+const pNom=id=>(S.profs.find(p=>p.id===id)||{}).ism||'—';
 
 // ── yordamchilar ──
 const $=id=>document.getElementById(id);
@@ -296,7 +319,7 @@ const cat=(b,id)=>(C[b]||C.shaxsiy).find(x=>x.id===id)||{id:id||'boshqa',l:id||'
 function detect(b,txt){const t=' '+String(txt||'').toLowerCase()+' ';let best=null,bl=0;for(const c of C[b])for(const k of c.k){if(t.includes(k)&&k.length>bl){best=c.id;bl=k.length;}}return best||'boshqa';}
 function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('show'),2200);}
 function hap(){try{TG&&TG.HapticFeedback.notificationOccurred('success');}catch(e){}}
-function togg(id){const el=$(id);const open=el.classList.contains('hide');['gf-in','gf-cv','g-hist'].forEach(x=>$(x).classList.add('hide'));if(open)el.classList.remove('hide');}
+function togg(id){const el=$(id);const open=el.classList.contains('hide');['gf-in','gf-gv','gf-cv','g-hist'].forEach(x=>$(x).classList.add('hide'));if(open)el.classList.remove('hide');}
 function ask(msg){return new Promise(r=>{if(TG&&TG.showConfirm){try{TG.showConfirm(msg,ok=>r(!!ok));return;}catch(e){}}r(confirm(msg));});}
 const val=id=>{const v=parseFloat(String($(id)?.value||'').replace(/\s/g,'').replace(',','.'));return isFinite(v)?v:0;};
 const ro=()=>S.view!==S.user.id;
@@ -321,34 +344,42 @@ async function start(user){
   S.prof=prof||{ism:user.email.split('@')[0],rol:''};
   $('u-name').textContent=S.prof.ism;$('u-rol').textContent=S.prof.rol;
   S.view=user.id;
-  if(S.prof.rol==='Owner'){
-    const {data:ps}=await db.from('profiles').select('id,ism,rol').in('rol',['Owner','Menejer','Kassir']).order('ism');
-    S.profs=ps||[];
+  const {data:ps}=await db.from('profiles').select('id,ism,rol').in('rol',['Owner','Menejer','Kassir']).order('ism');
+  S.profs=ps||[];
+  const others=S.profs.filter(p=>p.id!==user.id).map(p=>`<option value="${p.id}">${esc(p.ism)} — ${esc(p.rol)}</option>`).join('');
+  $('gg-k').innerHTML=others;$('gi-k').innerHTML=others;
+  if(boss()){
+    $('t-naz').classList.remove('hide');
     $('vs').innerHTML=S.profs.map(p=>`<option value="${p.id}">${esc(p.ism)} — ${esc(p.rol)}${p.id===user.id?' (siz)':''}</option>`).join('');
     try{const sv=localStorage.getItem('rx_view');if(sv&&S.profs.some(p=>p.id===sv))S.view=sv;}catch(e){}
     $('vs').value=S.view;$('viewsel').classList.remove('hide');
   }
-  try{const t=localStorage.getItem('rx_tab');if(t&&C[t])S.tab=t;}catch(e){}
+  if(boss())S.tab='nazorat';
+  try{const t=localStorage.getItem('rx_tab');if(t&&(C[t]||(t==='nazorat'&&boss())))S.tab=t;}catch(e){}
   $('login').classList.add('hide');$('app').classList.remove('hide');
   $('gcv').innerHTML=convForm('gc');
-  ['gi-d'].forEach(i=>$(i).value=today());
+  ['gi-d','gg-d'].forEach(i=>$(i).value=today());
   await load();
   db.channel('rasxod').on('postgres_changes',{event:'*',schema:'public',table:'rasxod_yozuvlar'},sched)
     .on('postgres_changes',{event:'*',schema:'public',table:'rasxod_obyektlar'},sched).subscribe();
 }
 let _t;function sched(){clearTimeout(_t);_t=setTimeout(load,400);}
 function setView(v){S.view=v;S.obj=null;try{localStorage.setItem('rx_view',v);}catch(e){}load();}
-function setTab(t){S.tab=t;try{localStorage.setItem('rx_tab',t);}catch(e){}$('ai-o').textContent='';render();window.scrollTo({top:Math.min(window.scrollY,document.querySelector('.tabs').offsetTop),behavior:'smooth'});}
+function setTab(t){if(t==='nazorat'&&!boss())t='obyekt';S.tab=t;try{localStorage.setItem('rx_tab',t);}catch(e){}$('ai-o').textContent='';render();window.scrollTo({top:Math.min(window.scrollY,document.querySelector('.tabs').offsetTop),behavior:'smooth'});}
 
 async function load(){
-  const v=S.view;
+  const v=S.view;const B=boss();
+  const f=(qq)=>B?qq:qq.eq('egasi',v);
   const [y,o,i,s]=await Promise.all([
-    db.from('rasxod_yozuvlar').select('*').eq('egasi',v).order('sana',{ascending:false}).order('id',{ascending:false}).limit(5000),
-    db.from('rasxod_obyektlar').select('*').eq('egasi',v).order('created_at'),
-    db.from('rasxod_ishchilar').select('*').eq('egasi',v).order('ism'),
+    f(db.from('rasxod_yozuvlar').select('*')).order('sana',{ascending:false}).order('id',{ascending:false}).limit(10000),
+    f(db.from('rasxod_obyektlar').select('*')).order('created_at'),
+    f(db.from('rasxod_ishchilar').select('*')).order('ism'),
     db.from('rasxod_sozlama').select('*').eq('egasi',v).maybeSingle()]);
   if(y.error){toast('Xatolik: '+y.error.message);return;}
-  S.Y=(y.data||[]).map(r=>({...r,summa:+r.summa}));S.O=o.data||[];S.I=i.data||[];S.soz=s.data||null;
+  S.ALL=(y.data||[]).map(r=>({...r,summa:+r.summa}));S.AO=o.data||[];S.AI=i.data||[];
+  S.Y=S.ALL.filter(r=>r.egasi===v);S.O=S.AO.filter(r=>r.egasi===v);S.I=S.AI.filter(r=>r.egasi===v);S.soz=s.data||null;
+  const hideSh=S.prof.rol==='Kassir'&&v!==S.user.id;
+  $('t-sh').classList.toggle('hide',hideSh);if(hideSh&&S.tab==='shaxsiy')S.tab='obyekt';
   if(S.obj&&!S.O.some(x=>x.id===S.obj))S.obj=null;
   if(!S.obj){const a=S.O.filter(x=>!x.yopilgan);S.obj=(a[a.length-1]||S.O[S.O.length-1]||{}).id||null;}
   document.body.classList.toggle('ro',ro());
@@ -363,11 +394,21 @@ function buildOy(){
 }
 const inPer=r=>S.oy==='all'||mk(r.sana)===S.oy;
 const sum=a=>a.reduce((s,r)=>s+r.summa,0);
+const fM=n=>Math.abs(n)>=1e6?(n/1e6).toFixed(1).replace('.',',')+' mln':fmt(n);
 
 // ── formalar ──
 function convForm(p){return `<div class="row"><div><label class="lab">Dollar ($)</label><input class="f num" id="${p}-u" type="number" inputmode="decimal" placeholder="1000" oninput="cvPrev('${p}')"></div><div><label class="lab">Kurs</label><input class="f num" id="${p}-k" type="number" inputmode="decimal" placeholder="12650" oninput="cvPrev('${p}')"></div></div>
 <div class="row mt"><div><label class="lab">Komissiya (%)</label><input class="f num" id="${p}-c" type="number" inputmode="decimal" placeholder="0" oninput="cvPrev('${p}')"></div><div><label class="lab">Sana</label><input class="f" id="${p}-d" type="date" value="${today()}"></div></div>
-<div class="pv" id="${p}-pv">Dollar va kursni kiriting</div>`;}
+<div class="pv" id="${p}-pv">Dollar va kursni kiriting</div>${p==='sc'?'':`<label class="lab mt">To'lov</label>${usulSel(p+'-pt')}`}`;}
+const usulSel=id=>`<select class="f" id="${id}"><option value="naqd">Naqd</option><option value="karta">Karta</option></select>`;
+let GS=1;function gsSw(n){GS=n;$('gs-1').classList.toggle('on',n===1);$('gs-2').classList.toggle('on',n===2);$('gs-kim').classList.toggle('hide',n!==2);}
+async function pulBer(){
+  const kim=$('gg-k').value,s=val('gg-s');if(!kim){toast('Kimga berishni tanlang');return;}if(s<=0){toast('Summani kiriting');return;}
+  if(!(await ask(`${pNom(kim)}ga ${fmt(s)} so'm berildi deb yozilsinmi?`)))return;
+  const {error}=await db.rpc('pul_otkazish',{p_kimdan:S.user.id,p_kimga:kim,p_summa:s,p_usul:$('gg-pt').value,p_izoh:$('gg-i').value.trim()||null,p_sana:$('gg-d').value||today()});
+  if(error){toast('Saqlanmadi: '+error.message);return;}
+  hap();toast('Berildi — '+pNom(kim)+' daftariga tushdi');$('gg-s').value='';$('gg-i').value='';await load();
+}
 function cvPrev(p){const u=val(p+'-u'),k=val(p+'-k'),c=val(p+'-c');if(!u||!k){$(p+'-pv').textContent='Dollar va kursni kiriting';return;}const g=u*k,cs=g*c/100;$(p+'-pv').innerHTML=`${fmt(u)}$ × ${fmt(k)} = ${fmt(g)} so'm · komissiya ${fmt(cs)} · <b>sof: ${fmt(g-cs)} so'm</b>`;}
 
 async function ins(row){
@@ -378,7 +419,13 @@ async function ins(row){
 async function addKirim(bolim,p){
   const s=val(p+'-s');if(s<=0){toast('Summani kiriting');return;}
   if(bolim==='obyekt'&&!S.obj){toast('Avval obyekt tanlang');return;}
-  const ok=await ins({bolim,tur:'kirim',kategoriya:'prixod',summa:s,izoh:$(p+'-i')?.value.trim()||null,sana:$(p+'-d')?.value||today(),obyekt_id:bolim==='obyekt'?S.obj:null});
+  if(p==='gi'&&GS===2){
+    const kim=$('gi-k').value;if(!kim){toast('Kimdan olganingizni tanlang');return;}
+    const {error}=await db.rpc('pul_otkazish',{p_kimdan:kim,p_kimga:S.user.id,p_summa:s,p_usul:$('gi-pt').value,p_izoh:$('gi-i').value.trim()||null,p_sana:$('gi-d').value||today()});
+    if(error){toast('Saqlanmadi: '+error.message);return;}
+    hap();toast('Saqlandi');$('gi-s').value='';$('gi-i').value='';await load();return;
+  }
+  const ok=await ins({bolim,tur:'kirim',kategoriya:'prixod',summa:s,izoh:$(p+'-i')?.value.trim()||null,sana:$(p+'-d')?.value||today(),obyekt_id:bolim==='obyekt'?S.obj:null,usul:$(p+'-pt')?.value||'naqd'});
   if(ok){$(p+'-s').value='';if($(p+'-i'))$(p+'-i').value='';}
 }
 async function addConv(bolim,p){
@@ -386,7 +433,7 @@ async function addConv(bolim,p){
   if(u<=0||k<=0){toast('Dollar va kursni kiriting');return;}
   if(bolim==='obyekt'&&!S.obj){toast('Avval obyekt tanlang');return;}
   const net=u*k*(1-c/100);
-  const ok=await ins({bolim,tur:'kirim',kategoriya:'konvertatsiya',summa:Math.round(net),usd:u,kurs:k,komissiya_foiz:c,izoh:`${fmt(u)}$ × ${fmt(k)} kursda konvertatsiya`+(c?` (komissiya ${c}%)`:''),sana:$(p+'-d').value||today(),obyekt_id:bolim==='obyekt'?S.obj:null});
+  const ok=await ins({bolim,tur:'kirim',kategoriya:'konvertatsiya',summa:Math.round(net),usd:u,kurs:k,komissiya_foiz:c,izoh:`${fmt(u)}$ × ${fmt(k)} kursda konvertatsiya`+(c?` (komissiya ${c}%)`:''),sana:$(p+'-d').value||today(),obyekt_id:bolim==='obyekt'?S.obj:null,usul:$(p+'-pt')?.value||'naqd'});
   if(ok){['u','k','c'].forEach(x=>$(p+'-'+x).value='');cvPrev(p);}
 }
 async function addChiqim(bolim){
@@ -400,7 +447,7 @@ async function addChiqim(bolim){
   if(bolim==='obyekt'&&!S.obj){toast('Avval obyekt yarating');return;}
   if(bolim==='obyekt'&&!iz&&!ish){toast('Izoh yozing (nimaga sarflandi)');return;}
   const ishN=ish?(S.I.find(w=>w.id===ish)||{}).ism:'';
-  const ok=await ins({bolim,tur:'chiqim',kategoriya:k,summa:s,izoh:iz||(ishN?cat(bolim,k).l+' — '+ishN:null),sana:$(p+'-d').value||today(),obyekt_id:bolim==='obyekt'?S.obj:null,ishchi_id:ish});
+  const ok=await ins({bolim,tur:'chiqim',kategoriya:k,summa:s,izoh:iz||(ishN?cat(bolim,k).l+' — '+ishN:null),sana:$(p+'-d').value||today(),obyekt_id:bolim==='obyekt'?S.obj:null,ishchi_id:ish,usul:$(p+'-pt')?.value||'naqd'});
   if(ok){$(p+'-s').value='';$(p+'-i').value='';if($(p+'-k'))$(p+'-k').value='';autoHint(bolim);}
 }
 function autoHint(b){const p='c-'+b;const el=$(p+'-ah');if(!el)return;const sel=$(p+'-k')?.value;const k=sel||(b==='ishga_oid'?S.ishKat:detect(b,$(p+'-i').value));el.innerHTML=sel?'':`Toifa avtomatik: <b>${esc(cat(b,k).l)}</b>`;
@@ -410,7 +457,7 @@ function chiqimForm(b,ph){
   const wsel=`<div id="c-${b}-wb" class="mt ${b==='ishga_oid'&&ISHCHILI.includes(S.ishKat)?'':'hide'}"><label class="lab">Ishchi</label><select class="f" id="c-${b}-w"><option value="">— tanlang —</option>${S.I.map(w=>`<option value="${w.id}">${esc(w.ism)}</option>`).join('')}</select>${S.I.length?'':'<div class="auto">Avval pastda ishchi qo\'shing</div>'}</div>`;
   return `<div class="row"><div><label class="lab">Summa (so'm)</label><input class="f num" id="c-${b}-s" type="number" inputmode="decimal" placeholder="150000"></div><div><label class="lab">Sana</label><input class="f" id="c-${b}-d" type="date" value="${today()}"></div></div>
   <label class="lab mt">Izoh</label><input class="f" id="c-${b}-i" placeholder="${ph}" oninput="autoHint('${b}')">
-  ${b!=='ishga_oid'?`<label class="lab mt">Toifa</label><select class="f" id="c-${b}-k" onchange="autoHint('${b}')"><option value="">Avtomatik aniqlash</option>${opts}</select>`:''}
+  <div class="row mt">${b!=='ishga_oid'?`<div><label class="lab">Toifa</label><select class="f" id="c-${b}-k" onchange="autoHint('${b}')"><option value="">Avtomatik</option>${opts}</select></div>`:''}${b!=='shaxsiy'?`<div style="flex:0 0 36%"><label class="lab">To'lov</label>${usulSel('c-'+b+'-pt')}</div>`:''}</div>
   <div class="auto" id="c-${b}-ah"></div>${b!=='shaxsiy'?wsel:''}
   <button class="btn full mt" onclick="addChiqim('${b}')">Xarajatni saqlash</button>`;
 }
@@ -422,11 +469,27 @@ function items(arr,b,opt={}){
   return Object.keys(by).sort().reverse().map(d=>{
     const rs=by[d];const t=sum(rs.filter(r=>r.tur==='chiqim'));
     return `<div class="dh"><span>${kunNom(d)}</span><span class="num">${t?'−'+fmt(t):''}</span></div>`+rs.map(r=>{
-      const c=r.tur==='kirim'?{l:r.kategoriya==='konvertatsiya'?'Konvertatsiya':'Prixod',c:'#2F6B45'}:cat(r.bolim,r.kategoriya);
-      const w=r.ishchi_id?(S.I.find(x=>x.id===r.ishchi_id)||{}).ism:'';
-      const o=opt.obj&&r.obyekt_id?(S.O.find(x=>x.id===r.obyekt_id)||{}).nom:'';
-      return `<div class="it"><span class="it-dot" style="background:${c.c}"></span><div class="it-m"><div class="it-t">${esc(r.izoh||c.l)}</div><div class="it-s">${esc(c.l)}${w?' · '+esc(w):''}${o?' · '+esc(o):''}${r.manba==='miniapp'?'<span class="tag">TG</span>':''}</div></div><div class="it-v num ${r.tur==='kirim'?'in':''}">${r.tur==='kirim'?'+':'−'}${fmt(r.summa)}</div><div class="it-a wr"><button onclick="editRow(${r.id})" aria-label="Tahrirlash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></button><button onclick="delRow(${r.id})" aria-label="O'chirish"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></svg></button></div></div>`;}).join('');
+      const c=rowCat(r);
+      const w=r.ishchi_id?(S.AI.find(x=>x.id===r.ishchi_id)||{}).ism:'';
+      const o=opt.obj&&r.obyekt_id?(S.AO.find(x=>x.id===r.obyekt_id)||{}).nom:'';
+      const t=rowTitle(r,c);
+      return `<div class="it"><span class="it-dot" style="background:${c.c}"></span><div class="it-m"><div class="it-t">${esc(t)}</div><div class="it-s">${esc(c.l)}${w?' · '+esc(w):''}${o?' · '+esc(o):''}${r.usul==='karta'?' · karta':''}${r.manba==='miniapp'?'<span class="tag">TG</span>':''}${tqBadge(r)}</div>${r.tasdiq==='savol'?`<div class="it-q">Savol: ${esc(r.tasdiq_izoh||'tekshirib qayta yozing')}</div>`:''}</div><div class="it-v num ${r.tur==='kirim'?'in':''}">${r.tur==='kirim'?'+':'−'}${fmt(r.summa)}</div><div class="it-a wr">${r.kategoriya==='otkazma'?'':`<button onclick="editRow(${r.id})" aria-label="Tahrirlash"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></button>`}<button onclick="delRow(${r.id})" aria-label="O'chirish"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/></svg></button></div></div>`;}).join('');
   }).join('');
+}
+function rowCat(r){
+  if(r.kategoriya==='otkazma')return {l:r.tur==='kirim'?'Olindi':'Berildi',c:'#5E4A85'};
+  if(r.tur==='kirim')return {l:r.kategoriya==='konvertatsiya'?'Konvertatsiya':'Prixod',c:'#2F6B45'};
+  return cat(r.bolim,r.kategoriya);
+}
+function rowTitle(r,c){
+  if(r.kategoriya==='otkazma'){const k=pNom(r.kontragent);return (r.tur==='kirim'?k+'dan olindi':k+'ga berildi')+(r.izoh?' — '+r.izoh:'');}
+  return r.izoh||c.l;
+}
+function tqBadge(r){
+  if(r.bolim==='shaxsiy')return '';
+  if(r.tasdiq==='tasdiqlandi')return '<span class="tq ok">✓ tekshirildi</span>';
+  if(r.tasdiq==='savol')return '<span class="tq q">? savol</span>';
+  return '<span class="tq wait">tekshiruvda</span>';
 }
 function bars(arr,b){
   const by={};arr.forEach(r=>by[r.kategoriya]=(by[r.kategoriya]||0)+r.summa);
@@ -445,11 +508,42 @@ function render(){
   $('g-bal').className='bal-v num'+(bal<0?' neg':'');$('g-bal').innerHTML=(bal<0?'−':'')+fmt(Math.abs(bal))+'<small>so\'m</small>';
   $('g-in').textContent=fmt(gIn);$('g-out').textContent=fmt(out);
   $('g-hist-l').innerHTML=`<div style="color:#D9CFBD">${items(S.Y.filter(r=>r.bolim==='umumiy'),'umumiy',{empty:'Prixod hali kiritilmagan'})}</div>`;
-  $('perbar').classList.toggle('hide',S.tab==='obyekt');
-  $('main').innerHTML=S.tab==='obyekt'?rObyekt():S.tab==='ishga_oid'?rIsh():rShaxsiy();
+  $('perbar').classList.toggle('hide',S.tab==='obyekt'||S.tab==='nazorat');
+  const sv=S.Y.filter(r=>r.tasdiq==='savol');
+  const ban=sv.length&&S.view===S.user.id?`<div class="banner">Kassada ${sv.length} ta yozuvingiz bo'yicha savol bor — pastdagi qizil yozuvlarni tekshirib, tuzating.</div>`:'';
+  $('main').innerHTML=S.tab==='nazorat'?rNazorat():ban+(S.tab==='obyekt'?rObyekt():S.tab==='ishga_oid'?rIsh():rShaxsiy());
   if(S.tab==='obyekt'){const c=document.querySelector('.chip.on');c&&c.scrollIntoView({inline:'center',block:'nearest'});}
   autoHint(S.tab);
 }
+
+// ── Nazorat (kassir / rahbar) ──
+function rNazorat(){
+  const rows=S.ALL.filter(r=>r.bolim!=='shaxsiy');
+  const ppl=S.profs.filter(p=>rows.some(r=>r.egasi===p.id));
+  const st=ppl.map(p=>{const a=rows.filter(r=>r.egasi===p.id);const ki=sum(a.filter(r=>r.tur==='kirim')),ch=sum(a.filter(r=>r.tur==='chiqim'));
+    return {p,ki,ch,q:ki-ch,w:a.filter(r=>r.tasdiq==='kutilmoqda').length,s:a.filter(r=>r.tasdiq==='savol').length};});
+  const nW=rows.filter(r=>r.tasdiq==='kutilmoqda').length,nS=rows.filter(r=>r.tasdiq==='savol').length;
+  let list=rows.filter(r=>r.tasdiq===S.nzF);if(S.nzF==='tasdiqlandi')list=list.slice(0,80);
+  const groups=ppl.map(p=>({p,a:list.filter(r=>r.egasi===p.id)})).filter(g=>g.a.length);
+  return `<div class="card"><div class="ct">Kimning qo'lida qancha pul</div><div class="cs">Shaxsiy xarajatlarsiz. Qoldiq = olgan + mijozdan tushgan − sarflagan − bergan.</div>
+    ${st.length?`<table class="tbl"><tr><th>Kim</th><th>Kirim</th><th>Chiqim</th><th>Qoldiq</th></tr>${st.map(x=>`<tr><td>${esc(x.p.ism)}${x.w?` <span class="tq wait">${x.w}</span>`:''}${x.s?` <span class="tq q">${x.s}?</span>`:''}</td><td>${fM(x.ki)}</td><td>${fM(x.ch)}</td><td><b class="${x.q<0?'neg':''}">${x.q<0?'−':''}${fM(Math.abs(x.q))}</b></td></tr>`).join('')}<tr><td>Jami</td><td>${fM(sum(st.map(x=>({summa:x.ki}))))}</td><td>${fM(sum(st.map(x=>({summa:x.ch}))))}</td><td>${fM(sum(st.map(x=>({summa:x.q}))))}</td></tr></table>`:'<div class="empty">Hali yozuv yo\'q</div>'}</div>
+  <div class="card"><div class="ct">Tekshirish</div><div class="cs">Har bir yozuvni ko'rib, ✓ bilan tasdiqlang yoki ? bilan savol bering. Kassaga va ERP'ga yozuvlar avtomatik tushgan — qayta kiritish shart emas.</div>
+    <div class="pills mt"><button class="pill ${S.nzF==='kutilmoqda'?'on':''}" onclick="S.nzF='kutilmoqda';render()">Tekshirilmagan (${nW})</button><button class="pill ${S.nzF==='savol'?'on':''}" onclick="S.nzF='savol';render()">Savol (${nS})</button><button class="pill ${S.nzF==='tasdiqlandi'?'on':''}" onclick="S.nzF='tasdiqlandi';render()">Tasdiqlangan</button></div>
+    ${groups.length?groups.map(g=>`<div class="ph"><b>${esc(g.p.ism)}</b><span class="cs">${g.a.length} ta · ${fmt(sum(g.a.filter(r=>r.tur==='chiqim')))} chiqim</span><span class="sp"></span>${S.nzF!=='tasdiqlandi'?`<button class="btn green sm" onclick="tasdiq([${g.a.map(r=>r.id).join(',')}],'tasdiqlandi')">Hammasi ✓</button>`:''}</div>${g.a.map(nzItem).join('')}`).join(''):`<div class="empty">${S.nzF==='kutilmoqda'?'Hammasi tekshirilgan 👍':'Yozuv yo\'q'}</div>`}
+  </div>`;
+}
+function nzItem(r){
+  const c=rowCat(r);const t=rowTitle(r,c);
+  const w=r.ishchi_id?(S.AI.find(x=>x.id===r.ishchi_id)||{}).ism:'';
+  const o=r.obyekt_id?(S.AO.find(x=>x.id===r.obyekt_id)||{}).nom:'';
+  const bl={umumiy:'Umumiy',obyekt:'Obyekt',ishga_oid:'Ishga oid'}[r.bolim]||'';
+  return `<div class="it"><span class="it-dot" style="background:${c.c}"></span><div class="it-m"><div class="it-t">${esc(t)}</div><div class="it-s">${kunNom(r.sana)} · ${bl} · ${esc(c.l)}${o?' · '+esc(o):''}${w?' · '+esc(w):''}${r.usul==='karta'?' · karta':''}</div>${r.tasdiq==='savol'?`<div class="it-q">Savol: ${esc(r.tasdiq_izoh||'')}</div>`:''}</div><div class="it-v num ${r.tur==='kirim'?'in':''}">${r.tur==='kirim'?'+':'−'}${fmt(r.summa)}</div><div class="nz-b">${r.tasdiq!=='tasdiqlandi'?`<button class="nz-ok" onclick="tasdiq([${r.id}],'tasdiqlandi')" aria-label="Tasdiqlash">✓</button>`:`<button class="nz-q" style="font-size:12px" onclick="tasdiq([${r.id}],'kutilmoqda')" aria-label="Bekor qilish">↺</button>`}${r.tasdiq!=='savol'?`<button class="nz-q" onclick="savolBer(${r.id})" aria-label="Savol berish">?</button>`:''}</div></div>`;
+}
+async function tasdiq(ids,h,iz){
+  const {error}=await db.rpc('rasxod_tasdiq',{p_ids:ids,p_holat:h,p_izoh:iz||null});
+  if(error){toast(error.message);return;}hap();toast(h==='tasdiqlandi'?'Tasdiqlandi':h==='savol'?'Savol yuborildi':'Qaytarildi');await load();
+}
+function savolBer(id){const r=S.ALL.find(x=>x.id===id);sheet(`<div class="ct">Savol berish</div><div class="cs">${esc(pNom(r.egasi))} · ${fmt(r.summa)} so'm · ${esc(r.izoh||'')}</div><textarea class="f mt" id="sq" rows="3" placeholder="masalan: chek bormi? qaysi obyekt uchun?"></textarea><div class="row mt"><button class="btn ghost" onclick="closeSheet()">Bekor</button><button class="btn" onclick="(async()=>{const t=$('sq').value.trim();closeSheet();await tasdiq([${id}],'savol',t);})()">Yuborish</button></div>`);}
 
 function rObyekt(){
   const objs=S.O.filter(o=>S.showClosed||!o.yopilgan||o.id===S.obj);
@@ -471,7 +565,7 @@ function rObyekt(){
   <div class="card wr"><div class="ct">Xarajat yozish</div>${chiqimForm('obyekt','masalan: profil, bolt, silikon')}</div>
   <div class="card wr"><div class="ct">Obyektga pul tushdi</div>
     <div class="pills mt"><button class="pill on" id="ok-1" onclick="okSw(1)">So'mda</button><button class="pill" id="ok-2" onclick="okSw(2)">Dollarda</button></div>
-    <div id="ok-a" class="mt"><div class="row"><div><label class="lab">Summa (so'm)</label><input class="f num" id="oi-s" type="number" inputmode="decimal"></div><div><label class="lab">Sana</label><input class="f" id="oi-d" type="date" value="${today()}"></div></div><label class="lab mt">Izoh</label><input class="f" id="oi-i" placeholder="masalan: mijozdan avans"><button class="btn green full mt" onclick="addKirim('obyekt','oi')">Saqlash</button></div>
+    <div id="ok-a" class="mt"><div class="row"><div><label class="lab">Summa (so'm)</label><input class="f num" id="oi-s" type="number" inputmode="decimal"></div><div><label class="lab">Sana</label><input class="f" id="oi-d" type="date" value="${today()}"></div></div><div class="row mt"><div><label class="lab">Izoh</label><input class="f" id="oi-i" placeholder="masalan: mijozdan avans"></div><div style="flex:0 0 36%"><label class="lab">To'lov</label>${usulSel('oi-pt')}</div></div><button class="btn green full mt" onclick="addKirim('obyekt','oi')">Saqlash</button></div>
     <div id="ok-b" class="mt hide">${convForm('oc')}<button class="btn green full mt" onclick="addConv('obyekt','oc')">Saqlash</button></div></div>
   <div class="card"><div class="ct">Obyekt tarixi</div><div class="list">${items(s.rs,'obyekt')}</div></div>`;
   return h;

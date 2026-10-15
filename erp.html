@@ -1439,7 +1439,7 @@ async function startApp(user){
     document.querySelectorAll('.ni[data-page="moliya"], .ni[data-page="hr"], .ni[data-page="jamoa"]').forEach(el=>el.style.display='none');
   }
   if(!['Owner','Menejer'].includes(curUser.rol)){document.querySelector('.ni[data-page="sayt"]')?.style.setProperty('display','none');}
-  if(!['Owner','Menejer'].includes(curUser.rol)){document.getElementById('ni-rasxod')?.style.setProperty('display','none');}
+  if(!['Owner','Menejer','Kassir'].includes(curUser.rol)){document.getElementById('ni-rasxod')?.style.setProperty('display','none');}
   if(!['Owner','Menejer','Kassir'].includes(curUser.rol)){
     document.querySelector('.ni[data-page="kassa"]')?.style.setProperty('display','none');
   }

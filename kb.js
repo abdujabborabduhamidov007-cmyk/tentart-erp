@@ -60,10 +60,13 @@
     if (ymd(d) === ymd(y)) return 'Kecha';
     return pad(d.getDate()) + '.' + pad(d.getMonth() + 1);
   };
-  const empName = (id) => KB.emp.find((e) => String(e.telegram_id) === String(id))?.full_name || (id ? 'ID ' + id : '—');
+  const empName = (id) => KB.emp.find((e) => String(e.telegram_id) === String(id))?.full_name
+    || (KB.prof || []).find((p) => String(p.telegram_id) === String(id))?.ism || (id ? 'ID ' + id : '—');
   const initials = (n) => String(n || '?').split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
   const tag = (manba) => manba === 'sayt-mijoz'
     ? '<span class="tag" style="background:#1A1A1A;color:#C9A96E">MIJOZ</span>'
+    : manba === 'daftar'
+      ? '<span class="tag" style="background:#EFE8DA;color:#7E5F25">DAFTAR</span>'
     : manba === 'sayt'
       ? '<span class="tag b-sayt">SAYT</span>'
       : '<span class="tag b-bot">BOT</span>';
@@ -98,7 +101,9 @@
     ]);
     const tids = tasks.map((t) => t.id);
     const trec = tids.length ? await q(db.from('kb_task_recipients').select('*').in('task_id', tids)) : [];
-    Object.assign(KB, { emp, cash, qoldiq, zak, dav, dam, rep, norms, dkv, tasks, trec, kom, alm, loaded: true });
+    let prof = [];
+    try { prof = await q(db.from('profiles').select('ism,telegram_id')); } catch (e) { prof = []; }
+    Object.assign(KB, { prof, emp, cash, qoldiq, zak, dav, dam, rep, norms, dkv, tasks, trec, kom, alm, loaded: true });
   }
 
   async function reload(flash) {
