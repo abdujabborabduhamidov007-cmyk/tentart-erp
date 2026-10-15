@@ -406,6 +406,11 @@ textarea.fi{resize:vertical;min-height:80px;}
           <a class="ni" id="ni-rasxod" href="/rasxod" style="text-decoration:none"><span class="ni-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 3h11a2 2 0 012 2v16l-3-2-3 2-3-2-3 2V5"/><path d="M9 8h7M9 12h7M9 16h4"/></svg></span>Rasxod daftari</a>
           <div class="ni" data-page="jamoa" role="button" tabindex="0"><span class="ni-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 4.6a3.5 3.5 0 010 6.8"/><path d="M18 14.8c1.8.7 3 2.4 3.5 5.2"/></svg></span>Jamoa va davomat</div>
         </div>
+        <div class="sb-sec" id="sb-bux">
+          <div class="sb-sec-t">Buxgalteriya</div>
+          <div class="ni" data-page="ph" role="button" tabindex="0"><span class="ni-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg></span>Pul harakati</div>
+          <div class="ni" data-page="qoldiq" role="button" tabindex="0"><span class="ni-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 7h18v12H3z"/><path d="M16 13h2"/><path d="M5 7l11-3 1 3"/></svg></span>Qoldiq (hamyonlar)</div>
+        </div>
         <div class="sb-sec" id="sb-biznes">
           <div class="sb-sec-t">Savdo va boshqaruv</div>
           <div class="ni" data-page="crm" role="button" tabindex="0"><span class="ni-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1"/></svg></span>CRM — lidlar<span class="ni-badge" id="nb-l">0</span></div>
@@ -537,6 +542,50 @@ textarea.fi{resize:vertical;min-height:80px;}
             <div class="panel col1"><h3 style="font-size:22px">Rasxod tarkibi · <span id="ks-mlabel"></span></h3><div id="ks-split" style="display:flex;flex-direction:column;gap:12px"></div></div>
             <div class="panel col1"><h3 style="font-size:22px">Valyuta va komissiya</h3><div id="ks-fx"></div></div>
           </div>
+        </div>
+
+        <!-- ===== BUXGALTERIYA: PUL HARAKATI ===== -->
+        <div class="page" id="page-ph">
+          <section class="sg" id="ph-cards" aria-label="Natija"></section>
+          <form class="panel" id="ph-form" onsubmit="return false" style="margin-bottom:16px">
+            <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+              <h3 style="font-size:24px;margin-right:auto" id="ph-ftitle">Yangi yozuv</h3>
+              <div class="seg" id="ph-mode"><button type="button" data-m="prixod">Prixod</button><button type="button" data-m="rasxod" class="on">Rasxod</button><button type="button" data-m="ichki">O'tkazma</button><button type="button" data-m="valyuta">$ → so'm</button></div>
+            </div>
+            <div id="ph-fbody" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px"></div>
+            <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+              <button type="button" class="btn btn-a" id="ph-save" onclick="phSave()" style="min-width:160px">Saqlash</button>
+              <button type="button" class="btn btn-g btn-sm" id="ph-cancel" style="display:none" onclick="phCancel()">Bekor qilish</button>
+              <button type="button" class="btn btn-danger btn-sm" id="ph-del" style="display:none" onclick="phDelete()">O'chirish</button>
+              <span class="muted" style="font-size:12px;margin-left:auto">Menejerlarning daftardagi yozuvlari bu yerga o'zi tushadi (DAFTAR belgisi) — qayta kiritmang, Nazoratda tasdiqlang.</span>
+            </div>
+          </form>
+          <div class="panel">
+            <div class="panel-h" style="flex-wrap:wrap;gap:10px"><h3>Pul harakati</h3>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                <select class="fs" id="ph-oy" aria-label="Oy"></select>
+                <select class="fs" id="ph-ham" aria-label="Hamyon"></select>
+                <input class="fs" id="ph-q" placeholder="Qidirish: zakaz, vid, izoh…" style="min-width:220px">
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <div class="seg" id="ph-turi"><button data-v="" class="on">Hammasi</button><button data-v="prixod">Prixod</button><button data-v="rasxod">Rasxod</button><button data-v="ichki">O'tkazma</button><button data-v="hisob">Valyuta</button></div>
+              <div class="seg" id="ph-yon"><button data-v="" class="on">Ikkalasi</button><button data-v="asosiy">Pergola</button><button data-v="qoshimcha">Oyna</button></div>
+            </div>
+            <div class="scroll-x"><table class="tbl" style="min-width:980px"><thead><tr><th>Sana</th><th>Turi</th><th>Kimdan → kimga</th><th>Zakaz · vid · izoh</th><th style="text-align:right">Summa</th><th style="text-align:right">$</th><th>Manba</th><th></th></tr></thead><tbody id="ph-tbody"></tbody></table></div>
+          </div>
+        </div>
+
+        <!-- ===== BUXGALTERIYA: QOLDIQ ===== -->
+        <div class="page" id="page-qoldiq">
+          <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px">
+            <div class="seg" id="qd-tur"><button data-v="all" class="on">Hammasi</button><button data-v="oy">Oy</button><button data-v="kun">Kun</button></div>
+            <select class="fs" id="qd-oy" style="display:none" aria-label="Oy"></select>
+            <input type="date" class="fs" id="qd-kun" style="display:none" aria-label="Kun">
+            <span class="muted" id="qd-note" style="font-size:13px"></span>
+          </div>
+          <section class="sg" id="qd-cards"></section>
+          <div id="qd-body"></div>
         </div>
 
         <!-- ===== v6: JAMOA VA DAVOMAT ===== -->
@@ -1439,6 +1488,7 @@ async function startApp(user){
     document.querySelectorAll('.ni[data-page="moliya"], .ni[data-page="hr"], .ni[data-page="jamoa"]').forEach(el=>el.style.display='none');
   }
   if(!['Owner','Menejer'].includes(curUser.rol)){document.querySelector('.ni[data-page="sayt"]')?.style.setProperty('display','none');}
+  if(!['Owner','Kassir'].includes(curUser.rol)){document.getElementById('sb-bux')?.style.setProperty('display','none');}
   if(!['Owner','Menejer','Kassir'].includes(curUser.rol)){document.getElementById('ni-rasxod')?.style.setProperty('display','none');}
   if(!['Owner','Menejer','Kassir'].includes(curUser.rol)){
     document.querySelector('.ni[data-page="kassa"]')?.style.setProperty('display','none');
@@ -1506,14 +1556,15 @@ document.querySelectorAll('.ni[data-page]').forEach(el=>{
     this.classList.add('on');
     document.querySelectorAll('.page').forEach(pg=>pg.classList.remove('on'));
     document.getElementById('page-'+p).classList.add('on');
-    const T={sayt:'tentart.uz sayti',bosh:'Bosh panel',voronka:'Zamer voronkasi',kassa:'Kassa',jamoa:'Jamoa va davomat',dashboard:'Zakaz statistikasi',zakazlar:'Zakazlar',kanban:'Kanban',crm:'CRM — lidlar',moliya:'Moliya',hr:'Xodimlar kartasi',narxlar:'Narxlar bazasi',kp:'Kommersiya taklifi',kpi:'KPI va savdo',marketing:'Marketing AI',video:'Video Studio'};
+    const T={ph:'Pul harakati',qoldiq:'Qoldiq — hamyonlar',sayt:'tentart.uz sayti',bosh:'Bosh panel',voronka:'Zamer voronkasi',kassa:'Kassa',jamoa:'Jamoa va davomat',dashboard:'Zakaz statistikasi',zakazlar:'Zakazlar',kanban:'Kanban',crm:'CRM — lidlar',moliya:'Moliya',hr:'Xodimlar kartasi',narxlar:'Narxlar bazasi',kp:'Kommersiya taklifi',kpi:'KPI va savdo',marketing:'Marketing AI',video:'Video Studio'};
     document.getElementById('ptitle').textContent=T[p]||p;
-    const AL={sayt:'',bosh:'+ Yangi zakaz',voronka:'+ Yangi zamer',kassa:'',jamoa:'',zakazlar:'+ Yangi zakaz',crm:'+ Yangi lid',hr:'+ Xodim',moliya:'+ Xarajat',kanban:'',dashboard:'+ Yangi zakaz',narxlar:'',kp:'',kpi:'',marketing:'',video:''};
+    const AL={ph:'',qoldiq:'',sayt:'',bosh:'+ Yangi zakaz',voronka:'+ Yangi zamer',kassa:'',jamoa:'',zakazlar:'+ Yangi zakaz',crm:'+ Yangi lid',hr:'+ Xodim',moliya:'+ Xarajat',kanban:'',dashboard:'+ Yangi zakaz',narxlar:'',kp:'',kpi:'',marketing:'',video:''};
     const ab=document.getElementById('tb-add-btn');
     ab.textContent=AL[p]||'+ Yangi zakaz';ab.style.display=AL[p]===''?'none':'';
     if(document.body.classList.contains('narxsiz')&&p!=='voronka')ab.style.display='none';
     if(p==='kanban')renderKanban();
     if(window.kbRenderPage)kbRenderPage(p);
+    if(window.phRenderPage)phRenderPage(p);
     if(p==='moliya')renderMoliya();
     if(p==='hr')renderHR();
     if(p==='narxlar'){renderNarxTable('pergola');}
@@ -3398,5 +3449,6 @@ function kpDownload(){
   <div class="mf" id="vd-f"></div>
 </div></div>
 <script src="kb.js"></script>
+<script src="ph.js"></script>
 </body>
 </html>

@@ -342,6 +342,7 @@ async function start(user){
   S.user=user;
   const {data:prof}=await db.from('profiles').select('ism,rol').eq('id',user.id).maybeSingle();
   S.prof=prof||{ism:user.email.split('@')[0],rol:''};
+  S.dept=/abdulloh/i.test(S.prof.ism)?'Oyna':'Pergola';
   $('u-name').textContent=S.prof.ism;$('u-rol').textContent=S.prof.rol;
   S.view=user.id;
   const {data:ps}=await db.from('profiles').select('id,ism,rol').in('rol',['Owner','Menejer','Kassir']).order('ism');
@@ -553,7 +554,7 @@ function rObyekt(){
   ${closedN?`<button class="link" onclick="S.showClosed=!S.showClosed;render()">${S.showClosed?'Yopilganlarni yashirish':`Yopilgan obyektlar (${closedN})`}</button>`:''}
   <div class="card wr ${S.O.length?'hide':''}" id="nobj"><div class="ct">Yangi obyekt</div>
     <label class="lab mt">Nomi</label><input class="f" id="no-n" placeholder="masalan: Yunusobod, pergola 4×6">
-    <label class="lab mt">Topshirish muddati</label><input class="f" id="no-d" type="date">
+    <div class="row mt"><div><label class="lab">Topshirish muddati</label><input class="f" id="no-d" type="date"></div><div><label class="lab">Yo'nalish</label><select class="f" id="no-y"><option value="asosiy">Pergola</option><option value="qoshimcha" ${S.dept==='Oyna'?'selected':''}>Oyna</option></select></div></div>
     <button class="btn full mt" onclick="addObj()">Obyekt yaratish</button></div>`;
   const o=S.O.find(x=>x.id===S.obj);
   if(!o)return h+(S.O.length?'':`<div class="empty">Obyekt yarating — keyin unga xarajat va tushumlarni yozasiz.</div>`);
@@ -572,13 +573,13 @@ function rObyekt(){
 }
 function okSw(n){$('ok-1').classList.toggle('on',n===1);$('ok-2').classList.toggle('on',n===2);$('ok-a').classList.toggle('hide',n!==1);$('ok-b').classList.toggle('hide',n!==2);}
 async function addObj(){const n=$('no-n').value.trim();if(!n){toast('Obyekt nomini yozing');return;}
-  const {data,error}=await db.from('rasxod_obyektlar').insert({nom:n,deadline:$('no-d').value||null}).select().single();
+  const {data,error}=await db.from('rasxod_obyektlar').insert({nom:n,deadline:$('no-d').value||null,yonalish:$('no-y').value}).select().single();
   if(error){toast('Xatolik: '+error.message);return;}S.obj=data.id;hap();toast('Obyekt yaratildi');load();}
 function editObj(){const o=S.O.find(x=>x.id===S.obj);if(!o)return;
-  sheet(`<div class="ct">Obyekt</div><label class="lab mt">Nomi</label><input class="f" id="eo-n" value="${esc(o.nom)}"><label class="lab mt">Topshirish muddati</label><input class="f" id="eo-d" type="date" value="${o.deadline||''}">
+  sheet(`<div class="ct">Obyekt</div><label class="lab mt">Nomi</label><input class="f" id="eo-n" value="${esc(o.nom)}"><div class="row mt"><div><label class="lab">Topshirish muddati</label><input class="f" id="eo-d" type="date" value="${o.deadline||''}"></div><div><label class="lab">Yo'nalish</label><select class="f" id="eo-y"><option value="asosiy" ${o.yonalish!=='qoshimcha'?'selected':''}>Pergola</option><option value="qoshimcha" ${o.yonalish==='qoshimcha'?'selected':''}>Oyna</option></select></div></div>
   <div class="row mt"><button class="btn ghost" onclick="objClose(${!o.yopilgan})">${o.yopilgan?'Qayta ochish':'Obyektni yopish'}</button><button class="btn" onclick="objSave()">Saqlash</button></div>
   <button class="link mt" style="display:block;margin:14px auto 0;color:var(--danger)" onclick="objDel()">Obyektni o'chirish</button>`);}
-async function objSave(){const {error}=await db.from('rasxod_obyektlar').update({nom:$('eo-n').value.trim()||'Obyekt',deadline:$('eo-d').value||null}).eq('id',S.obj);closeSheet();error?toast(error.message):(toast('Saqlandi'),load());}
+async function objSave(){const {error}=await db.from('rasxod_obyektlar').update({nom:$('eo-n').value.trim()||'Obyekt',deadline:$('eo-d').value||null,yonalish:$('eo-y').value}).eq('id',S.obj);closeSheet();error?toast(error.message):(toast('Saqlandi'),load());}
 async function objClose(v){await db.from('rasxod_obyektlar').update({yopilgan:v}).eq('id',S.obj);closeSheet();toast(v?'Obyekt yopildi':'Obyekt ochildi');load();}
 async function objDel(){if(!(await ask("Obyekt va uning barcha yozuvlari o'chadi. Davom etasizmi?")))return;await db.from('rasxod_obyektlar').delete().eq('id',S.obj);S.obj=null;closeSheet();toast("O'chirildi");load();}
 
