@@ -1,10 +1,52 @@
 {
-  "rewrites": [
-    { "source": "/", "has": [{ "type": "host", "value": "tentart.uz" }], "destination": "/site/index.html" },
-    { "source": "/", "has": [{ "type": "host", "value": "www.tentart.uz" }], "destination": "/site/index.html" },
-    { "source": "/", "destination": "/erp.html" }
-  ],
-  "headers": [
-    { "source": "/erp.html", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }] }
-  ]
+ "rewrites": [
+  {
+   "source": "/rasxod",
+   "destination": "/rasxod.html"
+  },
+  {
+   "source": "/",
+   "has": [
+    {
+     "type": "host",
+     "value": "tentart.uz"
+    }
+   ],
+   "destination": "/site/index.html"
+  },
+  {
+   "source": "/",
+   "has": [
+    {
+     "type": "host",
+     "value": "www.tentart.uz"
+    }
+   ],
+   "destination": "/site/index.html"
+  },
+  {
+   "source": "/",
+   "destination": "/erp.html"
+  }
+ ],
+ "headers": [
+  {
+   "source": "/erp.html",
+   "headers": [
+    {
+     "key": "X-Robots-Tag",
+     "value": "noindex, nofollow"
+    }
+   ]
+  },
+  {
+   "source": "/rasxod.html",
+   "headers": [
+    {
+     "key": "X-Robots-Tag",
+     "value": "noindex, nofollow"
+    }
+   ]
+  }
+ ]
 }
