@@ -409,6 +409,7 @@ textarea.fi{resize:vertical;min-height:80px;}
         <div class="sb-sec" id="sb-bux">
           <div class="sb-sec-t">Buxgalteriya</div>
           <div class="ni" data-page="ph" role="button" tabindex="0"><span class="ni-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg></span>Pul harakati</div>
+          <div class="ni" data-page="ishlar" role="button" tabindex="0"><span class="ni-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/></svg></span>Ishlar (foyda)</div>
           <div class="ni" data-page="qoldiq" role="button" tabindex="0"><span class="ni-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 7h18v12H3z"/><path d="M16 13h2"/><path d="M5 7l11-3 1 3"/></svg></span>Qoldiq (hamyonlar)</div>
         </div>
         <div class="sb-sec" id="sb-biznes">
@@ -573,6 +574,26 @@ textarea.fi{resize:vertical;min-height:80px;}
               <div class="seg" id="ph-yon"><button data-v="" class="on">Ikkalasi</button><button data-v="asosiy">Pergola</button><button data-v="qoshimcha">Oyna</button></div>
             </div>
             <div class="scroll-x"><table class="tbl" style="min-width:980px"><thead><tr><th>Sana</th><th>Turi</th><th>Kimdan → kimga</th><th>Zakaz · vid · izoh</th><th style="text-align:right">Summa</th><th style="text-align:right">$</th><th>Manba</th><th></th></tr></thead><tbody id="ph-tbody"></tbody></table></div>
+          </div>
+        </div>
+
+        <!-- ===== BUXGALTERIYA: ISHLAR ===== -->
+        <div class="page" id="page-ishlar">
+          <section class="sg" id="ish-cards"></section>
+          <div class="panel" id="ish-yoq" style="margin-bottom:16px;display:none"></div>
+          <div class="panel">
+            <div class="panel-h" style="flex-wrap:wrap;gap:10px"><h3>Ishlar tartibi</h3>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                <input class="fs" id="ish-q" placeholder="Qidirish: nom yoki kod" style="min-width:200px">
+                <button class="btn btn-a btn-sm" onclick="phIshNew()">+ Ish qo'shish</button>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <div class="seg" id="ish-r"><button data-v="" class="on">Hammasi</button><button data-v="asosiy">Asosiy</button><button data-v="proalyum">Proalyum</button><button data-v="ozimiz">O'zimiz</button></div>
+              <div class="seg" id="ish-h"><button data-v="" class="on">Har qanday</button><button data-v="Jarayonda">Jarayonda</button><button data-v="Tugadi">Tugadi</button><button data-v="Boshlanmagan">Boshlanmagan</button></div>
+            </div>
+            <div class="scroll-x"><table class="tbl" style="min-width:1000px"><thead><tr><th>Kod</th><th>Zakaz</th><th style="text-align:right">Summa</th><th>Tushgan</th><th style="text-align:right">Kassaga</th><th style="text-align:right">Xarajat</th><th style="text-align:right">Qo'ldagi pul</th><th>Holat · muddat</th></tr></thead><tbody id="ish-tbody"></tbody></table></div>
+            <p class="muted" style="font-size:12px">Qatorni bosing — to'lovlar, xarajatlar, yozuvlar va tahrirlash ochiladi. Hisob Excel'dagi "Ishlar" varag'i formulasi bilan bir xil: to'lov "Avans/Avans1…Ost" izohi bo'yicha, xarajat vid bo'yicha, summalar dollarda.</p>
           </div>
         </div>
 
@@ -1556,9 +1577,9 @@ document.querySelectorAll('.ni[data-page]').forEach(el=>{
     this.classList.add('on');
     document.querySelectorAll('.page').forEach(pg=>pg.classList.remove('on'));
     document.getElementById('page-'+p).classList.add('on');
-    const T={ph:'Pul harakati',qoldiq:'Qoldiq — hamyonlar',sayt:'tentart.uz sayti',bosh:'Bosh panel',voronka:'Zamer voronkasi',kassa:'Kassa',jamoa:'Jamoa va davomat',dashboard:'Zakaz statistikasi',zakazlar:'Zakazlar',kanban:'Kanban',crm:'CRM — lidlar',moliya:'Moliya',hr:'Xodimlar kartasi',narxlar:'Narxlar bazasi',kp:'Kommersiya taklifi',kpi:'KPI va savdo',marketing:'Marketing AI',video:'Video Studio'};
+    const T={ishlar:'Ishlar — zakaz foydasi',ph:'Pul harakati',qoldiq:'Qoldiq — hamyonlar',sayt:'tentart.uz sayti',bosh:'Bosh panel',voronka:'Zamer voronkasi',kassa:'Kassa',jamoa:'Jamoa va davomat',dashboard:'Zakaz statistikasi',zakazlar:'Zakazlar',kanban:'Kanban',crm:'CRM — lidlar',moliya:'Moliya',hr:'Xodimlar kartasi',narxlar:'Narxlar bazasi',kp:'Kommersiya taklifi',kpi:'KPI va savdo',marketing:'Marketing AI',video:'Video Studio'};
     document.getElementById('ptitle').textContent=T[p]||p;
-    const AL={ph:'',qoldiq:'',sayt:'',bosh:'+ Yangi zakaz',voronka:'+ Yangi zamer',kassa:'',jamoa:'',zakazlar:'+ Yangi zakaz',crm:'+ Yangi lid',hr:'+ Xodim',moliya:'+ Xarajat',kanban:'',dashboard:'+ Yangi zakaz',narxlar:'',kp:'',kpi:'',marketing:'',video:''};
+    const AL={ishlar:'',ph:'',qoldiq:'',sayt:'',bosh:'+ Yangi zakaz',voronka:'+ Yangi zamer',kassa:'',jamoa:'',zakazlar:'+ Yangi zakaz',crm:'+ Yangi lid',hr:'+ Xodim',moliya:'+ Xarajat',kanban:'',dashboard:'+ Yangi zakaz',narxlar:'',kp:'',kpi:'',marketing:'',video:''};
     const ab=document.getElementById('tb-add-btn');
     ab.textContent=AL[p]||'+ Yangi zakaz';ab.style.display=AL[p]===''?'none':'';
     if(document.body.classList.contains('narxsiz')&&p!=='voronka')ab.style.display='none';
