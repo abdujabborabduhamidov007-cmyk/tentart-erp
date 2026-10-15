@@ -1,10 +1,10 @@
 {
   "rewrites": [
     { "source": "/", "has": [{ "type": "host", "value": "tentart.uz" }], "destination": "/site/index.html" },
-    { "source": "/", "has": [{ "type": "host", "value": "www.tentart.uz" }], "destination": "/site/index.html" }
+    { "source": "/", "has": [{ "type": "host", "value": "www.tentart.uz" }], "destination": "/site/index.html" },
+    { "source": "/", "destination": "/erp.html" }
   ],
   "headers": [
-    { "source": "/", "has": [{ "type": "host", "value": "erp.tentart.uz" }], "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }] },
-    { "source": "/", "has": [{ "type": "host", "value": "tentart-erp.vercel.app" }], "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }] }
+    { "source": "/erp.html", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }] }
   ]
 }
