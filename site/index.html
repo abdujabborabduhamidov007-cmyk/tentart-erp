@@ -2,400 +2,468 @@
 <html lang="uz">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Tentart — pergola, markiza va gilotina oynalar Toshkentda · Bepul zamer</title>
-<meta name="description" content="Tentart: pergola, markiza, gilotina oynalar va sirpanma eshiklar. O'z ishlab chiqarishimiz, 3 yil kafolat, bepul zamer. Toshkent va viloyatlar.">
+<meta name="description" content="Tentart: LED chiroqli pergola, markiza, gilotina oynalar va sirpanma eshiklar. O'z ishlab chiqarishimiz, 3 yil kafolat, bepul zamer. Pergola narxini saytda hisoblang.">
 <meta name="theme-color" content="#1A1A1A">
 <link rel="canonical" href="https://www.tentart.uz/">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Tentart — Har loyiha bizning imzomiz">
 <meta property="og:description" content="Pergola, markiza, gilotina oynalar va sirpanma eshiklar. Bepul zamer, 3 yil kafolat.">
 <meta property="og:url" content="https://www.tentart.uz/">
+<meta property="og:image" content="https://www.tentart.uz/site/img/hero-keng.jpg">
 <meta property="og:locale" content="uz_UZ">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="/site/img/hero-keng.jpg">
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"HomeAndConstructionBusiness","name":"Tentart","url":"https://www.tentart.uz","description":"Pergola, markiza, gilotina oynalar va sirpanma eshiklar — o'z ishlab chiqarish, 3 yil kafolat, bepul zamer.","areaServed":"Toshkent","telephone":"+998979200001","sameAs":["https://www.instagram.com/tentart.uz/","https://t.me/Tentart_maneger"]}
+{"@context":"https://schema.org","@type":"HomeAndConstructionBusiness","name":"Tentart","url":"https://www.tentart.uz","image":"https://www.tentart.uz/site/img/hero-keng.jpg","description":"Pergola, markiza, gilotina oynalar va sirpanma eshiklar — o'z ishlab chiqarish, 3 yil kafolat, bepul zamer.","areaServed":"Toshkent","telephone":"+998979200001","sameAs":["https://www.instagram.com/tentart.uz/","https://t.me/Tentart_maneger"]}
 </script>
 <style>
+/* Brend: qora #1A1A1A, oltin #C9A96E, krem #F5F0E8 · Cormorant Garamond + Manrope */
 :root{
-  --ink:#1A1A1A;--ink2:#262420;--ink3:#3A3428;
-  --gold:#C9A96E;--gold2:#A9864A;--gold-d:#7E5F25;
-  --cream:#F5F0E8;--cream2:#FBF8F2;--cream3:#EFE8DA;--line:#E4DCCB;
-  --text:#1A1A1A;--text2:#5E574C;--on-ink:#F5F0E8;--on-ink2:#C9C0B0;
-  --green:#2F6B45;--danger:#9A3B2E;
-  --serif:'Cormorant Garamond',Georgia,serif;--sans:'Manrope',system-ui,sans-serif;
-  --wrap:1200px;
+  --ink:#1A1A1A;--ink-2:#22201D;--ink-3:#2C2925;
+  --gold:#C9A96E;--gold-hi:#D8BD88;--gold-ink:#7A5B22;
+  --cream:#F5F0E8;--cream-2:#ECE5D8;--paper:#FBF8F2;
+  --on-ink:#F5F0E8;--on-ink-2:#BDB4A5;--text:#1A1A1A;--text-2:#4E483F;
+  --ok:#2F6B45;--bad:#9A3B2E;
+  --serif:'Cormorant Garamond',Georgia,'Times New Roman',serif;
+  --sans:'Manrope',system-ui,-apple-system,'Segoe UI',sans-serif;
+  /* besh o'lcham */
+  --s-small:14px;
+  --s-body:clamp(17px,1rem + .2vw,19px);
+  --s-lead:clamp(21px,1.1rem + .7vw,27px);
+  --s-head:clamp(40px,1.6rem + 3.6vw,84px);
+  --s-big:clamp(64px,1.8rem + 6.4vw,160px);
+  --s-name:clamp(84px,17vw,300px);
+  --m:clamp(20px,4vw,56px);
+  --ease:cubic-bezier(.2,.7,.2,1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{font-family:var(--sans);background:var(--cream);color:var(--text);line-height:1.6;-webkit-font-smoothing:antialiased}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{font-family:var(--sans);font-size:var(--s-body);line-height:1.55;background:var(--ink);color:var(--on-ink);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img{display:block;max-width:100%;height:auto}
 a{color:inherit}
-img{max-width:100%;display:block}
 :focus-visible{outline:2px solid var(--gold);outline-offset:3px}
-.wrap{max-width:var(--wrap);margin:0 auto;padding:0 24px}
-.eyebrow{font-size:12px;font-weight:800;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-d)}
-h1,h2,h3{font-family:var(--serif);font-weight:600;line-height:1.05}
-h2{font-size:clamp(36px,5vw,56px)}
-.lead{font-size:18px;color:var(--text2);max-width:620px}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 26px;border-radius:999px;font-weight:700;font-size:15px;text-decoration:none;border:1px solid transparent;cursor:pointer;font-family:var(--sans);transition:background .2s,color .2s,border-color .2s}
-.btn-gold{background:var(--gold);color:var(--ink)}
-.btn-gold:hover{background:#D7BB85}
-.btn-ink{background:var(--ink);color:var(--on-ink)}
-.btn-ink:hover{background:var(--ink3)}
-.btn-line{border-color:rgba(245,240,232,.35);color:var(--on-ink)}
-.btn-line:hover{border-color:var(--gold);color:var(--gold)}
+::selection{background:var(--gold);color:var(--ink)}
+h1,h2,h3{font-family:var(--serif);font-weight:600;letter-spacing:-.02em;line-height:.98}
+h2{font-size:var(--s-head)}
+h3{font-size:var(--s-lead);letter-spacing:-.01em;line-height:1.1}
+p{max-width:62ch}
+.lead{font-size:var(--s-lead);line-height:1.4}
+.small{font-size:var(--s-small);color:var(--on-ink-2)}
+.pad{padding-left:var(--m);padding-right:var(--m)}
 
-/* HEADER */
-header{position:sticky;top:0;z-index:50;background:rgba(26,26,26,.92);backdrop-filter:blur(12px);color:var(--on-ink)}
-.hd{display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:72px}
-.logo{display:flex;flex-direction:column;text-decoration:none;line-height:1}
-.logo b{font-family:var(--serif);font-size:28px;letter-spacing:.16em;font-weight:700}
-.logo span{font-size:9px;letter-spacing:.3em;color:var(--gold);font-weight:800;margin-top:4px}
-nav ul{display:flex;gap:28px;list-style:none}
-nav a{text-decoration:none;font-size:14px;font-weight:600;color:var(--on-ink2)}
-nav a:hover{color:var(--on-ink)}
-.hd .btn{min-height:44px;padding:0 20px;font-size:14px}
-.hd-tel{color:var(--on-ink);text-decoration:none;font-weight:700;font-size:15px;white-space:nowrap;margin-left:auto}
-.hd-tel:hover{color:var(--gold)}
-.hd .btn{margin-left:0}
-.menu-btn{display:none;background:none;border:1px solid var(--ink3);color:var(--on-ink);width:44px;height:44px;border-radius:12px;font-size:20px;cursor:pointer}
+/* tugmalar: bitta shakl — to'g'ri burchak */
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:56px;padding:0 28px;font:700 var(--s-body)/1 var(--sans);text-decoration:none;border:0;border-radius:0;cursor:pointer;background:var(--gold);color:var(--ink);transition:background .2s var(--ease),transform .15s var(--ease)}
+.btn:hover{background:var(--gold-hi)}
+.btn:active{transform:scale(.97)}
+.btn.dark{background:var(--ink);color:var(--on-ink)}
+.btn.dark:hover{background:var(--ink-3)}
+.link{font-weight:700;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px;text-decoration-color:var(--gold);transition:color .2s}
+.link:hover{color:var(--gold)}
+
+/* NAV — oddiy panel, hero ustida shaffof, pastda qora */
+.nav{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;gap:28px;height:72px;transition:background .3s var(--ease)}
+.nav.solid{background:var(--ink)}
+.nav .wm{font:600 var(--s-lead)/1 var(--serif);letter-spacing:.14em;text-decoration:none;margin-right:auto;transition:opacity .3s var(--ease)}
+.nav:not(.solid) .wm{opacity:0}
+.nav ul{display:flex;gap:28px;list-style:none}
+.nav ul a{text-decoration:none;font-weight:500;transition:color .2s}
+.nav ul a:hover{color:var(--gold)}
+.nav .tel{font-weight:700;text-decoration:none;white-space:nowrap}
+.nav .btn{min-height:44px;padding:0 20px}
+.menu{display:none;background:none;border:0;color:var(--on-ink);font:700 var(--s-body) var(--sans);cursor:pointer;min-height:44px;padding:0 4px}
 
 /* HERO */
-.hero{background:var(--ink);color:var(--on-ink);position:relative;overflow:hidden}
-.hero .wrap{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:48px;align-items:center;padding-top:80px;padding-bottom:96px}
-.hero h1{font-size:clamp(48px,7.4vw,96px);letter-spacing:-.01em}
-.hero h1 em{font-style:italic;color:var(--gold)}
-.hero p{font-size:19px;color:var(--on-ink2);margin:24px 0 36px;max-width:540px}
-.hero-ctas{display:flex;flex-wrap:wrap;gap:12px}
-.hero-art{aspect-ratio:1/1;width:100%;max-width:520px;justify-self:end}
-.hero .wrap.wrap-st{display:block;padding-top:0;padding-bottom:0}
-.stats{border-top:1px solid var(--ink3);display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
-.stat{padding:28px 24px;border-right:1px solid var(--ink3)}
-.stat:last-child{border-right:none}
-.stat b{display:block;font-family:var(--serif);font-size:42px;font-weight:600;color:var(--on-ink);line-height:1}
-.stat span{font-size:13px;color:var(--on-ink2);font-weight:600}
+.hero{position:relative;height:100svh;min-height:620px;overflow:hidden;background:#0d0d0f}
+.hero img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:60% 40%;transform:scale(1.06);animation:settle 2.6s var(--ease) .1s forwards}
+.hero .dusk{position:absolute;inset:0;background:#06070a;opacity:.62;animation:lights 1.8s var(--ease) .35s forwards}
+.hero .scrim{position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,10,.88) 0%,rgba(10,10,10,.5) 42%,rgba(10,10,10,0) 62%,rgba(10,10,10,0) 70%,rgba(10,10,10,.45) 100%)} /* taste-skill-ignore — matn ostidagi neytral parda */
+.hero-top{position:absolute;left:0;right:0;top:clamp(84px,11vh,120px)}
+.hero-in{position:absolute;left:0;right:0;bottom:0}
+.hero h1{font-size:var(--s-head);max-width:20ch;line-height:.98}
+.hero .lead{margin:18px 0 28px;color:var(--on-ink);max-width:34ch}
+.hero .acts{display:flex;flex-wrap:wrap;gap:12px 28px;align-items:center;margin-bottom:clamp(40px,8vh,88px)}
+.hero .acts .link{min-height:56px;display:inline-flex;align-items:center}
+.name{font:600 var(--s-name)/.8 var(--serif);letter-spacing:-.035em;white-space:nowrap;color:var(--on-ink);user-select:none}
+.hero .where{position:absolute;right:var(--m);bottom:clamp(24px,4vh,40px);font-size:var(--s-small);color:var(--on-ink);text-align:right;max-width:26ch}
+@keyframes lights{to{opacity:0}}
+@keyframes settle{to{transform:scale(1)}}
 
-section{padding:104px 0;scroll-margin-top:72px}
-.sec-h{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:48px}
-.sec-h>div{display:flex;flex-direction:column;gap:14px}
+/* RAQAMLAR */
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px;padding-top:clamp(72px,8vw,120px);padding-bottom:0}
+.facts b{display:block;font:600 var(--s-head)/1 var(--serif);letter-spacing:-.02em;color:var(--gold)}
+.facts span{display:block;margin-top:10px;color:var(--on-ink)}
 
-/* PRODUCTS */
-.prods{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
-.prod{background:var(--cream2);border:1px solid var(--line);border-radius:24px;padding:28px;display:flex;flex-direction:column;gap:16px;transition:transform .25s,border-color .25s}
-.prod:hover{transform:translateY(-4px);border-color:var(--gold)}
-.prod svg{width:64px;height:64px;color:var(--gold-d)}
-.prod h3{font-size:30px}
-.prod p{font-size:15px;color:var(--text2);flex:1}
-.prod a{font-size:14px;font-weight:700;color:var(--gold-d);text-decoration:none}
-.prod a:hover{text-decoration:underline}
+/* MAHSULOT KADRLARI */
+.frame{position:relative;height:100svh;min-height:640px;overflow:hidden}
+.frame>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.frame .cols{position:relative;height:100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:center;padding:0 var(--m)}
+.frame .cols{pointer-events:none}.frame .card{pointer-events:auto}
+.card{background:var(--ink);color:var(--on-ink);padding:32px 28px;display:flex;flex-direction:column;gap:14px;min-height:56svh}
+.card h3{font-size:var(--s-lead)}
+.card .sub{color:var(--on-ink-2)}
+.card .fact{font-weight:700}
+.card img{width:100%;aspect-ratio:3/2;object-fit:cover;margin-top:auto}
+.card .btn{width:100%}
+.c2{grid-column:2}.c3{grid-column:3}.c4{grid-column:4}
+.frame-h{padding-top:clamp(72px,8vw,128px);padding-bottom:clamp(48px,5vw,72px)}
+.frame-h p{margin-top:18px;color:var(--on-ink-2)}
 
-/* PORTFOLIO */
-.works{background:var(--cream2)}
-.grid-w{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-.work{position:relative;border-radius:22px;overflow:hidden;aspect-ratio:4/5;background:var(--cream3)}
-.work img{width:100%;height:100%;object-fit:cover;transition:transform .5s}
-.work:hover img{transform:scale(1.04)}
-.work figcaption{position:absolute;left:0;right:0;bottom:0;padding:22px;background:linear-gradient(transparent,rgba(26,26,26,.85));color:var(--on-ink)}
-.work figcaption b{display:block;font-family:var(--serif);font-size:26px;font-weight:600;line-height:1.1}
-.work figcaption span{font-size:13px;color:var(--on-ink2)}
-.ig-card{grid-column:1/-1;background:var(--ink);color:var(--on-ink);border-radius:24px;padding:48px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:24px}
-.ig-card h3{font-size:clamp(30px,4vw,44px)}
-.ig-card p{color:var(--on-ink2);margin-top:8px}
+/* NARX HISOBLAGICH */
+.calc{background:var(--cream);color:var(--text);padding-top:clamp(88px,10vw,160px);padding-bottom:clamp(88px,10vw,160px)}
+.calc-g{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(40px,6vw,96px);align-items:start}
 
-/* STEPS */
-.steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border-top:1px solid var(--line)}
-.step{padding:32px 28px 8px 0}
-.step b{font-family:var(--serif);font-size:56px;color:var(--gold);font-weight:600;line-height:1}
-.step h3{font-size:26px;margin:14px 0 8px}
-.step p{font-size:15px;color:var(--text2)}
+.calc .lead{margin-top:22px;color:var(--text-2)}
+.calc .cl{color:var(--text-2)}
+.rng{margin-top:36px;display:flex;flex-direction:column;gap:28px}
+.rng label{display:flex;justify-content:space-between;align-items:baseline;font-weight:700;margin-bottom:12px}
+.rng label output{font:600 var(--s-lead)/1 var(--serif);color:var(--text)}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:44px;min-height:44px;padding:0;border:0;background:transparent;cursor:pointer}
+input[type=range]::-webkit-slider-runnable-track{height:6px;background:var(--cream-2)}
+input[type=range]::-moz-range-track{height:6px;background:var(--cream-2)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;margin-top:-11px;background:var(--ink);border-radius:50%;transition:transform .15s}
+input[type=range]::-moz-range-thumb{width:28px;height:28px;border:0;background:var(--ink);border-radius:50%}
+input[type=range]:active::-webkit-slider-thumb{transform:scale(1.2)}
+.plan{background:var(--paper);padding:clamp(20px,3vw,36px)}
+.plan svg{width:100%;height:auto;display:block}
+.price{font:600 var(--s-big)/.9 var(--serif);letter-spacing:-.03em;margin-top:28px;font-variant-numeric:tabular-nums}
+.price-sub{margin-top:12px;font-weight:700}
+.calc .note{margin-top:14px;color:var(--text-2);font-size:var(--s-small)}
+.calc .btn{margin-top:28px}
 
-/* FORM */
-.zamer{background:var(--ink);color:var(--on-ink)}
-.zamer .wrap{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:64px;align-items:start}
-.zamer .lead{color:var(--on-ink2)}
-.zamer ul{list-style:none;margin-top:28px;display:flex;flex-direction:column;gap:12px}
-.zamer li{display:flex;gap:12px;align-items:flex-start;color:var(--on-ink)}
-.zamer li svg{flex-shrink:0;margin-top:3px;color:var(--gold)}
-form.card{background:var(--cream2);color:var(--text);border-radius:28px;padding:36px;display:flex;flex-direction:column;gap:16px}
+/* ISHLARIMIZ — devordagi rasmlar */
+.works{padding-top:clamp(96px,10vw,170px);padding-bottom:clamp(96px,10vw,170px)}
+.works-h{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:20px}
+.wall{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;margin-top:clamp(48px,6vw,96px)}
+.w{margin-bottom:clamp(64px,12vh,140px)}
+.w figcaption{margin-top:14px}
+.w figcaption b{display:block;font:600 var(--s-lead)/1.1 var(--serif)}
+.w figcaption span{color:var(--on-ink-2)}
+.w .ph{overflow:hidden}
+.w img{width:100%;object-fit:cover;transition:transform .8s var(--ease)}
+.w:hover img{transform:scale(1.03)}
+.wa{grid-column:1/7}.wa img{aspect-ratio:3/2}
+.wb{grid-column:9/13;margin-top:-18vh}.wb img{aspect-ratio:4/5}
+.wc{grid-column:3/10}.wc img{aspect-ratio:16/9}
+.remark{grid-column:2/7;align-self:center;font:600 var(--s-lead)/1.15 var(--serif);margin-bottom:clamp(64px,12vh,140px)}
+.ig{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:center}
+
+/* JARAYON — bittadan fe'l */
+.flow{background:var(--ink-2);padding-top:clamp(96px,10vw,170px);padding-bottom:clamp(96px,10vw,170px)}
+.verb{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));column-gap:24px;align-items:baseline;margin-top:clamp(40px,6vw,88px)}
+.verb strong{grid-column:1/8;font:600 var(--s-big)/.85 var(--serif);letter-spacing:-.035em;color:var(--on-ink)}
+.verb p{grid-column:8/13;color:var(--on-ink)}
+.verb.r strong{grid-column:5/13;text-align:right;order:2}
+.verb.r p{grid-column:1/5;order:1}
+
+/* ZAMER — rasm ustida karta */
+.zamer{position:relative;padding:clamp(96px,10vw,170px) 0;min-height:100svh}
+.zamer>img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.zamer .shade{position:absolute;inset:0;background:rgba(12,12,12,.55)}
+.zamer-g{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,480px);gap:clamp(32px,6vw,96px);align-items:center}
+.zamer-g .lead{margin-top:22px}
+.zamer-g ul{list-style:none;margin-top:28px;display:flex;flex-direction:column;gap:10px;font-weight:700}
+.zamer-g ul li::before{content:"";display:inline-block;width:10px;height:10px;background:var(--gold);margin-right:14px;vertical-align:1px}
+form.box{background:var(--paper);color:var(--text);padding:clamp(24px,3vw,40px);display:flex;flex-direction:column;gap:16px}
+form.box h3{font-size:var(--s-lead)}
 .r2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700;color:var(--text2)}
-input,select,textarea{font:inherit;font-size:16px;color:var(--text);background:#fff;border:1px solid var(--line);border-radius:14px;min-height:52px;padding:0 16px;outline:none;transition:border-color .2s,box-shadow .2s}
+label.f{display:flex;flex-direction:column;gap:6px;font-size:var(--s-small);font-weight:700;color:var(--text-2)}
+input,select,textarea{font:inherit;color:var(--text);background:#fff;border:1px solid #D9D0BF;border-radius:0;min-height:54px;padding:0 16px;outline:none;transition:border-color .2s;width:100%}
 textarea{padding:14px 16px;min-height:96px;resize:vertical}
-input:focus,select:focus,textarea:focus{border-color:var(--gold2);box-shadow:0 0 0 4px rgba(201,169,110,.22)}
-.form-note{font-size:12px;color:var(--text2)}
-.msg{border-radius:14px;padding:14px 16px;font-size:14px;font-weight:600;display:none}
-.msg.ok{display:block;background:#E3EEE4;color:var(--green)}
-.msg.err{display:block;background:#F4E1DC;color:var(--danger)}
-.done{text-align:center;padding:24px 8px;display:none;flex-direction:column;align-items:center;gap:12px}
-.done h3{font-size:36px}
-.done p{color:var(--text2)}
+input:focus,select:focus,textarea:focus{border-color:var(--ink)}
+.msg{padding:14px 16px;font-weight:700;display:none}
+.msg.ok{display:block;background:#E3EEE4;color:var(--ok)}
+.msg.err{display:block;background:#F4E1DC;color:var(--bad)}
+.done{display:none;flex-direction:column;gap:12px;padding:24px 0}
+.done h3{font-size:var(--s-lead)}
+form.box .small{color:var(--text-2)}
 
-/* TRACK */
-.track .box{background:var(--cream2);border:1px solid var(--line);border-radius:28px;padding:40px;display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:48px}
+/* ZAKAZIM QAYERDA */
+.track{background:var(--cream);color:var(--text);padding-top:clamp(88px,9vw,150px);padding-bottom:clamp(88px,9vw,150px)}
+.track-g{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(32px,6vw,96px)}
+.track p.cl{margin-top:18px;color:var(--text-2)}
 .track form{display:flex;flex-direction:column;gap:14px}
-.res{display:flex;flex-direction:column;gap:18px}
-.tl{display:flex;flex-wrap:wrap;gap:8px}
-.tl span{font-size:12px;font-weight:700;padding:6px 12px;border-radius:999px;background:var(--cream3);color:var(--text2)}
+.res{margin-top:18px}
+.res-card{background:var(--paper);padding:24px;display:flex;flex-direction:column;gap:14px}
+.res-card h4{font:600 var(--s-lead)/1.1 var(--serif)}
+.tl{display:flex;flex-wrap:wrap;gap:6px}
+.tl span{font-size:var(--s-small);font-weight:700;padding:8px 12px;background:var(--cream-2);color:var(--text-2)}
 .tl span.ok{background:var(--gold);color:var(--ink)}
 .tl span.cur{background:var(--ink);color:var(--on-ink)}
-.res-card{border:1px solid var(--line);border-radius:18px;padding:20px;background:#fff;display:flex;flex-direction:column;gap:12px}
-.res-card h4{font-family:var(--serif);font-size:26px;font-weight:600}
-.muted{color:var(--text2);font-size:14px}
+.track .muted{color:var(--text-2)}
 
-/* FOOTER */
-footer{background:var(--ink);color:var(--on-ink2);padding:64px 0 32px}
-.ft{display:grid;grid-template-columns:1.2fr 1fr 1fr;gap:40px;padding-bottom:40px;border-bottom:1px solid var(--ink3)}
-.ft h4{color:var(--on-ink);font-size:13px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:16px}
-.ft a{display:block;text-decoration:none;margin-bottom:10px}
-.ft a:hover{color:var(--gold)}
-.ft a.logo{display:flex}
-.ft-b{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px;padding-top:24px;font-size:13px}
-.ft-b a{color:var(--on-ink2)}
+/* FOOTER — telefon sarlavha sifatida */
+footer{padding-top:clamp(96px,10vw,160px);padding-bottom:40px}
+footer .call{display:inline-block;font:600 var(--s-big)/.9 var(--serif);letter-spacing:-.03em;text-decoration:none;margin-top:18px;transition:color .2s}
+footer .call:hover{color:var(--gold)}
+.ft-row{display:flex;flex-wrap:wrap;gap:16px 40px;margin-top:48px;align-items:center}
+.ft-row a{text-decoration:none;font-weight:700}
+.ft-row a:hover{color:var(--gold)}
+.ft-name{font:600 var(--s-name)/.8 var(--serif);letter-spacing:-.035em;margin-top:clamp(64px,8vw,120px);color:var(--ink-3);white-space:nowrap;user-select:none}
+.ft-b{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;margin-top:28px;font-size:var(--s-small);color:var(--on-ink-2)}
+.ft-b a{color:var(--on-ink-2)}
 
-.sticky-cta{display:none}
+.sticky{display:none}
 
-@media(max-width:980px){
-  nav{display:none}
-  nav.open{display:block;position:absolute;top:72px;left:0;right:0;background:var(--ink);padding:16px 24px 24px;border-top:1px solid var(--ink3)}
-  nav.open ul{flex-direction:column;gap:4px}
-  nav.open a{display:block;padding:12px 0;font-size:17px}
-  .menu-btn{display:inline-flex;align-items:center;justify-content:center}
-  .hd .btn{display:none}
-  .hd-tel{font-size:14px}
-  .hero .wrap{grid-template-columns:1fr;padding-top:48px;padding-bottom:56px}
-  .hero-art{max-width:340px;justify-self:center;order:-1}
-  .stats{grid-template-columns:repeat(2,1fr)}
-  .stat:nth-child(2){border-right:none}
-  .stat:nth-child(-n+2){border-bottom:1px solid var(--ink3)}
-  .prods{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .grid-w{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .steps{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .zamer .wrap,.track .box{grid-template-columns:1fr;gap:36px}
-  .ft{grid-template-columns:1fr}
-  section{padding:72px 0}
-  .sticky-cta{display:flex;gap:8px;position:fixed;left:16px;right:16px;bottom:16px;z-index:40}
-  .sticky-cta .btn{box-shadow:0 12px 30px rgba(0,0,0,.3)}
-  footer{padding-bottom:96px}
+/* PAYDO BO'LISH — skript bo'lmasa kontent ko'rinib turadi */
+.js .rv{opacity:0;transform:translateY(24px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+.js .rv.in{opacity:1;transform:none}
+
+@media (max-width:1080px){
+  .nav ul{display:none}
+  .nav.open ul{display:flex;flex-direction:column;gap:0;position:absolute;top:72px;left:0;right:0;background:var(--ink);padding:8px var(--m) 24px}
+  .nav.open ul a{display:block;padding:14px 0;font-size:20px}
+  .menu{display:inline-flex;align-items:center}
+  .nav .btn{display:none}
+  .card{grid-column:1/3 !important}
+  .hero .where{display:none}
 }
-@media(max-width:560px){
-  .hd-tel{display:none}
-  .wrap{padding:0 16px}
-  .prods,.grid-w,.steps,.r2{grid-template-columns:1fr}
-  form.card,.track .box{padding:24px}
-  .ig-card{padding:32px}
-  .stat{padding:22px 16px}
-  .stat b{font-size:34px}
+@media (max-width:760px){
+  :root{--m:20px}
+  .nav{gap:16px}
+  .nav .tel{display:none}
+  .hero{min-height:560px}
+  .hero img{object-position:62% 50%}
+  .hero .where{display:none}
+  .hero .acts{margin-bottom:96px}
+  .facts{grid-template-columns:1fr 1fr;row-gap:44px}
+  .frame{height:auto;min-height:0}
+  .frame>img{position:relative;height:68svh}
+  .frame .cols{display:block;padding:0}
+  .card{min-height:0;padding:28px var(--m) 36px}
+  .card img{display:none}
+  .calc-g,.zamer-g,.track-g{grid-template-columns:1fr}
+  .wall{display:flex;flex-direction:column}
+  .w,.remark{margin-bottom:64px}
+  .wa{width:100%}.wb{width:72%;align-self:flex-end;margin-top:0}.wc{width:86%}
+  .verb{display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+  .verb.r strong{text-align:left;order:1}
+  .verb.r p{order:2}
+  .r2{grid-template-columns:1fr}
+  .sticky{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:40;padding:10px 12px calc(10px + env(safe-area-inset-bottom));gap:8px;background:var(--ink)}
+  .sticky .btn{flex:1;min-height:52px}
+  footer{padding-bottom:110px}
 }
-@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .hero img,.hero .dusk{animation:none}.hero img{transform:none}.hero .dusk{opacity:0}
+  .js .rv{opacity:1;transform:none;transition:none}
+  *{transition:none !important}
+}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="wrap hd">
-    <a href="#" class="logo" aria-label="Tentart — bosh sahifa"><b>TENTART</b><span>HAR LOYIHA — BIZNING IMZOMIZ</span></a>
-    <nav id="nav" aria-label="Asosiy menyu">
-      <ul>
-        <li><a href="#mahsulotlar">Mahsulotlar</a></li>
-        <li><a href="#ishlarimiz">Ishlarimiz</a></li>
-        <li><a href="#jarayon">Qanday ishlaymiz</a></li>
-        <li><a href="#zakazim">Zakazim qayerda?</a></li>
-      </ul>
-    </nav>
-    <a href="tel:+998979200001" class="hd-tel">+998 97 920-00-01</a>
-    <a href="#zamer" class="btn btn-gold">Bepul zamer</a>
-    <button class="menu-btn" aria-label="Menyuni ochish" aria-expanded="false" aria-controls="nav" onclick="toggleNav(this)">☰</button>
-  </div>
-</header>
+<nav class="nav pad" id="nav" aria-label="Asosiy menyu">
+  <a href="#" class="wm" aria-label="Tentart — bosh sahifa">TENTART</a>
+  <ul id="nav-l">
+    <li><a href="#mahsulotlar">Mahsulotlar</a></li>
+    <li><a href="#narx">Narx</a></li>
+    <li><a href="#ishlarimiz">Ishlarimiz</a></li>
+    <li><a href="#zakazim">Zakazim qayerda?</a></li>
+  </ul>
+  <a href="tel:+998979200001" class="tel">+998 97 920-00-01</a>
+  <a href="#zamer" class="btn">Bepul zamer</a>
+  <button class="menu" type="button" aria-expanded="false" aria-controls="nav-l" id="menu">Menyu</button>
+</nav>
 
 <main>
-  <section class="hero" style="padding:0" aria-labelledby="hero-h">
-    <div class="wrap">
-      <div>
-        <div class="eyebrow" style="color:var(--gold)">Pergola · Markiza · Gilotina · Sirpanma eshik</div>
-        <h1 id="hero-h" style="margin-top:20px">Har loyiha — <em>bizning imzomiz</em></h1>
-        <p>Terrasa, hovli va kafe uchun premium tizimlar. O'z ishlab chiqarishimizda tayyorlaymiz, o'zimiz o'rnatamiz va 3 yil kafolat beramiz.</p>
-        <div class="hero-ctas">
-          <a href="#zamer" class="btn btn-gold">Bepul zamerga yozilish</a>
-          <a href="#ishlarimiz" class="btn btn-line">Ishlarimizni ko'rish</a>
-        </div>
-      </div>
-      <svg class="hero-art" viewBox="0 0 400 400" fill="none" stroke="#C9A96E" stroke-width="1.4" role="img" aria-label="Pergola tasviri">
-        <rect x="40" y="40" width="320" height="320" rx="160" stroke="#3A3428"/>
-        <path d="M70 150 L330 110" stroke-width="2.2"/>
-        <path d="M70 165 L330 125" stroke-width="1"/>
-        <g stroke-width="1.2" opacity=".9">
-          <path d="M90 147 L90 160"/><path d="M115 143 L115 156"/><path d="M140 139 L140 152"/><path d="M165 135 L165 148"/><path d="M190 131 L190 144"/><path d="M215 127 L215 140"/><path d="M240 123 L240 136"/><path d="M265 119 L265 132"/><path d="M290 115 L290 128"/><path d="M315 111 L315 124"/>
-        </g>
-        <path d="M80 160 L80 320" stroke-width="2.6"/><path d="M320 122 L320 320" stroke-width="2.6"/>
-        <path d="M150 150 L150 320" stroke-width="1" opacity=".5"/>
-        <path d="M60 320 L340 320" stroke="#3A3428"/>
-        <g stroke="#F5F0E8" opacity=".55" stroke-width="1"><path d="M95 260 h50 v60 h-50z"/><path d="M110 245 q10 -20 20 0"/></g>
-        <circle cx="300" cy="80" r="18" stroke-width="1"/>
-      </svg>
-    </div>
-    <div class="wrap wrap-st">
-      <div class="stats">
-        <div class="stat"><b>5 yil</b><span>sohada tajriba</span></div>
-        <div class="stat"><b>5 000+ m²</b><span>o'rnatilgan pergola</span></div>
-        <div class="stat"><b>3 yil</b><span>rasmiy kafolat</span></div>
-        <div class="stat"><b>Bepul</b><span>zamer va maslahat</span></div>
+  <section class="hero" aria-labelledby="hero-h">
+    <img src="/site/img/hero-keng.jpg" width="1920" height="1080" alt="Kechqurun yoqilgan LED chiroqli pergola va naqshli oltin ustunlar, Mirobod tumani" fetchpriority="high">
+    <div class="dusk" aria-hidden="true"></div>
+    <div class="scrim" aria-hidden="true"></div>
+    <p class="where">Mirobod, 66B: pergola, LED yoritish va naqshli ustunlar. Tentart ishi.</p>
+    <div class="hero-top pad"><p class="name" aria-hidden="true">Tentart</p></div>
+    <div class="hero-in pad">
+      <h1 id="hero-h">Pergola, markiza va gilotina oynalar</h1>
+      <p class="lead">O'z sexda yasaymiz, o'zimiz o'rnatamiz. Zamer bepul, kafolat 3 yil.</p>
+      <div class="acts">
+        <a href="#zamer" class="btn">Bepul zamerga yozilish</a>
+        <a href="#narx" class="link">Pergola narxini hisoblash</a>
       </div>
     </div>
+  </section>
+
+  <section class="facts pad" aria-label="Tentart raqamlarda">
+    <div class="rv"><b>5 yil</b><span>pergola va markiza bilan ishlaymiz</span></div>
+    <div class="rv"><b>5 000+ m²</b><span>pergola o'rnatganmiz</span></div>
+    <div class="rv"><b>3 yil</b><span>har bir ishga rasmiy kafolat</span></div>
+    <div class="rv"><b>0 so'm</b><span>zamer va maslahat</span></div>
   </section>
 
   <section id="mahsulotlar" aria-labelledby="mah-h">
-    <div class="wrap">
-      <div class="sec-h">
-        <div><span class="eyebrow">Mahsulotlar</span><h2 id="mah-h">Ochiq makon uchun<br>to'liq yechim</h2></div>
-        <p class="lead">Har bir tizim joyingizga qarab o'lchanadi va loyihalanadi. Narx o'lcham, material va rangga bog'liq — zamerdan keyin aniq taklif beramiz.</p>
-      </div>
-      <div class="prods">
-        <article class="prod">
-          <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 22 L58 14"/><path d="M10 21v35M54 15v41M4 56h56"/><path d="M18 20v4M26 19v4M34 18v4M42 17v4M50 16v4"/></svg>
+    <div class="frame-h pad">
+      <h2 id="mah-h" class="rv">Ochiq joyni xonaga aylantiramiz</h2>
+      <p class="lead rv">Har tizim joyingizga qarab o'lchanadi, sexda yasaladi va o'zimiz o'rnatamiz.</p>
+    </div>
+
+    <div class="frame">
+      <img src="/site/img/pergola-shift.jpg" style="object-position:50% 8%" width="960" height="1280" alt="Pergola shifti: matoli lamellar orasida LED chiroqlar, ostida to'qima mebel" decoding="async">
+      <div class="cols">
+        <article class="card c2 rv">
           <h3>Pergola</h3>
-          <p>Alyuminiy karkasli bioklimatik va matoli pergolalar. Quyosh va yomg'irdan himoya, LED yoritish va elektr boshqaruv.</p>
-          <a href="#zamer" data-turi="Pergola">Zamerga yozilish →</a>
+          <p class="sub">Matoli yoki bioklimatik, pult bilan ochiladi. Lamellar ichida LED chiroq.</p>
+          <p class="fact">1 m² — $140 dan $325 gacha</p>
+          <img src="/site/img/terrasa-kun.jpg" width="960" height="1280" alt="Restoran terrasasi ustidagi pergola, kunduzi" loading="lazy">
+          <a href="#narx" class="btn">Narxini hisoblash</a>
         </article>
-        <article class="prod">
-          <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M8 14h48"/><path d="M8 14 L14 34 L50 34 L56 14"/><path d="M14 34 q4 6 8 0 q4 6 8 0 q4 6 8 0 q4 6 8 0"/><path d="M8 14v42"/></svg>
+      </div>
+    </div>
+
+    <div class="frame">
+      <img src="/site/img/markiza-katta.jpg" style="object-position:50% 30%" width="960" height="1280" alt="Bino devoriga o'rnatilgan katta kulrang markiza, quyoshli kun" decoding="async">
+      <div class="cols">
+        <article class="card c3 rv">
           <h3>Markiza</h3>
-          <p>Ochiladigan-yopiladigan soyabonlar: terrasa, kafe va balkon uchun. Qo'lda yoki pult bilan boshqariladi.</p>
-          <a href="#zamer" data-turi="Markiza">Zamerga yozilish →</a>
+          <p class="sub">Ochiladigan soyabon: kafe, do'kon, hovli va balkon uchun. Qo'lda yoki pult bilan.</p>
+          <p class="fact">Eni 7 metrgacha, chiqishi 3,5 metrgacha</p>
+          <img src="/site/img/markiza-barber.jpg" width="960" height="1280" alt="Qora fasadli barbershop ustidagi kassetali markiza" loading="lazy">
+          <a href="#zamer" class="btn" data-turi="Markiza">Zamerga yozilish</a>
         </article>
-        <article class="prod">
-          <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="10" y="8" width="44" height="48" rx="2"/><path d="M10 24h44M10 40h44"/><path d="M32 44v8M28 48l4 4 4-4"/></svg>
-          <h3>Gilotina oyna</h3>
-          <p>Vertikal suriladigan shisha tizim. Terrasani yilning istalgan faslida foydalanishga yaroqli xonaga aylantiradi.</p>
-          <a href="#zamer" data-turi="Giyotin">Zamerga yozilish →</a>
-        </article>
-        <article class="prod">
-          <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="6" y="10" width="52" height="44" rx="2"/><path d="M24 10v44M40 10v44"/><path d="M28 32h8M32 28l4 4-4 4"/></svg>
-          <h3>Sirpanma eshik</h3>
-          <p>Keng va yengil suriladigan alyuminiy eshiklar. Ichkari va tashqarini bitta makonga birlashtiradi.</p>
-          <a href="#zamer" data-turi="Sirpanma eshik">Zamerga yozilish →</a>
+      </div>
+    </div>
+
+    <div class="frame">
+      <img src="/site/img/oyna-qandil.jpg" style="object-position:50% 22%" width="960" height="1280" alt="Shisha devorli zal, pergola ostida qandillar va shahar manzarasi" decoding="async">
+      <div class="cols">
+        <article class="card c4 rv">
+          <h3>Gilotina va sirpanma eshik</h3>
+          <p class="sub">Shisha tizimlar terrasani yil bo'yi ishlatsa bo'ladigan xonaga aylantiradi.</p>
+          <p class="fact">Qishda issiq, yozda ochiq</p>
+          <img src="/site/img/hero-keng-2.jpg" width="1920" height="1080" alt="Do'kon kirishidagi buklanadigan shisha eshiklar va pergola" loading="lazy">
+          <a href="#zamer" class="btn" data-turi="Giyotin">Zamerga yozilish</a>
         </article>
       </div>
     </div>
   </section>
 
-  <section id="ishlarimiz" class="works" aria-labelledby="ish-h">
-    <div class="wrap">
-      <div class="sec-h">
-        <div><span class="eyebrow">Ishlarimiz</span><h2 id="ish-h">Biz bajargan loyihalar</h2></div>
-        <a class="btn btn-ink" href="https://www.instagram.com/tentart.uz/" target="_blank" rel="noopener">Instagram'da ko'proq</a>
-      </div>
-      <div class="grid-w" id="portfolio">
-        <div class="ig-card">
-          <div><h3>90 000+ kishi kuzatib boradi</h3><p>Har bir montaj jarayoni va tayyor loyihalarni Instagram sahifamizda ko'ring.</p></div>
-          <a class="btn btn-gold" href="https://www.instagram.com/tentart.uz/" target="_blank" rel="noopener">@tentart.uz</a>
+  <section id="narx" class="calc" aria-labelledby="narx-h">
+    <div class="calc-g pad">
+      <div>
+        <h2 id="narx-h" class="rv">Narxini hisoblang</h2>
+        <p class="lead rv">Pergolaning enini va chiqishini tanlang: taxminiy narx shu zahoti chiqadi.</p>
+        <div class="rng rv">
+          <div>
+            <label for="r-en">Eni <output id="o-en">5 m</output></label>
+            <input type="range" id="r-en" min="3" max="9" step="0.5" value="5" aria-describedby="o-en">
+          </div>
+          <div>
+            <label for="r-ch">Chiqishi (devordan) <output id="o-ch">4 m</output></label>
+            <input type="range" id="r-ch" min="2" max="9" step="0.5" value="4" aria-describedby="o-ch">
+          </div>
         </div>
       </div>
+      <div class="rv">
+        <div class="plan" aria-hidden="true"><svg id="plan" viewBox="0 0 400 300"></svg></div>
+        <p class="price" id="c-narx" aria-live="polite">$3 900</p>
+        <p class="price-sub" id="c-sub">20 m² · 1 m² uchun $195</p>
+        <p class="note">Matoli pergolaning taxminiy narxi. Aniq narxni zamerdan keyin, rang va jihozlarga qarab aytamiz.</p>
+        <a href="#zamer" class="btn dark" id="c-btn">Shu o'lcham bilan zamerga yozilish</a>
+      </div>
     </div>
   </section>
 
-  <section id="jarayon" aria-labelledby="jar-h">
-    <div class="wrap">
-      <div class="sec-h"><div><span class="eyebrow">Qanday ishlaymiz</span><h2 id="jar-h">To'rt qadamda tayyor</h2></div></div>
-      <div class="steps">
-        <div class="step"><b>01</b><h3>Ariza</h3><p>Saytda yoki Telegram'da qisqa ariza qoldirasiz. Menejer tez orada qo'ng'iroq qiladi.</p></div>
-        <div class="step"><b>02</b><h3>Bepul zamer</h3><p>Mutaxassis joyga borib o'lchaydi, variantlarni ko'rsatadi va maslahat beradi.</p></div>
-        <div class="step"><b>03</b><h3>Loyiha va taklif</h3><p>Aniq narx va muddat bilan tijorat taklifini tayyorlaymiz. Shartnoma tuzamiz.</p></div>
-        <div class="step"><b>04</b><h3>Ishlab chiqarish va montaj</h3><p>O'z sexda tayyorlab, o'zimiz o'rnatamiz. 3 yil kafolat beriladi.</p></div>
-      </div>
+  <section id="ishlarimiz" class="works pad" aria-labelledby="ish-h">
+    <div class="works-h">
+      <h2 id="ish-h" class="rv">Bizning ishlar</h2>
+      <div class="ig rv"><span class="small">Har montajni Instagram'da ko'rsatamiz</span><a class="link" href="https://www.instagram.com/tentart.uz/" target="_blank" rel="noopener">@tentart.uz</a></div>
     </div>
+    <div class="wall" id="portfolio">
+      <figure class="w wa rv"><div class="ph"><img src="/site/img/lounge-tun.jpg" width="960" height="1280" alt="Lounge kafe fasadi bo'ylab uzun pergola, kechasi LED bilan" loading="lazy"></div><figcaption><b>Lounge, kechki terrasa</b><span>Pergola · LED · 20 metrdan uzun</span></figcaption></figure>
+      <figure class="w wb rv"><div class="ph"><img src="/site/img/terrasa-kun.jpg" width="960" height="1280" alt="Restoran terrasasi ustidagi matoli pergola" loading="lazy"></div><figcaption><b>Restoran terrasasi</b><span>Matoli pergola · yon tomoni ochiq</span></figcaption></figure>
+      <p class="remark rv">Har loyiha — bizning imzomiz.</p>
+      <figure class="w wc rv"><div class="ph"><img src="/site/img/markiza-kafe.jpg" width="1280" height="960" alt="Kafe kirishidagi qora markiza" loading="lazy"></div><figcaption><b>Kafe kirishi</b><span>Kassetali markiza · qora</span></figcaption></figure>
+      <figure class="w wa rv"><div class="ph"><img src="/site/img/mirobod-tun-1.jpg" width="1050" height="1400" alt="Mirobod tumanidagi do'kon oldida LED chiroqli pergola va oltin ustunlar" loading="lazy"></div><figcaption><b>Mirobod, 66B</b><span>Pergola · LED · naqshli ustunlar</span></figcaption></figure>
+      <figure class="w wb rv"><div class="ph"><img src="/site/img/hovli-qish.jpg" width="960" height="1280" alt="Xususiy uy hovlisidagi pergola, qishda" loading="lazy"></div><figcaption><b>Xususiy hovli</b><span>Pergola · qishda ham ishlaydi</span></figcaption></figure>
+    </div>
+  </section>
+
+  <section id="jarayon" class="flow pad" aria-labelledby="jar-h">
+    <h2 id="jar-h" class="rv">Arizadan montajgacha</h2>
+    <div class="verb rv"><strong>Ariza</strong><p>Saytda yoki Telegram'da qisqa ariza qoldirasiz. Menejer o'sha kuni qo'ng'iroq qiladi.</p></div>
+    <div class="verb r rv"><strong>Zamer</strong><p>Usta joyga kelib o'lchaydi, namunalarni ko'rsatadi. Bu bepul va hech narsaga majbur qilmaydi.</p></div>
+    <div class="verb rv"><strong>Loyiha</strong><p>Aniq narx va muddat bilan taklif tayyorlaymiz, shartnoma tuzamiz.</p></div>
+    <div class="verb r rv"><strong>Montaj</strong><p>O'z sexda yasab, o'zimiz o'rnatamiz. Ish tugagach 3 yil kafolat beramiz.</p></div>
   </section>
 
   <section id="zamer" class="zamer" aria-labelledby="zam-h">
-    <div class="wrap">
+    <img src="/site/img/mirobod-tun-2.jpg" width="1050" height="1400" alt="" loading="lazy">
+    <div class="shade" aria-hidden="true"></div>
+    <div class="zamer-g pad">
       <div>
-        <span class="eyebrow" style="color:var(--gold)">Bepul zamer</span>
-        <h2 id="zam-h" style="margin:14px 0 18px">Joyingizni o'lchab,<br>aniq narx aytamiz</h2>
-        <p class="lead">Ariza qoldiring — menejerimiz siz bilan bog'lanib, zamer vaqtini kelishib oladi. Hech qanday majburiyat yo'q.</p>
-        <ul>
-          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>Zamer va maslahat bepul</li>
-          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>O'z ishlab chiqarishimiz — vositachisiz</li>
-          <li><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>3 yil rasmiy kafolat</li>
+        <h2 id="zam-h" class="rv">Bepul zamer</h2>
+        <p class="lead rv">Joyingizni o'lchab, aniq narxini aytamiz. Ariza qoldiring, menejer qulay vaqtni kelishib oladi.</p>
+        <ul class="rv">
+          <li>Zamer va maslahat bepul</li>
+          <li>O'z ishlab chiqarishimiz, vositachisiz</li>
+          <li>3 yil rasmiy kafolat</li>
         </ul>
-        <p style="margin-top:28px;color:var(--on-ink2)">Tezroq bog'lanmoqchimisiz? <a href="tel:+998979200001" style="color:var(--gold);font-weight:700">+998 97 920-00-01</a> yoki <a href="https://t.me/Tentart_maneger" target="_blank" rel="noopener" style="color:var(--gold);font-weight:700">Telegram: @Tentart_maneger</a></p>
+        <p class="rv" style="margin-top:28px">Tezroq kerakmi? <a class="link" href="tel:+998979200001">+998 97 920-00-01</a> yoki <a class="link" href="https://t.me/Tentart_maneger" target="_blank" rel="noopener">Telegram</a></p>
       </div>
-      <form class="card" id="zamer-form" novalidate>
+      <form class="box rv" id="zamer-form" novalidate>
         <div id="zf-fields" style="display:flex;flex-direction:column;gap:16px">
-          <label>Ismingiz<input name="ism" autocomplete="name" required maxlength="80" placeholder="Masalan: Sardor"></label>
-          <label>Telefon raqam<input name="tel" type="tel" inputmode="tel" autocomplete="tel" required placeholder="+998 90 123 45 67"></label>
+          <h3>Ariza qoldiring</h3>
+          <label class="f">Ismingiz<input name="ism" autocomplete="name" required maxlength="80" placeholder="Masalan: Sardor"></label>
+          <label class="f">Telefon raqam<input name="tel" type="tel" inputmode="tel" autocomplete="tel" required placeholder="+998 90 123 45 67"></label>
           <div class="r2">
-            <label>Mahsulot<select name="turi" id="zf-turi"><option>Pergola</option><option>Markiza</option><option value="Giyotin">Gilotina oyna</option><option>Sirpanma eshik</option><option>Boshqa</option></select></label>
-            <label>Hudud / tuman<input name="manzil" autocomplete="address-level2" maxlength="160" placeholder="Masalan: Yunusobod"></label>
+            <label class="f">Mahsulot<select name="turi" id="zf-turi"><option>Pergola</option><option>Markiza</option><option value="Giyotin">Gilotina oyna</option><option>Sirpanma eshik</option><option>Boshqa</option></select></label>
+            <label class="f">Tuman<input name="manzil" autocomplete="address-level2" maxlength="160" placeholder="Masalan: Yunusobod"></label>
           </div>
-          <label>Qo'shimcha (ixtiyoriy)<textarea name="izoh" maxlength="500" placeholder="Taxminiy o'lcham, qulay vaqt va h.k."></textarea></label>
+          <label class="f">Qo'shimcha (ixtiyoriy)<textarea name="izoh" id="zf-izoh" maxlength="500" placeholder="Taxminiy o'lcham, qulay vaqt"></textarea></label>
           <div class="msg" id="zf-msg" role="alert"></div>
-          <button class="btn btn-ink" type="submit" id="zf-btn" style="min-height:56px;font-size:16px">Arizani yuborish</button>
-          <p class="form-note">Raqamingiz faqat siz bilan bog'lanish uchun ishlatiladi.</p>
+          <button class="btn dark" type="submit" id="zf-btn">Arizani yuborish</button>
+          <p class="small">Raqamingizni faqat siz bilan bog'lanish uchun ishlatamiz.</p>
         </div>
         <div class="done" id="zf-done" aria-live="polite">
-          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#2F6B45" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M7 12.5l3.2 3.2L17 9"/></svg>
-          <h3>Rahmat! Arizangiz qabul qilindi</h3>
-          <p>Menejerimiz tez orada siz bilan bog'lanadi.</p>
+          <h3>Rahmat, arizangiz qabul qilindi</h3>
+          <p>Menejerimiz tez orada qo'ng'iroq qiladi.</p>
         </div>
       </form>
     </div>
   </section>
 
   <section id="zakazim" class="track" aria-labelledby="zak-h">
-    <div class="wrap">
-      <div class="box">
-        <div>
-          <span class="eyebrow">Mijozlar uchun</span>
-          <h2 id="zak-h" style="margin:14px 0 14px;font-size:clamp(32px,4vw,46px)">Zakazim qayerda?</h2>
-          <p class="muted">Shartnomadagi zakaz raqami va telefoningizni kiriting — buyurtmangiz qaysi bosqichda ekanini ko'rasiz.</p>
-        </div>
-        <div class="res">
-          <form id="track-form" novalidate>
-            <div class="r2">
-              <label>Zakaz raqami<input name="id" required placeholder="Masalan: TMOVD9T2T" autocapitalize="characters"></label>
-              <label>Telefon raqam<input name="tel" type="tel" inputmode="tel" required placeholder="+998 90 123 45 67"></label>
-            </div>
-            <button class="btn btn-ink" type="submit">Tekshirish</button>
-          </form>
-          <div id="track-res" aria-live="polite"></div>
-        </div>
+    <div class="track-g pad">
+      <div>
+        <h2 id="zak-h" class="rv">Zakazim qayerda?</h2>
+        <p class="cl rv">Shartnomadagi zakaz raqami va telefoningizni kiriting. Buyurtmangiz qaysi bosqichda ekanini ko'rasiz.</p>
+      </div>
+      <div class="rv">
+        <form id="track-form" novalidate>
+          <div class="r2">
+            <label class="f">Zakaz raqami<input name="id" required placeholder="Masalan: TMOVD9T2T" autocapitalize="characters"></label>
+            <label class="f">Telefon raqam<input name="tel" type="tel" inputmode="tel" required placeholder="+998 90 123 45 67"></label>
+          </div>
+          <button class="btn dark" type="submit">Tekshirish</button>
+        </form>
+        <div class="res" id="track-res" aria-live="polite"></div>
       </div>
     </div>
   </section>
 </main>
 
-<footer>
-  <div class="wrap">
-    <div class="ft">
-      <div>
-        <a href="#" class="logo" style="color:var(--on-ink);margin-bottom:16px"><b>TENTART</b><span>HAR LOYIHA — BIZNING IMZOMIZ</span></a>
-        <p style="max-width:340px">Pergola, markiza, gilotina oynalar va sirpanma eshiklar. O'z ishlab chiqarish, Toshkent.</p>
-      </div>
-      <div>
-        <h4>Bog'lanish</h4>
-        <a href="tel:+998979200001">+998 97 920-00-01</a>
-        <a href="https://t.me/Tentart_maneger" target="_blank" rel="noopener">Telegram: @Tentart_maneger</a>
-        <a href="https://www.instagram.com/tentart.uz/" target="_blank" rel="noopener">Instagram: @tentart.uz</a>
-      </div>
-      <div>
-        <h4>Sahifalar</h4>
-        <a href="#mahsulotlar">Mahsulotlar</a>
-        <a href="#ishlarimiz">Ishlarimiz</a>
-        <a href="#zakazim">Zakazim qayerda?</a>
-      </div>
-    </div>
-    <div class="ft-b">
-      <span>© <span id="yil"></span> Tentart</span>
-      <a href="https://erp.tentart.uz" rel="nofollow">Xodimlar uchun kirish</a>
-    </div>
+<footer class="pad">
+  <p class="lead">Savolingiz bormi? Qo'ng'iroq qiling.</p>
+  <a class="call" href="tel:+998979200001">+998 97 920 00 01</a>
+  <div class="ft-row">
+    <a href="https://t.me/Tentart_maneger" target="_blank" rel="noopener">Telegram: @Tentart_maneger</a>
+    <a href="https://www.instagram.com/tentart.uz/" target="_blank" rel="noopener">Instagram: @tentart.uz</a>
+    <span class="small">Toshkent va viloyatlar</span>
+  </div>
+  <p class="ft-name" aria-hidden="true">Tentart</p>
+  <div class="ft-b">
+    <span>© <span id="yil">2026</span> Tentart</span>
+    <a href="https://erp.tentart.uz" rel="nofollow">Xodimlar uchun kirish</a>
   </div>
 </footer>
 
-<div class="sticky-cta"><a href="tel:+998979200001" class="btn btn-ink" aria-label="Qo'ng'iroq qilish">Qo'ng'iroq</a><a href="#zamer" class="btn btn-gold" style="flex:1">Bepul zamer</a></div>
+<div class="sticky"><a href="tel:+998979200001" class="btn dark" style="flex:0 0 auto;background:var(--ink-3)">Qo'ng'iroq</a><a href="#zamer" class="btn">Bepul zamer</a></div>
 
 <script>
+document.documentElement.classList.add('js');
 (function(){
   const SURL='https://zheszanbqkcckxwnrycu.supabase.co';
   const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpoZXN6YW5icWtjY2t4d25yeWN1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc0OTQ3MzksImV4cCI6MjA5MzA3MDczOX0.uzQVIB8gwJ_MnX3-i45d_CwCuhhI3rtS98642kdeKvc';
@@ -404,9 +472,81 @@ footer{background:var(--ink);color:var(--on-ink2);padding:64px 0 32px}
   const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   $('#yil').textContent=new Date().getFullYear();
 
-  window.toggleNav=function(b){const n=$('#nav');const o=n.classList.toggle('open');b.setAttribute('aria-expanded',o);};
-  document.querySelectorAll('#nav a').forEach(a=>a.addEventListener('click',()=>{$('#nav').classList.remove('open');}));
+  // menyu va nav foni
+  const nav=$('#nav'),menu=$('#menu');
+  menu.addEventListener('click',()=>{const o=nav.classList.toggle('open');menu.setAttribute('aria-expanded',o);nav.classList.add('solid');});
+  document.querySelectorAll('#nav-l a').forEach(a=>a.addEventListener('click',()=>{nav.classList.remove('open');menu.setAttribute('aria-expanded','false');}));
+  const solid=()=>nav.classList.toggle('solid',scrollY>window.innerHeight*.6||nav.classList.contains('open'));
+  addEventListener('scroll',solid,{passive:true});solid();
   document.querySelectorAll('[data-turi]').forEach(a=>a.addEventListener('click',()=>{$('#zf-turi').value=a.dataset.turi;}));
+
+  // paydo bo'lish (bo'lim ichida ketma-ket)
+  const io='IntersectionObserver' in window?new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target);}}),{rootMargin:'0px 0px -8% 0px'}):null;
+  function watch(root){
+    root.querySelectorAll('.rv:not(.in)').forEach(el=>{
+      const sib=[...el.parentElement.children].filter(x=>x.classList.contains('rv'));
+      el.style.transitionDelay=(Math.min(sib.indexOf(el),5)*80)+'ms';
+      io?io.observe(el):el.classList.add('in');
+    });
+  }
+  watch(document);
+
+  // ---- PERGOLA NARX HISOBLAGICH (ERP narxlar bazasidagi jadval, $/m²) ----
+  const CH=[2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7,7.5,8,8.5,9];          // chiqishi
+  const EN=[3,3.5,4,4.5,5,5.5,6,6.5,7,7.5,8,8.5,9];                  // eni
+  const P=[
+    [325,305,300,285,280,270,255,250,245,245,240,235,230],
+    [280,265,260,255,250,245,230,230,225,220,215,210,205],
+    [255,250,245,230,215,210,205,205,205,200,195,195,190],
+    [240,225,220,215,205,200,195,195,190,185,180,180,175],
+    [220,215,215,210,195,185,180,180,180,175,170,170,165],
+    [210,205,200,195,185,180,175,175,175,170,165,160,155],
+    [200,195,190,185,180,175,170,165,165,165,160,155,150],
+    [195,190,185,180,175,170,165,165,165,155,155,150,150],
+    [190,185,180,175,160,160,155,155,155,150,150,null,null],
+    [185,180,175,170,160,155,155,155,155,150,null,null,null],
+    [175,170,170,165,160,155,150,150,150,null,null,null,null],
+    [170,165,165,160,155,150,145,145,null,null,null,null,null],
+    [170,165,165,160,155,145,140,null,null,null,null,null,null],
+    [165,160,165,155,150,145,null,null,null,null,null,null,null],
+    [165,165,165,155,150,145,null,null,null,null,null,null,null]];
+  const fmt=n=>Math.round(n).toLocaleString('ru-RU').replace(/ |,/g,' ');
+  const m=v=>String(v).replace('.',',')+' m';
+  const rEn=$('#r-en'),rCh=$('#r-ch');
+  let cur=null;
+  function draw(en,ch){
+    // reja ko'rinishi: devor, ustunlar, lamellar — o'lchamga mos
+    const W=360,Hm=250,s=Math.min(W/9,Hm/9),w=en*s,h=ch*s,x=(400-w)/2,y=24;
+    let g=`<rect x="20" y="${y-14}" width="360" height="10" fill="#1A1A1A"/>`;
+    g+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#ECE5D8"/>`;
+    const n=Math.max(4,Math.round(ch/0.22));
+    for(let i=1;i<n;i++){const yy=y+h*i/n;g+=`<rect x="${x}" y="${yy-1.5}" width="${w}" height="3" fill="#C9A96E"/>`;}
+    g+=`<rect x="${x-4}" y="${y+h-8}" width="12" height="12" fill="#1A1A1A"/><rect x="${x+w-8}" y="${y+h-8}" width="12" height="12" fill="#1A1A1A"/>`;
+    g+=`<text x="${x+w/2}" y="${y+h+30}" text-anchor="middle" font-family="Manrope,sans-serif" font-size="15" font-weight="700" fill="#1A1A1A">${m(en)}</text>`;
+    g+=`<text x="${x+w+14}" y="${y+h/2+5}" font-family="Manrope,sans-serif" font-size="15" font-weight="700" fill="#1A1A1A">${m(ch)}</text>`;
+    $('#plan').innerHTML=g;
+  }
+  function calc(){
+    const en=+rEn.value,ch=+rCh.value;
+    $('#o-en').textContent=m(en);$('#o-ch').textContent=m(ch);
+    draw(en,ch);
+    const pm=P[CH.indexOf(ch)][EN.indexOf(en)],kv=en*ch;
+    if(pm==null){
+      cur=null;
+      $('#c-narx').textContent='Zamerda';
+      $('#c-sub').textContent=fmt(kv)+' m² — bunday katta o’lchamni joyida hisoblaymiz';
+    }else{
+      cur={en,ch,kv,t:pm*kv};
+      $('#c-narx').textContent='$'+fmt(pm*kv);
+      $('#c-sub').textContent=String(+kv.toFixed(2)).replace('.',',')+' m² · 1 m² uchun $'+pm;
+    }
+  }
+  rEn.addEventListener('input',calc);rCh.addEventListener('input',calc);calc();
+  $('#c-btn').addEventListener('click',()=>{
+    $('#zf-turi').value='Pergola';
+    const en=+rEn.value,ch=+rCh.value;
+    $('#zf-izoh').value='Pergola '+m(en)+' × '+m(ch)+(cur?' (saytdagi hisob: taxminan $'+fmt(cur.t)+')':'');
+  });
 
   async function rpc(fn,body){
     const r=await fetch(SURL+'/rest/v1/rpc/'+fn,{method:'POST',headers:H,body:JSON.stringify(body)});
@@ -415,13 +555,13 @@ footer{background:var(--ink);color:var(--on-ink2);padding:64px 0 32px}
     return d;
   }
 
-  // Portfolio (ERP'dagi "Sayt" bo'limidan boshqariladi)
+  // Portfolio: ERP'dagi "Sayt" bo'limidan qo'shilganlar devorga qo'shiladi
   fetch(SURL+'/rest/v1/sayt_portfolio?select=sarlavha,joy,mahsulot,rasm_url&korinadi=eq.true&order=tartib.asc,id.desc&limit=12',{headers:H})
     .then(r=>r.ok?r.json():[]).then(rows=>{
       if(!rows||!rows.length)return;
-      const box=$('#portfolio');
-      const ig=box.innerHTML;
-      box.innerHTML=rows.map(w=>`<figure class="work"><img src="${esc(w.rasm_url)}" alt="${esc(w.sarlavha)}" loading="lazy"><figcaption><b>${esc(w.sarlavha)}</b><span>${esc([w.mahsulot,w.joy].filter(Boolean).join(' · '))}</span></figcaption></figure>`).join('')+ig;
+      const cls=['wc','wa','wb'];
+      const html=rows.filter(w=>w.rasm_url).map((w,i)=>`<figure class="w ${cls[i%3]} rv"><div class="ph"><img src="${esc(w.rasm_url)}" alt="${esc(w.sarlavha)}" loading="lazy"></div><figcaption><b>${esc(w.sarlavha)}</b><span>${esc([w.mahsulot,w.joy].filter(Boolean).join(' · '))}</span></figcaption></figure>`).join('');
+      $('#portfolio').insertAdjacentHTML('beforeend',html);watch($('#portfolio'));
     }).catch(()=>{});
 
   // Zamer arizasi
@@ -452,9 +592,10 @@ footer{background:var(--ink);color:var(--on-ink2);padding:64px 0 32px}
     try{
       const rows=await rpc('zakaz_holati',{p_tel:d.tel,p_id:d.id});
       if(!rows.length){tr.innerHTML='<div class="msg err">Zakaz topilmadi. Raqam va telefonni tekshiring yoki menejerga yozing.</div>';return;}
+      const OY=['yanvar','fevral','mart','aprel','may','iyun','iyul','avgust','sentabr','oktabr','noyabr','dekabr'];
       tr.innerHTML=rows.map(z=>{
         const i=STATS.indexOf(z.status);
-        const OY=['yanvar','fevral','mart','aprel','may','iyun','iyul','avgust','sentabr','oktabr','noyabr','dekabr'];const md=z.montaj?new Date(z.montaj):null;const mon=md?md.getDate()+'-'+OY[md.getMonth()]:null;
+        const md=z.montaj?new Date(z.montaj):null;const mon=md?md.getDate()+'-'+OY[md.getMonth()]:null;
         return `<div class="res-card"><h4>${esc(z.mahsulot||'Zakaz')} · ${esc(z.id)}</h4>
           <div class="tl">${STATS.map((s,k)=>`<span class="${k<i?'ok':k===i?'cur':''}">${esc(s)}</span>`).join('')}</div>
           <p class="muted">Hozirgi bosqich: <b style="color:var(--text)">${esc(z.status)}</b>${mon?` · Montaj: <b style="color:var(--text)">${esc(mon)}</b>`:''}</p></div>`;
