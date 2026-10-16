@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Tentart — pergola, markiza va gilotina oynalar Toshkentda · Bepul zamer</title>
-<meta name="description" content="Tentart: LED chiroqli pergola, markiza, gilotina oynalar va sirpanma eshiklar. O'z ishlab chiqarishimiz, 3 yil kafolat, bepul zamer. Pergola narxini saytda hisoblang.">
+<meta name="description" content="Tentart: LED chiroqli pergola, markiza, gilotina oynalar va sirpanma eshiklar. O'z ishlab chiqarishimiz, 3 yil kafolat, bepul zamer.">
 <meta name="theme-color" content="#1A1A1A">
 <link rel="canonical" href="https://www.tentart.uz/">
 <meta property="og:type" content="website">
@@ -114,28 +114,6 @@ p{max-width:62ch}
 .c2{grid-column:2}.c3{grid-column:3}.c4{grid-column:4}
 .frame-h{padding-top:clamp(72px,8vw,128px);padding-bottom:clamp(48px,5vw,72px)}
 .frame-h p{margin-top:18px;color:var(--fg2)}
-
-/* NARX HISOBLAGICH */
-.calc{padding-top:clamp(88px,10vw,160px);padding-bottom:clamp(88px,10vw,160px)}
-.calc-g{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(40px,6vw,96px);align-items:start}
-
-.calc .lead{margin-top:22px;color:var(--fg2)}
-
-.rng{margin-top:36px;display:flex;flex-direction:column;gap:28px}
-.rng label{display:flex;justify-content:space-between;align-items:baseline;font-weight:700;margin-bottom:12px}
-.rng label output{font:600 var(--s-lead)/1 var(--serif)}
-input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:44px;min-height:44px;padding:0;border:0;background:transparent;cursor:pointer}
-input[type=range]::-webkit-slider-runnable-track{height:6px;background:var(--cream-2)}
-input[type=range]::-moz-range-track{height:6px;background:var(--cream-2)}
-input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;height:28px;margin-top:-11px;background:var(--ink);border-radius:50%;transition:transform .15s}
-input[type=range]::-moz-range-thumb{width:28px;height:28px;border:0;background:var(--ink);border-radius:50%}
-input[type=range]:active::-webkit-slider-thumb{transform:scale(1.2)}
-.plan{background:var(--paper);padding:clamp(20px,3vw,36px)}
-.plan svg{width:100%;height:auto;display:block}
-.price{font:600 var(--s-big)/.9 var(--serif);letter-spacing:-.03em;margin-top:28px;font-variant-numeric:tabular-nums}
-.price-sub{margin-top:12px;font-weight:700}
-.calc .note{margin-top:14px;font-size:var(--s-small)}
-.calc .btn{margin-top:28px}
 
 /* ISHLARIMIZ — devordagi rasmlar */
 .works{padding-top:clamp(96px,10vw,170px);padding-bottom:clamp(96px,10vw,170px)}
@@ -268,7 +246,7 @@ html.lenis,html.lenis body{height:auto}
   .frame .cols{display:block;padding:0}
   .card{min-height:0;padding:28px var(--m) 36px}
   .card img{display:none}
-  .calc-g,.zamer-g,.track-g{grid-template-columns:1fr}
+  .zamer-g,.track-g{grid-template-columns:1fr}
   .wall{display:flex;flex-direction:column}
   .w,.remark{margin-bottom:64px}
   .wa{width:100%}.wb{width:72%;align-self:flex-end;margin-top:0}.wc{width:86%}
@@ -296,7 +274,6 @@ html.lenis,html.lenis body{height:auto}
   <a href="#" class="wm" aria-label="Tentart — bosh sahifa">TENTART</a>
   <ul id="nav-l">
     <li><a href="#mahsulotlar">Mahsulotlar</a></li>
-    <li><a href="#narx">Narx</a></li>
     <li><a href="#ishlarimiz">Ishlarimiz</a></li>
     <li><a href="#zakazim">Zakazim qayerda?</a></li>
   </ul>
@@ -317,7 +294,7 @@ html.lenis,html.lenis body{height:auto}
       <p class="lead" data-rise style="--i:1">O'z sexda yasaymiz, o'zimiz o'rnatamiz. Zamer bepul, kafolat 3 yil.</p>
       <div class="acts" data-rise style="--i:2">
         <a href="#zamer" class="btn">Bepul zamerga yozilish</a>
-        <a href="#narx" class="link">Pergola narxini hisoblash</a>
+        <a href="#ishlarimiz" class="link">Ishlarimizni ko'rish</a>
       </div>
     </div>
   </section>
@@ -341,9 +318,9 @@ html.lenis,html.lenis body{height:auto}
         <article class="card c2 rv">
           <h3>Pergola</h3>
           <p class="sub">Matoli yoki bioklimatik, pult bilan ochiladi. Lamellar ichida LED chiroq.</p>
-          <p class="fact">1 m² — $140 dan $325 gacha</p>
+          <p class="fact">Har loyiha joyida o'lchanib, alohida hisoblanadi</p>
           <img src="/site/img/terrasa-kun.jpg" width="960" height="1280" alt="Restoran terrasasi ustidagi pergola, kunduzi" loading="lazy">
-          <a href="#narx" class="btn">Narxini hisoblash</a>
+          <a href="#zamer" class="btn" data-turi="Pergola">Zamerga yozilish</a>
         </article>
       </div>
     </div>
@@ -371,32 +348,6 @@ html.lenis,html.lenis body{height:auto}
           <img src="/site/img/hero-keng-2.jpg" width="1920" height="1080" alt="Do'kon kirishidagi buklanadigan shisha eshiklar va pergola" loading="lazy">
           <a href="#zamer" class="btn" data-turi="Giyotin">Zamerga yozilish</a>
         </article>
-      </div>
-    </div>
-  </section>
-
-  <section id="narx" class="calc" data-tone="light" aria-labelledby="narx-h">
-    <div class="calc-g pad">
-      <div>
-        <h2 id="narx-h" class="rv">Narxini hisoblang</h2>
-        <p class="lead rv">Pergolaning enini va chiqishini tanlang: taxminiy narx shu zahoti chiqadi.</p>
-        <div class="rng rv">
-          <div>
-            <label for="r-en">Eni <output id="o-en">5 m</output></label>
-            <input type="range" id="r-en" min="3" max="9" step="0.5" value="5" aria-describedby="o-en">
-          </div>
-          <div>
-            <label for="r-ch">Chiqishi (devordan) <output id="o-ch">4 m</output></label>
-            <input type="range" id="r-ch" min="2" max="9" step="0.5" value="4" aria-describedby="o-ch">
-          </div>
-        </div>
-      </div>
-      <div class="rv">
-        <div class="plan" aria-hidden="true"><svg id="plan" viewBox="0 0 400 300"></svg></div>
-        <p class="price" id="c-narx" aria-live="polite">$3 900</p>
-        <p class="price-sub" id="c-sub">20 m² · 1 m² uchun $195</p>
-        <p class="note">Matoli pergolaning taxminiy narxi. Aniq narxni zamerdan keyin, rang va jihozlarga qarab aytamiz.</p>
-        <a href="#zamer" class="btn dark" id="c-btn">Shu o'lcham bilan zamerga yozilish</a>
       </div>
     </div>
   </section>
@@ -576,70 +527,6 @@ document.documentElement.classList.add('js');
       const id=a.getAttribute('href');const t=id.length>1?document.querySelector(id):null;
       if(!t&&id!=='#')return; e.preventDefault(); lenis.scrollTo(t||0,{offset:t&&t.id!=='zamer'?-72:0});
     }));
-  });
-
-  // ---- PERGOLA NARX HISOBLAGICH (ERP narxlar bazasidagi jadval, $/m²) ----
-  const CH=[2,2.5,3,3.5,4,4.5,5,5.5,6,6.5,7,7.5,8,8.5,9];          // chiqishi
-  const EN=[3,3.5,4,4.5,5,5.5,6,6.5,7,7.5,8,8.5,9];                  // eni
-  const P=[
-    [325,305,300,285,280,270,255,250,245,245,240,235,230],
-    [280,265,260,255,250,245,230,230,225,220,215,210,205],
-    [255,250,245,230,215,210,205,205,205,200,195,195,190],
-    [240,225,220,215,205,200,195,195,190,185,180,180,175],
-    [220,215,215,210,195,185,180,180,180,175,170,170,165],
-    [210,205,200,195,185,180,175,175,175,170,165,160,155],
-    [200,195,190,185,180,175,170,165,165,165,160,155,150],
-    [195,190,185,180,175,170,165,165,165,155,155,150,150],
-    [190,185,180,175,160,160,155,155,155,150,150,null,null],
-    [185,180,175,170,160,155,155,155,155,150,null,null,null],
-    [175,170,170,165,160,155,150,150,150,null,null,null,null],
-    [170,165,165,160,155,150,145,145,null,null,null,null,null],
-    [170,165,165,160,155,145,140,null,null,null,null,null,null],
-    [165,160,165,155,150,145,null,null,null,null,null,null,null],
-    [165,165,165,155,150,145,null,null,null,null,null,null,null]];
-  const fmt=n=>Math.round(n).toLocaleString('ru-RU').replace(/ |,/g,' ');
-  const m=v=>String(v).replace('.',',')+' m';
-  const rEn=$('#r-en'),rCh=$('#r-ch');
-  let cur=null;
-  function draw(en,ch){
-    // reja ko'rinishi: devor, ustunlar, lamellar — o'lchamga mos
-    const W=360,Hm=250,s=Math.min(W/9,Hm/9),w=en*s,h=ch*s,x=(400-w)/2,y=24;
-    let g=`<rect x="20" y="${y-14}" width="360" height="10" fill="#1A1A1A"/>`;
-    g+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#ECE5D8"/>`;
-    const n=Math.max(4,Math.round(ch/0.22));
-    for(let i=1;i<n;i++){const yy=y+h*i/n;g+=`<rect x="${x}" y="${yy-1.5}" width="${w}" height="3" fill="#C9A96E"/>`;}
-    g+=`<rect x="${x-4}" y="${y+h-8}" width="12" height="12" fill="#1A1A1A"/><rect x="${x+w-8}" y="${y+h-8}" width="12" height="12" fill="#1A1A1A"/>`;
-    g+=`<text x="${x+w/2}" y="${y+h+30}" text-anchor="middle" font-family="Manrope,sans-serif" font-size="15" font-weight="700" fill="#1A1A1A">${m(en)}</text>`;
-    g+=`<text x="${x+w+14}" y="${y+h/2+5}" font-family="Manrope,sans-serif" font-size="15" font-weight="700" fill="#1A1A1A">${m(ch)}</text>`;
-    $('#plan').innerHTML=g;
-  }
-  let shown=null,tw=0;
-  function tweenPrice(to){
-    const el=$('#c-narx');
-    if(calm||shown==null){shown=to;el.textContent='$'+fmt(to);return;}
-    const from=shown,t0=performance.now(),id=++tw;shown=to;
-    (function f(t){if(id!==tw)return;const k=Math.min(1,(t-t0)/380),e=1-Math.pow(1-k,3);el.textContent='$'+fmt(from+(to-from)*e);if(k<1)requestAnimationFrame(f);})(t0);
-  }
-  function calc(){
-    const en=+rEn.value,ch=+rCh.value;
-    $('#o-en').textContent=m(en);$('#o-ch').textContent=m(ch);
-    draw(en,ch);
-    const pm=P[CH.indexOf(ch)][EN.indexOf(en)],kv=en*ch;
-    if(pm==null){
-      cur=null;shown=null;tw++;
-      $('#c-narx').textContent='Zamerda';
-      $('#c-sub').textContent=fmt(kv)+' m² — bunday katta o’lchamni joyida hisoblaymiz';
-    }else{
-      cur={en,ch,kv,t:pm*kv};
-      tweenPrice(pm*kv);
-      $('#c-sub').textContent=String(+kv.toFixed(2)).replace('.',',')+' m² · 1 m² uchun $'+pm;
-    }
-  }
-  rEn.addEventListener('input',calc);rCh.addEventListener('input',calc);calc();
-  $('#c-btn').addEventListener('click',()=>{
-    $('#zf-turi').value='Pergola';
-    const en=+rEn.value,ch=+rCh.value;
-    $('#zf-izoh').value='Pergola '+m(en)+' × '+m(ch)+(cur?' (saytdagi hisob: taxminan $'+fmt(cur.t)+')':'');
   });
 
   async function rpc(fn,body){
