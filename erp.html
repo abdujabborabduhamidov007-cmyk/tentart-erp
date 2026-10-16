@@ -518,32 +518,24 @@ textarea.fi{resize:vertical;min-height:80px;}
           <section class="sg" id="ks-cards" aria-label="Qoldiqlar"></section>
           <div class="grid2">
             <div class="panel col3">
-              <div class="panel-h"><h3>Kassa harakati</h3>
+              <div class="panel-h"><h3>Daftar yozuvlari</h3>
                 <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
                   <select class="fs" id="ks-month" aria-label="Oy"></select>
                   <div class="seg" id="ks-seg"><button data-t="" class="on">Hammasi</button><button data-t="prixod">Prixod</button><button data-t="rasxod">Rasxod</button></div>
                 </div>
               </div>
-              <div class="scroll-x"><table class="tbl" style="min-width:760px"><thead><tr><th>Vaqt</th><th>Turi</th><th>Izoh</th><th>Kategoriya</th><th>Kim</th><th style="text-align:right">Summa</th><th>Manba</th></tr></thead><tbody id="ks-tbody"></tbody></table></div>
+              <div class="scroll-x"><table class="tbl" style="min-width:760px"><thead><tr><th>Vaqt</th><th>Turi</th><th>Izoh</th><th>Kategoriya</th><th>Kim</th><th style="text-align:right">Summa</th><th>Holat</th></tr></thead><tbody id="ks-tbody"></tbody></table></div>
             </div>
-            <form class="panel col1 qf" id="ks-form" onsubmit="return false">
-              <h3 style="font-size:26px">Tez kiritish</h3>
-              <div class="seg" id="ks-kind" style="display:grid;grid-template-columns:1fr 1fr"><button type="button" data-k="prixod" class="on">Prixod</button><button type="button" data-k="rasxod">Rasxod</button></div>
-              <div><label class="fl" for="ks-sum">Summa</label><input class="fi" id="ks-sum" inputmode="decimal" placeholder="0" autocomplete="off"></div>
-              <div class="r2">
-                <div><label class="fl" for="ks-cur">Valyuta</label><select class="fi" id="ks-cur"><option>UZS</option><option>USD</option></select></div>
-                <div><label class="fl" for="ks-usul">Usul</label><select class="fi" id="ks-usul"><option value="naqd">Naqd</option><option value="karta">Karta</option></select></div>
-              </div>
-              <div><label class="fl" for="ks-cat">Kategoriya</label><input class="fi" id="ks-cat" list="ks-cats" placeholder="Zakaz to'lovi, Material…"><datalist id="ks-cats"></datalist></div>
-              <div><label class="fl" for="ks-who">Kassa egasi</label><select class="fi" id="ks-who"></select></div>
-              <div><label class="fl" for="ks-izoh">Izoh</label><input class="fi" id="ks-izoh" placeholder="Masalan: T-1042 avans"></div>
-              <button type="button" class="bp" onclick="kbSaveCash()">Saqlash</button>
-              <p class="muted" style="font-size:12px;line-height:1.5">Yozuv tanlangan xodimning bot kassasiga qo'shiladi va botdagi hisobotda ham darhol ko'rinadi.</p>
-            </form>
+            <div class="panel col1 qf" id="ks-form">
+              <h3 style="font-size:26px">Pul yozish</h3>
+              <p class="muted" style="font-size:13.5px;line-height:1.55">Kassa endi faqat <b>Rasxod daftari</b>dan hisoblanadi — har bir prixod, rasxod, pul berish va $→so'm o'sha yerda yoziladi. Shu sababli bu yerdagi qoldiq daftardagi bilan doim bir xil.</p>
+              <a class="bp" href="/rasxod" style="text-decoration:none;display:flex;align-items:center;justify-content:center">📒 Rasxod daftarini ochish</a>
+              <p class="muted" style="font-size:12px;line-height:1.5">Telegram'da: botdagi «📒 Rasxod daftari» tugmasi.</p>
+            </div>
           </div>
           <div class="grid2" style="margin-bottom:0">
             <div class="panel col1"><h3 style="font-size:22px">Rasxod tarkibi · <span id="ks-mlabel"></span></h3><div id="ks-split" style="display:flex;flex-direction:column;gap:12px"></div></div>
-            <div class="panel col1"><h3 style="font-size:22px">Valyuta va komissiya</h3><div id="ks-fx"></div></div>
+            <div class="panel col1"><h3 style="font-size:22px">Valyuta va o'tkazmalar</h3><div id="ks-fx"></div></div>
           </div>
         </div>
 
@@ -1518,6 +1510,10 @@ async function startApp(user){
   if(!biznesRols.includes(curUser.rol)){
     // Moliya, HR va jamoa davomatini yashir
     document.querySelectorAll('.ni[data-page="moliya"], .ni[data-page="hr"], .ni[data-page="jamoa"]').forEach(el=>el.style.display='none');
+  }
+  // Menejerlar (Pergola/Oyna) bir-birining moliyasi va xodimlarini ko'rmaydi — Moliya/HR faqat Owner'da
+  if(curUser.rol==='Menejer'){
+    document.querySelectorAll('.ni[data-page="moliya"], .ni[data-page="hr"]').forEach(el=>el.style.display='none');
   }
   if(!['Owner','Menejer'].includes(curUser.rol)){document.querySelector('.ni[data-page="sayt"]')?.style.setProperty('display','none');}
   if(!['Owner','Kassir'].includes(curUser.rol)){document.getElementById('sb-bux')?.style.setProperty('display','none');}

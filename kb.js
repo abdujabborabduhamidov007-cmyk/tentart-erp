@@ -102,8 +102,71 @@
     const tids = tasks.map((t) => t.id);
     const trec = tids.length ? await q(db.from('kb_task_recipients').select('*').in('task_id', tids)) : [];
     let prof = [];
-    try { prof = await q(db.from('profiles').select('ism,telegram_id')); } catch (e) { prof = []; }
-    Object.assign(KB, { prof, emp, cash, qoldiq, zak, dav, dam, rep, norms, dkv, tasks, trec, kom, alm, loaded: true });
+    try { prof = await q(db.from('profiles').select('id,ism,telegram_id,rol')); } catch (e) { prof = []; }
+    // Kassa endi Rasxod daftaridan hisoblanadi (RLS: menejer faqat o'zinikini oladi)
+    let dft = [], dobj = [], dq = null;
+    try {
+      [dft, dobj] = await Promise.all([
+        q(db.from('rasxod_yozuvlar').select('id,egasi,kontragent,sana,tur,bolim,kategoriya,usul,summa,usd,izoh,obyekt_id,tasdiq,created_at').order('sana', { ascending: false }).order('id', { ascending: false }).limit(3000)),
+        q(db.from('rasxod_obyektlar').select('id,nom')),
+      ]);
+    } catch (e) { dft = []; }
+    try { const r = await db.rpc('kassa_qoldiq'); if (!r.error) dq = r.data || []; } catch (e) { dq = null; }
+    Object.assign(KB, { prof, emp, cash, qoldiq, zak, dav, dam, rep, norms, dkv, tasks, trec, kom, alm, dft, dobj, dq, loaded: true });
+    scopeKB();
+  }
+
+  // Menejerlar (Pergola / Oyna) bir-birining ma'lumotini ko'rmaydi:
+  // kassa — faqat o'ziniki, jamoa/davomat/hisobot — faqat o'z bo'limi.
+  const isBoss = () => ['Owner', 'Kassir'].includes(CU()?.rol);
+  const myProf = () => (KB.prof || []).find((p) => p.ism === CU()?.ism || p.id === CU()?.id);
+  function scopeKB() {
+    if (CU()?.rol !== 'Menejer') return;
+    const me = myProf();
+    const tid = me?.telegram_id;
+    const dept = KB.emp.find((e) => String(e.telegram_id) === String(tid))?.department;
+    KB.cash = KB.cash.filter((c) => String(c.telegram_id) === String(tid));
+    KB.qoldiq = [];
+    KB.dft = (KB.dft || []).filter((r) => r.egasi === me?.id);
+    if (dept) {
+      const ids = new Set(KB.emp.filter((e) => e.department === dept).map((e) => String(e.telegram_id)));
+      const mine = (r) => ids.has(String(r.telegram_id));
+      KB.emp = KB.emp.filter((e) => e.department === dept);
+      KB.dav = KB.dav.filter(mine);
+      KB.dam = KB.dam.filter(mine);
+      KB.rep = KB.rep.filter(mine);
+      KB.norms = KB.norms.filter((n) => n.department === dept);
+      KB.dkv = KB.dkv.filter((d) => d.department === dept);
+      KB.tasks = KB.tasks.filter((t) => String(t.created_by) === String(tid) || KB.trec.some((r) => r.task_id === t.id && ids.has(String(r.telegram_id))));
+    }
+    KB.kom = []; KB.alm = [];
+  }
+
+  // ---------- daftar asosidagi kassa ----------
+  const KAT = { material: 'Material', xoztovar: 'Xoz tovar', usta: 'Usta', abed: 'Obed', transport: 'Transport', komissiya: 'Komissiya', avans: 'Avans', taksi: 'Taksi', boshqa: 'Boshqa', prixod: 'Prixod', konvertatsiya: 'Konvertatsiya', otkazma: "O'tkazma" };
+  const katL = (r) => r.kategoriya === 'otkazma' ? (r.tur === 'kirim' ? 'Olindi' : 'Berildi') : (KAT[r.kategoriya] || r.kategoriya || 'Boshqa');
+  const pIsm = (id) => (KB.prof || []).find((p) => p.id === id)?.ism || '—';
+  // Rasxod daftaridagi bilan bir xil: umumiy prixod − barcha chiqim
+  function dBal(rows) {
+    const s = (f) => rows.filter(f).reduce((a, r) => a + n0(r.summa), 0);
+    const inn = (u) => s((r) => r.bolim === 'umumiy' && r.tur === 'kirim' && u(r));
+    const out = (u) => s((r) => r.tur === 'chiqim' && u(r));
+    const kr = (r) => r.usul === 'karta', nq = (r) => r.usul !== 'karta', all = () => true;
+    return { jami: inn(all) - out(all), naqd: inn(nq) - out(nq), karta: inn(kr) - out(kr), kirim: inn(all), chiqim: out(all) };
+  }
+  // Har bir odam bo'yicha qoldiq. Server funksiyasi (kassa_qoldiq) bo'lsa — o'sha (shaxsiyni ham hisobga oladi).
+  function kassaRows() {
+    if (Array.isArray(KB.dq)) {
+      return KB.dq.map((r) => ({ egasi: r.egasi, ism: r.ism || pIsm(r.egasi), rol: r.rol, jami: n0(r.jami), naqd: n0(r.naqd), karta: n0(r.karta) }));
+    }
+    const by = {};
+    (KB.dft || []).forEach((r) => (by[r.egasi] = by[r.egasi] || []).push(r));
+    return Object.entries(by).map(([egasi, rows]) => ({ egasi, ism: pIsm(egasi), rol: (KB.prof || []).find((p) => p.id === egasi)?.rol, ...dBal(rows) }));
+  }
+  function myKassa() {
+    const me = myProf();
+    const r = kassaRows().find((x) => x.egasi === me?.id);
+    return r || { jami: 0, naqd: 0, karta: 0 };
   }
 
   async function reload(flash) {
@@ -158,17 +221,14 @@
     if (!KB.loaded) return;
 
     // Kassa
-    let uzs = 0, usd = 0;
-    KB.qoldiq.forEach((r) => {
-      const v = n0(r.prixod) - n0(r.rasxod);
-      if (r.currency === 'USD') usd += v; else uzs += v;
-    });
-    // Kassa qoldig'ini faqat moliya bilan ishlaydiganlar ko'radi
+    // Kassa — Rasxod daftari bo'yicha: menejer o'zinikini, Owner/Kassir menejerlar qo'lidagi jamini ko'radi
+    const holders = kassaRows().filter((r) => r.rol !== 'Owner');
+    const uzs = CU()?.rol === 'Menejer' ? myKassa().jami : holders.reduce((a, r) => a + r.jami, 0);
     const finRol = ['Owner', 'Menejer', 'Kassir'].includes(CU()?.rol);
     const kCard = $('k-kassa').closest('.sc');
     if (kCard) kCard.style.display = finRol ? '' : 'none';
-    $('k-kassa').innerHTML = esc(mln(uzs).replace(' mln', '')) + (Math.abs(uzs) >= 1e6 ? '<small>mln</small>' : '');
-    $('k-kassa-s').textContent = '+ $' + money(usd, 'USD').replace('$', '') + ' · naqd va karta';
+    $('k-kassa').innerHTML = (uzs < 0 ? '−' : '') + esc(mln(Math.abs(uzs)).replace(' mln', '')) + (Math.abs(uzs) >= 1e6 ? '<small>mln</small>' : '');
+    $('k-kassa-s').textContent = CU()?.rol === 'Menejer' ? 'Rasxod daftari bo\'yicha qo\'lingizda' : 'Menejerlar qo\'lida · daftar bo\'yicha';
 
     // Faol zakazlar (sayt zakazlari)
     const ZZx = ZZL();
@@ -379,23 +439,34 @@
     reload();
   };
 
-  // ---------- KASSA ----------
+  // ---------- KASSA (Rasxod daftari asosida) ----------
   function monthsList() {
     const set = new Set([ym(new Date())]);
-    KB.cash.forEach((c) => c.created_at && set.add(String(c.created_at).slice(0, 7)));
+    (KB.dft || []).forEach((r) => r.sana && set.add(String(r.sana).slice(0, 7)));
     return [...set].sort().reverse();
   }
 
   function renderKassa() {
-    // Qoldiqlar kartalari
-    const cards = [['UZS', 'naqd', "Naqd · so'm"], ['UZS', 'karta', "Karta · so'm"], ['USD', 'naqd', 'Naqd · dollar'], ['USD', 'karta', 'Karta · dollar']];
-    const bal = (cur, usul) => KB.qoldiq.filter((r) => r.currency === cur && r.usul === usul).reduce((a, r) => a + n0(r.prixod) - n0(r.rasxod), 0);
-    const shown = cards.filter(([c, u], i) => i < 2 || bal(c, u) !== 0);
+    const boss = isBoss();
+    const sgn = (v) => (v < 0 ? '−' : '') + money(Math.abs(v));
+    const card = (l, v, sub, dark) => `<div class="sc${dark ? ' dark' : ''}"><div class="sc-l">${esc(l)}</div><div class="sc-v${v < 0 ? ' neg' : ''}">${esc(sgn(v))}</div>${sub ? `<div class="sc-s">${sub}</div>` : ''}</div>`;
     const m = KB.ksMonth || ym(new Date());
-    const mcash = KB.cash.filter((c) => String(c.created_at).startsWith(m) && c.currency === 'UZS');
-    const net = mcash.reduce((a, c) => a + (c.type === 'prixod' ? 1 : -1) * n0(c.amount), 0);
-    $('ks-cards').innerHTML = shown.map(([c, u, l], i) => `<div class="sc${i === 0 ? ' dark' : ''}"><div class="sc-l">${l}</div><div class="sc-v">${esc(money(bal(c, u), c))}</div></div>`).join('')
-      + `<div class="sc"><div class="sc-l">Oy natijasi (prixod − rasxod)</div><div class="sc-v ${net >= 0 ? 'pos' : 'neg'}" style="font-weight:600">${net >= 0 ? '+' : '−'}${esc(mln(Math.abs(net)))}</div><div class="sc-s">so'm · ${esc(m)}</div></div>`;
+    const mrows = (KB.dft || []).filter((r) => String(r.sana).startsWith(m) && r.bolim !== 'shaxsiy');
+    const mIn = mrows.filter((r) => r.bolim === 'umumiy' && r.tur === 'kirim' && r.kategoriya !== 'otkazma').reduce((a, r) => a + n0(r.summa), 0);
+    const mOut = mrows.filter((r) => r.tur === 'chiqim' && r.kategoriya !== 'otkazma').reduce((a, r) => a + n0(r.summa), 0);
+    let html = '';
+    if (boss) {
+      const rows = kassaRows().filter((r) => r.rol !== 'Owner').sort((a, b) => b.jami - a.jami);
+      const tot = rows.reduce((a, r) => a + r.jami, 0);
+      html += card("Menejerlar qo'lida · jami", tot, "so'm · Rasxod daftari bo'yicha", true);
+      html += rows.map((r) => card(r.ism, r.jami, `naqd ${esc(sgn(r.naqd))} · karta ${esc(sgn(r.karta))}`)).join('');
+    } else {
+      const k = myKassa();
+      html += card("Qo'limdagi pul · so'm", k.jami, 'Rasxod daftaridagi qoldiq bilan bir xil', true);
+      html += card("Naqd · so'm", k.naqd) + card("Karta · so'm", k.karta);
+    }
+    html += `<div class="sc"><div class="sc-l">Oy natijasi (prixod − rasxod)</div><div class="sc-v ${mIn - mOut >= 0 ? 'pos' : 'neg'}" style="font-weight:600">${mIn - mOut >= 0 ? '+' : '−'}${esc(mln(Math.abs(mIn - mOut)))}</div><div class="sc-s">so'm · ${esc(m)} · o'tkazmalarsiz</div></div>`;
+    $('ks-cards').innerHTML = html;
 
     // Oy tanlash
     const ms = monthsList();
@@ -406,62 +477,40 @@
     $('ks-mlabel').textContent = UZMON[Number(KB.ksMonth.slice(5)) - 1];
     document.querySelectorAll('#ks-seg button').forEach((b) => b.classList.toggle('on', b.dataset.t === KB.ksType));
 
-    const rows = KB.cash.filter((c) => String(c.created_at).startsWith(KB.ksMonth) && (!KB.ksType || c.type === KB.ksType));
-    $('ks-tbody').innerHTML = rows.length ? rows.map((c) => {
-      const p = c.type === 'prixod';
-      return `<tr><td class="muted" style="white-space:nowrap">${esc(when(c.created_at))}</td>
+    const objN = (id) => (KB.dobj || []).find((o) => o.id === id)?.nom;
+    const tur = KB.ksType === 'prixod' ? 'kirim' : KB.ksType === 'rasxod' ? 'chiqim' : '';
+    const rows = (KB.dft || []).filter((r) => String(r.sana).startsWith(KB.ksMonth) && (!tur || r.tur === tur) && (r.bolim !== 'shaxsiy' || !boss || CU()?.rol === 'Owner'));
+    const tq = (r) => r.bolim === 'shaxsiy' ? '<span class="tag">SHAXSIY</span>' : r.tasdiq === 'tasdiqlandi' ? '<span class="tag" style="background:#E3EFE6;color:#2F6B45">✓</span>' : r.tasdiq === 'savol' ? '<span class="tag" style="background:#F4E1DC;color:var(--danger)">SAVOL</span>' : '<span class="tag" style="background:#EFE8DA;color:#7E5F25">TEKSHIRUVDA</span>';
+    $('ks-tbody').innerHTML = rows.length ? rows.map((r) => {
+      const p = r.tur === 'kirim';
+      const title = r.kategoriya === 'otkazma' ? (p ? pIsm(r.kontragent) + 'dan olindi' : pIsm(r.kontragent) + 'ga berildi') + (r.izoh ? ' — ' + r.izoh : '') : (r.izoh || katL(r));
+      const sub = [r.bolim === 'obyekt' ? objN(r.obyekt_id) || 'Obyekt' : r.bolim === 'ishga_oid' ? 'Ishga oid' : r.bolim === 'umumiy' ? 'Umumiy' : 'Shaxsiy', r.usul === 'karta' ? 'Karta' : 'Naqd'].filter(Boolean).join(' · ');
+      return `<tr><td class="muted" style="white-space:nowrap">${esc(r.sana)}</td>
         <td><span class="badge ${p ? 'b-tayyor' : 'b-chiq'}">${p ? 'Prixod' : 'Rasxod'}</span></td>
-        <td><div class="t-name">${esc(c.comment || '—')}</div><div class="t-sub">${esc(c.usul === 'karta' ? 'Karta' : 'Naqd')} · ${esc(c.currency)}${c.zakaz_id ? ' · zakaz #' + esc(c.zakaz_id) : ''}</div></td>
-        <td class="muted">${esc(c.category || '—')}</td>
-        <td class="muted">${esc(empName(c.telegram_id))}</td>
-        <td style="text-align:right;white-space:nowrap" class="${p ? 'pos' : 'neg'}">${p ? '+' : '−'}${esc(money(c.amount, c.currency))}</td>
-        <td>${tag(c.manba)}</td></tr>`;
-    }).join('') : '<tr><td colspan="7"><div class="empty"><div class="empty-t">Bu oyda yozuv yo\'q</div></div></td></tr>';
+        <td><div class="t-name">${esc(title)}</div><div class="t-sub">${esc(sub)}</div></td>
+        <td class="muted">${esc(katL(r))}</td>
+        <td class="muted">${esc(pIsm(r.egasi))}</td>
+        <td style="text-align:right;white-space:nowrap" class="${p ? 'pos' : 'neg'}">${p ? '+' : '−'}${esc(money(r.summa))}</td>
+        <td>${tq(r)}</td></tr>`;
+    }).join('') : '<tr><td colspan="7"><div class="empty"><div class="empty-t">Bu oyda daftarda yozuv yo\'q</div></div></td></tr>';
 
     // Rasxod tarkibi
     const by = {};
-    KB.cash.filter((c) => String(c.created_at).startsWith(KB.ksMonth) && c.type === 'rasxod' && c.currency === 'UZS')
-      .forEach((c) => { const k = c.category || 'Boshqa'; by[k] = (by[k] || 0) + n0(c.amount); });
+    rows.filter((r) => r.tur === 'chiqim' && r.kategoriya !== 'otkazma').forEach((r) => { const k = katL(r); by[k] = (by[k] || 0) + n0(r.summa); });
     const arr = Object.entries(by).sort((a, b) => b[1] - a[1]);
     const tot = arr.reduce((a, [, v]) => a + v, 0) || 1;
     $('ks-split').innerHTML = arr.length ? arr.slice(0, 8).map(([k, v]) => `<div style="display:grid;grid-template-columns:120px minmax(0,1fr) 84px;gap:12px;align-items:center;font-size:13px"><span style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(k)}</span><div class="prog" style="height:8px"><div class="prog-f" style="width:${Math.round((v / tot) * 100)}%"></div></div><span class="muted" style="text-align:right">${esc(mln(v))}</span></div>`).join('')
       : '<div class="muted">Bu oyda rasxod yo\'q</div>';
 
-    // Valyuta va komissiya
-    const lastAlm = [...KB.alm].sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)))[0];
-    const usdOut = KB.alm.filter((a) => a.from_currency === 'USD').reduce((a, r) => a + n0(r.from_amount), 0);
-    const komUZS = KB.kom.filter((k) => k.currency === 'UZS').reduce((a, r) => a + n0(r.komissiya), 0);
+    // Valyuta (daftardagi $ → so'm) va o'tkazmalar
+    const conv = (KB.dft || []).filter((r) => String(r.sana).startsWith(KB.ksMonth) && r.kategoriya === 'konvertatsiya');
+    const usd = conv.reduce((a, r) => a + n0(r.usd), 0);
+    const berildi = (KB.dft || []).filter((r) => String(r.sana).startsWith(KB.ksMonth) && r.kategoriya === 'otkazma' && r.tur === 'chiqim').reduce((a, r) => a + n0(r.summa), 0);
     const line = (l, v) => `<div style="display:flex;justify-content:space-between;gap:12px;font-size:14px;border-bottom:1px solid #ECE4D4;padding:10px 0"><span class="muted">${l}</span><b>${v}</b></div>`;
-    $('ks-fx').innerHTML = line('Oxirgi kurs', lastAlm ? esc(money(lastAlm.rate)) + " so'm" : '—')
-      + line('Shu oy almashtirildi', '$' + esc(money(usdOut, 'USD').replace('$', '')))
-      + line('Shu oy komissiya', esc(money(komUZS)) + " so'm");
-
-    // Forma
-    const cats = new Set(["Zakaz to'lovi", 'Material', 'Obed', 'Avans', 'Transport', 'Oylik']);
-    KB.cash.forEach((c) => c.category && cats.add(c.category));
-    $('ks-cats').innerHTML = [...cats].map((c) => `<option value="${esc(c)}">`).join('');
-    const prev = $('ks-who').value;
-    fillEmpSelect('ks-who', prev || localStorage.getItem('kb-who') || '');
-    document.querySelectorAll('#ks-kind button').forEach((b) => b.classList.toggle('on', b.dataset.k === KB.ksKind));
+    $('ks-fx').innerHTML = line("Shu oy $ → so'm", '$' + esc(money(usd, 'USD').replace('$', '')))
+      + line("Shu oy so'mga aylandi", esc(money(conv.reduce((a, r) => a + n0(r.summa), 0))) + " so'm")
+      + line("Shu oy pul berildi (o'tkazma)", esc(money(berildi)) + " so'm");
   }
-
-  window.kbSaveCash = async function () {
-    const amount = Number(($('ks-sum').value || '').replace(/\s/g, '').replace(',', '.'));
-    const who = $('ks-who').value;
-    if (!amount || amount <= 0) return toast('⚠️', 'Summani kiriting', '');
-    if (!who) return toast('⚠️', 'Kassa egasini tanlang', '');
-    const row = {
-      telegram_id: Number(who), type: KB.ksKind, amount, currency: $('ks-cur').value, usul: $('ks-usul').value,
-      category: $('ks-cat').value.trim() || null, comment: $('ks-izoh').value.trim() || null,
-      created_at: new Date().toISOString().replace('Z', '').slice(0, 26), manba: 'sayt',
-    };
-    const { error } = await db.from('kb_cashflow').insert(row);
-    if (error) return toast('❌', 'Saqlanmadi', error.message);
-    try { localStorage.setItem('kb-who', who); } catch (e) { /* bo'sh */ }
-    ['ks-sum', 'ks-izoh'].forEach((i) => ($(i).value = ''));
-    toast('✅', 'Kassaga yozildi', (row.type === 'prixod' ? '+' : '−') + money(amount, row.currency) + ' · ' + empName(who));
-    reload();
-  };
 
   // ---------- JAMOA ----------
   function renderJamoa() {
@@ -623,7 +672,6 @@
     $('v-chips').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; KB.vFilter = b.dataset.f; renderVoronka(); });
     $('v-q').addEventListener('input', renderVoronka);
     $('ks-seg').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; KB.ksType = b.dataset.t; renderKassa(); });
-    $('ks-kind').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; KB.ksKind = b.dataset.k; document.querySelectorAll('#ks-kind button').forEach((x) => x.classList.toggle('on', x === b)); });
     $('ks-month').addEventListener('change', (e) => { KB.ksMonth = e.target.value; renderKassa(); });
     $('jm-rep-d').addEventListener('change', renderJamoa);
   }
