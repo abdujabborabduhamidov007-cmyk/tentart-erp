@@ -210,6 +210,8 @@ textarea.fi{resize:vertical;min-height:80px;}
 .prod-item-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .prod-add-btn{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;background:transparent;border:1px dashed var(--border2);border-radius:var(--r2);cursor:pointer;color:var(--accent2);font-size:14px;font-weight:600;transition:all .2s;width:100%;}
 .prod-add-btn:hover{background:var(--bg3);}
+.cur-sw{display:inline-flex;border:1px solid var(--border2);border-radius:999px;overflow:hidden}.cur-sw button{min-height:34px;padding:0 14px;border:0;background:transparent;font-weight:600;cursor:pointer;color:var(--text2)}.cur-sw button.on{background:var(--text);color:var(--bg)}
+.tol-row{display:grid;grid-template-columns:1.3fr auto 1fr 1fr auto;gap:8px;align-items:end;background:var(--bg3);border-radius:var(--r2);padding:10px;margin-bottom:8px}.tol-row .fl{font-size:10px}@media(max-width:640px){.tol-row{grid-template-columns:1fr auto;}}
 
 /* FAYL YUKLASH */
 .file-upload-area{border:2px dashed var(--border2);border-radius:var(--r2);padding:20px;text-align:center;cursor:pointer;transition:all .2s;position:relative;background:#fff;}
@@ -1275,15 +1277,24 @@ textarea.fi{resize:vertical;min-height:80px;}
         <span>Mahsulotlar</span>
         <span id="prod-total-badge" style="font-size:11px;color:var(--green);font-weight:600"></span>
       </div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px">
+        <span class="fl" style="margin:0">Shartnoma valyutasi:</span>
+        <div class="cur-sw" id="z-cur"><button type="button" data-v="uzs" onclick="setZCur('uzs')">so'm</button><button type="button" data-v="usd" onclick="setZCur('usd')">$ dollar</button></div>
+        <label class="fl" style="margin:0;display:flex;align-items:center;gap:6px">Kurs <input class="fi" type="number" id="z-kurs" style="width:110px;min-height:34px" oninput="zKurs=parseFloat(this.value)||0;calcTotal()"></label>
+      </div>
       <div class="prod-list" id="prod-list"></div>
       <button class="prod-add-btn" onclick="addProdItem()">
         <span style="font-size:18px">+</span> Mahsulot qo'shish
       </button>
 
+      <!-- To'lovlar -->
+      <div class="fst fin" style="display:flex;align-items:center;justify-content:space-between"><span>To'lovlar (mijozdan olingan pul)</span><span id="tol-badge" style="font-size:11px;color:var(--green);font-weight:600"></span></div>
+      <div class="fin" id="tol-list"></div>
+      <button class="prod-add-btn fin" onclick="addTol()" style="margin-bottom:6px"><span style="font-size:18px">+</span> To'lov qo'shish (so'm yoki $)</button>
+
       <!-- Umumiy moliya -->
       <div class="fst">Moliya & Muddat</div>
       <div class="fgrid">
-        <div><label class="fl">Oldindan to'lov (so'm)</label><input class="fi" type="number" id="z-old" placeholder="2500000" oninput="calcTotal()"></div>
         <div><label class="fl">Montaj sanasi</label><input class="fi" type="date" id="z-montaj"></div>
         <div><label class="fl">Srok (kun)</label><input class="fi" type="number" id="z-srok" placeholder="15"></div>
         <div><label class="fl">Mas'ul</label>
@@ -1661,8 +1672,8 @@ function renderProdList(){
           <input class="fi" placeholder="RAL 7016, bronza..." value="${p.rang}" oninput="updProd(${p.id},'rang',this.value)">
         </div>
         <div>
-          <label class="fl">Narx (so'm)</label>
-          <input class="fi" type="number" placeholder="5000000" value="${p.narx||''}" oninput="updProd(${p.id},'narx',this.value);calcTotal()">
+          <label class="fl">Narx (${zCur==='usd'?'$':"so'm"})</label>
+          <input class="fi" type="number" step="any" placeholder="${zCur==='usd'?'4500':'5000000'}" value="${p.narx||''}" oninput="updProd(${p.id},'narx',this.value);calcTotal()">
         </div>
       </div>
     </div>
@@ -1672,15 +1683,38 @@ function renderProdList(){
 
 function updProd(id,field,val){
   const item=prodItems.find(p=>p.id===id);
-  if(item){item[field]=field==='narx'?parseInt(val)||0:val;}
+  if(item){item[field]=field==='narx'?parseFloat(val)||0:val;}
 }
 
+// ── Valyuta: shartnoma bitta valyutada, to'lovlar esa har biri o'z valyutasi va kursi bilan ──
+let zCur='uzs', zKurs=12000, zTol=[];
+function lastZKurs(){let k=0,t='';(typeof ZZ!=='undefined'?ZZ:[]).forEach(z=>(z.tolovlar||[]).forEach(x=>{if(+x.kurs>0&&(x.sana||'')>=t){t=x.sana||'';k=+x.kurs;}}));return k||12000;}
+function fz(v,cur){v=+v||0;if(cur==='usd'){const a=Math.abs(v),s=(Math.round(a*100)/100).toLocaleString('en-US',{maximumFractionDigits:2});return (v<0?'−':'')+'$'+s;}return fmt(Math.round(v))+" so'm";}
+function tolConv(t,cur){const s=+t.summa||0,k=+t.kurs||0;if((t.valyuta||'uzs')===cur)return s;if(cur==='usd')return k?s/k:0;return s*k;}
+function zm(z){const cur=z.valyuta||'uzs';const tol=z.tolovlar||[];
+  const narx=cur==='usd'?(+z.narx_val||0):(+z.narx||0);
+  const old=tol.length?tol.reduce((a,t)=>a+tolConv(t,cur),0):(cur==='usd'?((+z.oldinpul||0)/(+z.kurs||12000)):(+z.oldinpul||0));
+  return {cur,narx,old,q:narx-old,p:narx?Math.round(old/narx*100):0};}
+function setZCur(c){zCur=c;document.querySelectorAll('#z-cur button').forEach(b=>b.classList.toggle('on',b.dataset.v===c));renderProdList();renderTol();}
+function addTol(){zTol.push({sana:new Date().toISOString().slice(0,10),summa:0,valyuta:zCur,kurs:zKurs,izoh:''});renderTol();}
+function updTol(i,f,v){const t=zTol[i];if(!t)return;t[f]=(f==='summa'||f==='kurs')?(parseFloat(v)||0):v;if(f==='valyuta')renderTol();else calcTotal();}
+function renderTol(){const el=document.getElementById('tol-list');if(!el)return;
+  el.innerHTML=zTol.length?zTol.map((t,i)=>`<div class="tol-row">
+    <div><label class="fl">Summa</label><input class="fi" type="number" step="any" value="${t.summa||''}" placeholder="${t.valyuta==='usd'?'1000':'12000000'}" oninput="updTol(${i},'summa',this.value)"></div>
+    <div><label class="fl">Valyuta</label><div class="cur-sw"><button type="button" class="${t.valyuta!=='usd'?'on':''}" onclick="updTol(${i},'valyuta','uzs')">so'm</button><button type="button" class="${t.valyuta==='usd'?'on':''}" onclick="updTol(${i},'valyuta','usd')">$</button></div></div>
+    <div><label class="fl">Kurs (1$ = so'm)</label><input class="fi" type="number" value="${t.kurs||''}" oninput="updTol(${i},'kurs',this.value)"></div>
+    <div><label class="fl">Sana</label><input class="fi" type="date" value="${t.sana||''}" onchange="updTol(${i},'sana',this.value)"></div>
+    <div class="ib btn-danger" title="O'chirish" onclick="zTol.splice(${i},1);renderTol()" style="width:34px;height:34px">✕</div>
+  </div>`).join(''):'<div style="font-size:12px;color:var(--text3);padding:4px 0 10px">Hali to\'lov yo\'q</div>';
+  calcTotal();}
 function calcTotal(){
-  const total=prodItems.reduce((a,p)=>a+p.narx,0);
-  const old=parseInt(document.getElementById('z-old')?.value)||0;
-  if(total>0){
-    document.getElementById('prod-total-badge').textContent=`Jami: ${fmt(total)} so'm${old?` | Qoldiq: ${fmt(total-old)} so'm`:''}`;
-  }
+  const total=prodItems.reduce((a,p)=>a+(+p.narx||0),0);
+  const old=zTol.reduce((a,t)=>a+tolConv(t,zCur),0);
+  const k=document.getElementById('z-kurs');if(k&&document.activeElement!==k)k.value=zKurs||'';
+  const pb=document.getElementById('prod-total-badge');
+  if(pb)pb.textContent=total>0?`Jami: ${fz(total,zCur)}${zCur==='usd'&&zKurs?' ≈ '+fz(total*zKurs,'uzs'):''}`:'';
+  const tb=document.getElementById('tol-badge');
+  if(tb)tb.textContent=old||total?`Olindi: ${fz(old,zCur)} · Qoldiq: ${fz(total-old,zCur)}`:'';
 }
 
 function getProdSummary(){
@@ -1786,7 +1820,8 @@ function openAddZ(){
   editId=null;matList=[];prodItems=[];
   pendingFiles={obekt:[],zamer:[]};
   document.getElementById('mz-t').textContent='Yangi zakaz';
-  ['z-mijoz','z-tel','z-manzil','z-old','z-srok','z-usta','z-soat','z-izoh'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
+  ['z-mijoz','z-tel','z-manzil','z-srok','z-usta','z-soat','z-izoh'].forEach(i=>{const el=document.getElementById(i);if(el)el.value='';});
+  zTol=[];zKurs=lastZKurs();setZCur('uzs');
   document.getElementById('z-masul').value='';
   document.getElementById('z-status').value='Yangi';
   document.getElementById('z-montaj').value='';
@@ -1823,7 +1858,11 @@ async function saveZ(){
   // Fayllarni yuklash
   const uploadedFiles=await uploadFiles(zId);
   
-  const totalNarx=validProds.reduce((a,p)=>a+p.narx,0);
+  const totalNarx=validProds.reduce((a,p)=>a+(+p.narx||0),0);
+  if(zCur==='usd'&&!(zKurs>0)){notif('⚠️','Kurs','Dollar kursini kiriting');return;}
+  const tolovlar=zTol.filter(t=>+t.summa>0).map(t=>({sana:t.sana||null,summa:+t.summa,valyuta:t.valyuta||'uzs',kurs:+t.kurs||null,izoh:t.izoh||''}));
+  if(tolovlar.some(t=>t.valyuta!==zCur&&!(t.kurs>0))){notif('⚠️','Kurs',"Boshqa valyutadagi to'lov uchun kursni kiriting");return;}
+  const oldUZS=Math.round(tolovlar.reduce((a,t)=>a+tolConv(t,'uzs'),0));
   
   const z={
     id:zId,
@@ -1834,8 +1873,12 @@ async function saveZ(){
     mahsulot:validProds.map(p=>p.mahsulot).join(', '), // Eski mos kelish uchun
     olcham:validProds.map(p=>p.olcham).filter(Boolean).join(', '),
     rang:validProds.map(p=>p.rang).filter(Boolean).join(', '),
-    narx:totalNarx,
-    oldinpul:parseInt(document.getElementById('z-old').value)||0,
+    valyuta:zCur,
+    narx_val:totalNarx,
+    kurs:zCur==='usd'?zKurs:(zKurs||null),
+    narx:Math.round(zCur==='usd'?totalNarx*zKurs:totalNarx),
+    tolovlar,
+    oldinpul:oldUZS,
     status:document.getElementById('z-status').value,
     montaj:document.getElementById('z-montaj').value||null,
     srok:parseInt(document.getElementById('z-srok').value)||0,
@@ -1867,7 +1910,7 @@ function openDetail(id){
   document.getElementById('det-t').textContent=z.id+' — '+z.mijoz;
   const si=STATS.indexOf(z.status);
   const tl=STATS.map((s,i)=>`<div class="st ${i<si?'done':i===si?'cur':''}"><div class="st-d">${i<si?'✓':i+1}</div><div class="st-l">${s}</div></div>`).join('');
-  const q=z.narx-z.oldinpul;
+  const M=zm(z),q=M.q;
   const mats=z.materiallar||[];
   const mt=mats.reduce((a,m)=>a+m.miq*m.narx,0);
   const prods=z.mahsulotlar||[];
@@ -1881,7 +1924,7 @@ function openDetail(id){
         <div><div style="font-size:10px;color:var(--text3);margin-bottom:3px">MAHSULOT ${i+1}</div><div style="font-weight:600">${p.mahsulot}</div></div>
         <div><div style="font-size:10px;color:var(--text3);margin-bottom:3px">O'LCHAM</div><div>${p.olcham||'—'}</div></div>
         <div><div style="font-size:10px;color:var(--text3);margin-bottom:3px">RANG</div><div>${p.rang||'—'}</div></div>
-        <div class="fin"><div style="font-size:10px;color:var(--text3);margin-bottom:3px">NARX</div><div style="color:var(--green);font-weight:600">${fmt(p.narx)} so'm</div></div>
+        <div class="fin"><div style="font-size:10px;color:var(--text3);margin-bottom:3px">NARX</div><div style="color:var(--green);font-weight:600">${fz(p.narx,M.cur)}</div></div>
       </div>`).join('')}
     </div>`;
   }
@@ -1891,16 +1934,17 @@ function openDetail(id){
     <div class="dg">
       <div><div class="di-l">Mijoz</div><div class="di-v" style="font-weight:600">${z.mijoz}</div></div>
       <div><div class="di-l">Telefon</div><div class="di-v">${z.tel||'—'}</div></div>
-      <div class="fin"><div class="di-l">Jami narx</div><div class="di-v big">${fmt(z.narx)} so'm</div></div>
-      <div class="fin"><div class="di-l">Oldinpul</div><div class="di-v" style="color:var(--green);font-weight:600">${fmt(z.oldinpul)} so'm</div></div>
-      <div class="fin"><div class="di-l">Qoldiq</div><div class="di-v" style="color:${q>0?'var(--warn)':'var(--green)'};font-weight:600">${fmt(q)} so'm</div></div>
+      <div class="fin"><div class="di-l">Jami narx</div><div class="di-v big">${fz(M.narx,M.cur)}</div>${M.cur==='usd'&&z.kurs?`<div class="t-sub">kurs ${fmt(z.kurs)}</div>`:''}</div>
+      <div class="fin"><div class="di-l">Olingan</div><div class="di-v" style="color:var(--green);font-weight:600">${fz(M.old,M.cur)}</div></div>
+      <div class="fin"><div class="di-l">Qoldiq</div><div class="di-v" style="color:${q>0.5?'var(--warn)':'var(--green)'};font-weight:600">${fz(q,M.cur)}</div></div>
       <div><div class="di-l">Montaj</div><div class="di-v" style="${dlcls(z.montaj)}">${fdate(z.montaj)}</div></div>
       <div><div class="di-l">Manzil</div><div class="di-v">${z.manzil||'—'}</div></div>
       <div><div class="di-l">Mas'ul</div><div class="di-v">${z.masul||'—'}</div></div>
       <div><div class="di-l">Usta</div><div class="di-v">${z.usta||'—'}</div></div>
       <div><div class="di-l">Ish soati</div><div class="di-v">${z.soat||0} soat</div></div>
     </div>
-    <div class="fin" style="margin-bottom:20px"><div class="di-l" style="margin-bottom:6px">To'lov — ${z.narx?Math.round(z.oldinpul/z.narx*100):0}%</div><div class="prog"><div class="prog-f" style="width:${z.narx?Math.round(z.oldinpul/z.narx*100):0}%"></div></div></div>
+    <div class="fin" style="margin-bottom:20px"><div class="di-l" style="margin-bottom:6px">To'lov — ${M.p}%</div><div class="prog"><div class="prog-f" style="width:${Math.min(100,M.p)}%"></div></div></div>
+    ${(z.tolovlar||[]).length?`<div class="fin" style="margin-bottom:16px"><div class="fst">To'lovlar</div>${z.tolovlar.map(t=>`<div class="mat-row"><span>${fdate(t.sana)}</span><span style="font-weight:600;color:var(--green)">${fz(t.summa,t.valyuta)}</span><span class="t-sub">${t.valyuta!==M.cur&&t.kurs?'kurs '+fmt(t.kurs)+' → '+fz(tolConv(t,M.cur),M.cur):''}</span><span></span><span></span></div>`).join('')}</div>`:''}
     ${prodsHtml}
     ${z.izoh?`<div style="background:var(--bg3);border-radius:var(--r2);padding:14px;font-size:13px;color:var(--text2);margin-bottom:16px">📝 ${z.izoh}</div>`:''}
     ${mats.length?`<div class="fst">Materiallar</div>${mats.map(m=>`<div class="mat-row"><span>${m.nom}</span><span>${m.miq} ${m.bir}</span><span>${fmt(m.narx)}</span><span style="color:var(--green);font-weight:600">${fmt(m.miq*m.narx)}</span><span></span></div>`).join('')}<div class="fin" style="text-align:right;font-size:13px;font-weight:600;margin-top:8px;color:var(--green)">Jami: ${fmt(mt)} so'm</div>`:''}
@@ -1929,10 +1973,12 @@ function editZ(id){
     prodItems=[{id:Date.now(),mahsulot:z.mahsulot||'',olcham:z.olcham||'',rang:z.rang||'',narx:z.narx||0}];
   }
   
-  const f={'z-mijoz':z.mijoz,'z-tel':z.tel,'z-manzil':z.manzil,'z-old':z.oldinpul,'z-srok':z.srok,'z-montaj':z.montaj,'z-masul':z.masul,'z-usta':z.usta,'z-soat':z.soat,'z-izoh':z.izoh,'z-status':z.status};
+  zKurs=+z.kurs||lastZKurs();zCur=z.valyuta||'uzs';
+  zTol=(z.tolovlar&&z.tolovlar.length)?z.tolovlar.map(t=>({...t})):(+z.oldinpul>0?[{sana:(z.created_at||'').slice(0,10),summa:+z.oldinpul,valyuta:'uzs',kurs:zKurs,izoh:''}]:[]);
+  const f={'z-mijoz':z.mijoz,'z-tel':z.tel,'z-manzil':z.manzil,'z-srok':z.srok,'z-montaj':z.montaj,'z-masul':z.masul,'z-usta':z.usta,'z-soat':z.soat,'z-izoh':z.izoh,'z-status':z.status};
   Object.entries(f).forEach(([k,v])=>{const el=document.getElementById(k);if(el)el.value=v||'';});
   
-  renderProdList();renderMatList();
+  setZCur(zCur);renderMatList();
   
   // Mavjud fayllarni ko'rsatish
   ['fl-obekt','fl-zamer'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML='';});
@@ -1978,7 +2024,7 @@ function renderZ(){
   const tb=document.getElementById('z-tbody');
   if(!data.length){tb.innerHTML=`<tr><td colspan="11"><div class="empty"><div class="empty-ic">📭</div><div class="empty-t">Zakaz topilmadi</div></div></td></tr>`;return;}
   tb.innerHTML=data.map(z=>{
-    const q=z.narx-z.oldinpul;
+    const M=zm(z),q=M.q;
     const prods=z.mahsulotlar||[];
     const prodText=prods.length?prods.map(p=>p.mahsulot+(p.olcham?' ('+p.olcham+')':'')).join('<br>'):(z.mahsulot||'—');
     const filesCount=(z.fayllar||[]).length;
@@ -1986,9 +2032,9 @@ function renderZ(){
       <td class="t-id">${z.id}</td>
       <td><div class="t-name">${z.mijoz}</div><div class="t-sub">${z.tel||''}</div></td>
       <td style="font-size:12px">${prodText}</td>
-      <td class="fin">${fmt(z.narx)}</td>
-      <td class="fin" style="color:var(--green)">${fmt(z.oldinpul)}</td>
-      <td class="fin" style="color:${q>0?'var(--warn)':'var(--green)'}">${fmt(q)}</td>
+      <td class="fin">${fz(M.narx,M.cur)}</td>
+      <td class="fin" style="color:var(--green)">${fz(M.old,M.cur)}</td>
+      <td class="fin" style="color:${q>0.5?'var(--warn)':'var(--green)'}">${fz(q,M.cur)}</td>
       <td>${filesCount?`<span style="font-size:12px;color:var(--accent2)">📎 ${filesCount}</span>`:'—'}</td>
       <td>${badge(z.status)}</td>
       <td style="${dlcls(z.montaj)}">${fdate(z.montaj)}</td>
