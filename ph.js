@@ -55,6 +55,7 @@
       PH.ihD = d1.data || []; PH.ihW = d2.data || []; PH.ihJ = d3.data || []; PH.oyl = d4.data || [];
       const [g1, g2, g3, g4, g5] = await Promise.all([db.from('rasxod_plan').select('*').order('tartib').order('id'), db.from('rasxod_reja').select('*').order('tartib').order('id'),
         db.from('bux_sozlama').select('*'), db.from('alohida_hisob').select('*').order('tartib').order('id'), db.from('alohida_hisob_ish').select('*').order('tartib').order('id')]);
+      { const { data: ob } = await db.from('rasxod_obyektlar').select('id,nom,ish_id'); PH.obj = ob || []; }
       PH.plan = g1.data || []; PH.reja = g2.data || []; PH.soz = Object.fromEntries((g3.data || []).map((x) => [x.kalit, x.qiymat])); PH.ah = g4.data || []; PH.ahI = g5.data || [];
       PH.loaded = true;
     } catch (e) { console.error(e); toast('⚠️', 'Pul harakati yuklanmadi', e.message || ''); }
@@ -65,16 +66,17 @@
   async function phStart() {
     if (!boss()) return;
     await phLoad();
-    if (!subscribed) { subscribed = true; db.channel('ph').on('postgres_changes', { event: '*', schema: 'public', table: 'pul_harakati' }, sched).on('postgres_changes', { event: '*', schema: 'public', table: 'ishlar' }, sched).subscribe(); }
+    if (!subscribed) { subscribed = true; db.channel('ph').on('postgres_changes', { event: '*', schema: 'public', table: 'pul_harakati' }, sched).on('postgres_changes', { event: '*', schema: 'public', table: 'ishlar' }, sched).on('postgres_changes', { event: '*', schema: 'public', table: 'rasxod_obyektlar' }, sched).subscribe(); }
     phRender();
   }
   window.phRenderPage = async function (p) {
-    if (!['ph', 'qoldiq', 'ishlar', 'ishhaqqi', 'tahlil'].includes(p)) return;
+    if (!['panel', 'ph', 'qoldiq', 'ishlar', 'ishhaqqi', 'tahlil'].includes(p)) return;
     if (!PH.loaded) { $('ph-tbody') && ($('ph-tbody').innerHTML = '<tr><td colspan="9"><div class="empty"><div class="empty-t">Yuklanmoqda…</div></div></td></tr>'); await phStart(); }
     else phRender();
   };
   function phRender() {
     const p = document.querySelector('.ni.on')?.dataset.page;
+    if (p === 'panel') renderPanel();
     if (p === 'ph') renderPH();
     if (p === 'qoldiq') renderQoldiq();
     if (p === 'ishlar') renderIshlar();
@@ -719,4 +721,117 @@
     if (e.target.id === 'th-aoy') { PH.tf.aoy = e.target.value; renderTahlil(); }
   });
   let _q; document.addEventListener('input', (e) => { if (e.target.id === 'ish-q') { clearTimeout(_q); _q = setTimeout(() => { PH.ishF.q = e.target.value; renderIshlar(); }, 250); return; } if (e.target.id === 'ph-q') { clearTimeout(_q); _q = setTimeout(() => { PH.f.q = e.target.value; PH.limit = 300; renderPH(); }, 250); } });
+
+  // ---------- Boshqaruv paneli: pul oqimi + obyekt pasportlari ----------
+  PH.pf = { m: 'oy', oy: today().slice(0, 7), kun: today(), st: 'Jarayonda', q: '', sort: 'foyda', open: null };
+  const isPri = (r) => r.turi === 'prixod' || r.turi === 'eski_prixod';
+  const isXar = (r) => (r.turi === 'rasxod' || r.turi === 'eski_rasxod') && !['kassa', 'foyda'].includes(key(r.vid));
+  const isKas = (r) => (r.turi === 'rasxod' || r.turi === 'eski_rasxod') && ['kassa', 'foyda'].includes(key(r.vid));
+  const usd = (r) => n0(r.summa_usd);
+  function flow(rows) { const o = { p: 0, r: 0, k: 0 }; rows.forEach((x) => { if (isPri(x)) o.p += usd(x); else if (isXar(x)) o.r += usd(x); else if (isKas(x)) o.k += usd(x); }); return o; }
+  function renderPanel() {
+    if (!$('pn-body')) return;
+    buildAgg();
+    const f = PH.pf;
+    const sel = f.m === 'kun' ? PH.rows.filter((r) => String(r.sana) === f.kun) : PH.rows.filter((r) => String(r.sana).startsWith(f.oy));
+    const F = flow(sel); const sof = F.p - F.r;
+    const prevOy = (() => { const d = new Date(f.oy + '-01'); d.setMonth(d.getMonth() - 1); return ymd(d).slice(0, 7); })();
+    const Fp = f.m === 'oy' ? flow(PH.rows.filter((r) => String(r.sana).startsWith(prevOy))) : null;
+    const dlt = (a, b) => (b ? `<div class="sc-s">o'tgan oy: ${esc(fUSD(b))}</div>` : '');
+    let h = `<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px">
+      <div class="seg" id="pn-m"><button data-v="kun" class="${f.m === 'kun' ? 'on' : ''}">Kunlik</button><button data-v="oy" class="${f.m === 'oy' ? 'on' : ''}">Oylik</button></div>
+      ${f.m === 'kun' ? `<input type="date" class="fs" id="pn-kun" value="${esc(f.kun)}" style="min-height:40px">`
+        : `<select class="fs" id="pn-oy" style="min-height:40px">${months().map((m) => `<option value="${m}" ${m === f.oy ? 'selected' : ''}>${esc(oyNom(m))}</option>`).join('')}</select>`}
+      <span class="muted" style="font-size:12px">Hammasi $ da (so'm o'sha kungi kurs bilan o'girilgan)</span></div>
+    <section class="sg">
+      <div class="sc"><div class="sc-l">Prixod — kelgan pul</div><div class="sc-v pos">${esc(fUSD(F.p))}</div>${f.m === 'oy' ? dlt(F.p, Fp.p) : ''}</div>
+      <div class="sc"><div class="sc-l">Rasxod — xarajatlar</div><div class="sc-v neg">${esc(fUSD(F.r))}</div>${f.m === 'oy' ? dlt(F.r, Fp.r) : ''}</div>
+      <div class="sc dark"><div class="sc-l">Sof (prixod − rasxod)</div><div class="sc-v">${esc((sof >= 0 ? '+' : '') + fUSD(sof))}</div><div class="sc-s">${F.p ? Math.round((sof / F.p) * 100) + '% prixoddan' : ''}</div></div>
+      <div class="sc"><div class="sc-l">Kassaga olindi (foyda)</div><div class="sc-v">${esc(fUSD(F.k))}</div><div class="sc-s">xarajat emas</div></div>
+    </section>`;
+    if (f.m === 'oy') {
+      const [y, m] = f.oy.split('-').map(Number); const nd = new Date(y, m, 0).getDate();
+      const days = Array.from({ length: nd }, (_, i) => { const d = f.oy + '-' + String(i + 1).padStart(2, '0'); return { d, ...flow(sel.filter((r) => String(r.sana) === d)) }; });
+      const mx = Math.max(1, ...days.map((x) => Math.max(x.p, x.r)));
+      const W = 900, H = 220, bw = W / nd;
+      const bars = days.map((x, i) => { const hp = (x.p / mx) * (H / 2 - 14), hr = (x.r / mx) * (H / 2 - 14); return `<g style="cursor:pointer" onclick="phPanelDay('${x.d}')"><title>${+x.d.slice(8)}-kun · prixod ${fUSD(x.p)} · rasxod ${fUSD(x.r)}</title><rect x="${i * bw}" y="0" width="${bw}" height="${H}" fill="transparent"/><rect x="${i * bw + bw * 0.18}" y="${H / 2 - hp}" width="${bw * 0.64}" height="${hp}" rx="2" fill="#4F8A5B"/><rect x="${i * bw + bw * 0.18}" y="${H / 2}" width="${bw * 0.64}" height="${hr}" rx="2" fill="#B5543C"/>${(i + 1) % 5 === 1 ? `<text x="${i * bw + bw / 2}" y="${H + 14}" font-size="11" text-anchor="middle" fill="#8A8072">${i + 1}</text>` : ''}</g>`; }).join('');
+      const yon = (yv) => flow(sel.filter((r) => (r.yonalish || '') === yv));
+      const A = yon('asosiy'), Q = yon('qoshimcha');
+      h += `<div class="panel" style="margin-bottom:20px"><div class="panel-h"><h3>Kunma-kun: ${esc(oyNom(f.oy))}</h3><span class="muted" style="font-size:12px"><span style="color:#4F8A5B">■</span> prixod &nbsp; <span style="color:#B5543C">■</span> rasxod · kunni bosing</span></div>
+        <div style="padding:16px 20px;overflow-x:auto"><svg viewBox="0 0 ${W} ${H + 20}" style="width:100%;min-width:560px;height:auto"><line x1="0" x2="${W}" y1="${H / 2}" y2="${H / 2}" stroke="#D8CFC0"/>${bars}</svg></div>
+        <div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Yo'nalish</th><th style="text-align:right">Prixod</th><th style="text-align:right">Rasxod</th><th style="text-align:right">Sof</th></tr></thead><tbody>
+        <tr><td>Pergola (asosiy)</td><td style="text-align:right" class="pos">${esc(fUSD(A.p))}</td><td style="text-align:right" class="neg">${esc(fUSD(A.r))}</td><td style="text-align:right;font-weight:600">${esc(fUSD(A.p - A.r))}</td></tr>
+        <tr><td>Oyna (qo'shimcha)</td><td style="text-align:right" class="pos">${esc(fUSD(Q.p))}</td><td style="text-align:right" class="neg">${esc(fUSD(Q.r))}</td><td style="text-align:right;font-weight:600">${esc(fUSD(Q.p - Q.r))}</td></tr></tbody></table></div></div>`;
+    } else {
+      const ls = sel.filter((r) => isPri(r) || isXar(r) || isKas(r)).sort((a, b) => isPri(b) - isPri(a) || usd(b) - usd(a));
+      h += `<div class="panel" style="margin-bottom:20px"><div class="panel-h"><h3>${esc(sanaF(f.kun))} — ${ls.length} ta yozuv</h3></div><div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Turi</th><th>Kim</th><th>Obyekt</th><th>Nima uchun</th><th style="text-align:right">Summa</th></tr></thead><tbody>
+        ${ls.length ? ls.map((r) => `<tr><td>${isPri(r) ? '<span class="badge b-tayyor">Prixod</span>' : isKas(r) ? '<span class="badge b-smeta">Kassaga</span>' : '<span class="badge b-chiq">Rasxod</span>'}${r.manba === 'daftar' ? '<div class="t-sub">menejer daftari</div>' : ''}</td><td>${esc(hNom(isPri(r) ? r.kimga : r.kimdan))}</td><td>${esc(r.zakaz || '—')}</td><td>${esc([r.vid, r.oluvchi, r.izoh].filter(Boolean).join(' · ') || '—')}</td><td style="text-align:right;font-weight:600" class="${isPri(r) ? 'pos' : 'neg'}">${esc(money(r.summa, r.valyuta))}${r.valyuta === 'uzs' && usd(r) ? `<div class="t-sub">${esc(fUSD(usd(r)))}</div>` : ''}</td></tr>`).join('')
+          : '<tr><td colspan="5"><div class="empty"><div class="empty-t">Bu kunda yozuv yo\'q</div></div></td></tr>'}</tbody></table></div></div>`;
+    }
+    // ---- obyekt pasportlari ----
+    const q = key(f.q);
+    let L = PH.ish.filter((i) => (i.nom || '').trim() && !/^\d+([.,]\d+)?$/.test(String(i.nom).trim()))
+      .filter((i) => (!f.st || (i.holat || '') === f.st) && (!q || key(i.nom).includes(q)))
+      .map((i) => { const c = calc(i); const tan = c.X; const fo = c.S - tan; return { i, c, tan, fo, fp: c.S ? fo / c.S : null }; });
+    const so = { foyda: (a, b) => (a.fp ?? 9) - (b.fp ?? 9), qarz: (a, b) => b.c.qarz - a.c.qarz, yangi: (a, b) => String(b.i.boshlandi || '').localeCompare(String(a.i.boshlandi || '')) || b.i.id - a.i.id, katta: (a, b) => b.c.S - a.c.S };
+    L.sort(so[f.sort] || so.foyda);
+    const tS = L.reduce((s, x) => s + x.c.S, 0), tT = L.reduce((s, x) => s + x.tan, 0);
+    const tone = (fp) => (fp == null ? 'var(--text3)' : fp < 0.15 ? '#B5543C' : fp < 0.3 ? '#C08A2E' : '#4F8A5B');
+    h += `<div class="panel-h" style="padding:0;margin:8px 0 14px"><h3 style="font-size:22px">Obyekt pasportlari</h3></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px">
+      <div class="seg" id="pn-st">${[['Jarayonda', 'Jarayonda'], ['', 'Hammasi'], ['Tugadi', 'Tugagan']].map(([v, t]) => `<button data-v="${v}" class="${f.st === v ? 'on' : ''}">${t}</button>`).join('')}</div>
+      <select class="fs" id="pn-sort" style="min-height:40px">${[['foyda', 'Foydasi eng kam'], ['katta', 'Eng katta obyekt'], ['qarz', 'Mijoz qarzi'], ['yangi', 'Eng yangi']].map(([v, t]) => `<option value="${v}" ${f.sort === v ? 'selected' : ''}>${t}</option>`).join('')}</select>
+      <input class="fs" id="pn-q" placeholder="Obyekt qidirish…" value="${esc(f.q)}" style="min-height:40px;max-width:220px">
+      <span class="muted" style="font-size:13px">${L.length} ta · shartnoma ${esc(fUSD(tS))} · tannarx ${esc(fUSD(tT))} · foyda <b>${esc(fUSD(tS - tT))}</b></span></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;margin-bottom:24px;align-items:start">
+    ${L.length ? L.map(({ i, c, tan, fo, fp }) => { const sh = c.S ? Math.min(100, Math.round((tan / c.S) * 100)) : 0; const tp = c.S ? Math.min(100, Math.round((c.T / c.S) * 100)) : 0; const op = PH.pf.open === i.id;
+      const xs = Object.entries(c.xar).filter(([, v]) => Math.abs(v) > 0.005).sort((a, b) => b[1] - a[1]);
+      const lab = Object.fromEntries(XCOLS);
+      const dft = c.a.rows.filter((r) => r.manba === 'daftar' && isXar(r)).reduce((s, r) => s + usd(r), 0);
+      return `<div class="sc" style="cursor:pointer;border-left:4px solid ${tone(fp)}" onclick="phPanelOpen(${i.id})">
+        <div style="display:flex;justify-content:space-between;gap:8px"><div><div class="t-name" style="font-size:16px">${esc(i.nom)}</div><div class="t-sub">${esc(ROYXAT[i.royxat] || '')}${i.kod ? ' · ' + esc(i.kod) : ''}${i.kv ? ' · ' + esc(+i.kv) + ' m²' : ''}</div></div>${i.holat ? `<span class="badge ${{ Tugadi: 'b-tayyor', Jarayonda: 'b-olchov' }[i.holat] || 'b-new'}">${esc(i.holat)}</span>` : ''}</div>
+        ${c.S ? `<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:14px 0 10px;font-size:12px">
+          <div><div class="muted">Shartnoma</div><div style="font-weight:700;font-size:15px">${esc(fUSD(c.S))}</div></div>
+          <div><div class="muted">Tannarx</div><div style="font-weight:700;font-size:15px" class="neg">${esc(fUSD(tan))}</div></div>
+          <div><div class="muted">Foyda</div><div style="font-weight:700;font-size:15px;color:${tone(fp)}">${esc(fUSD(fo))}</div><div class="t-sub">${fp != null ? Math.round(fp * 100) + '%' : ''}</div></div></div>
+          <div class="prog" title="Tannarx shartnomaning ${sh}%"><div class="prog-f" style="width:${sh}%;background:${tone(fp)}"></div></div>
+          <div class="t-sub" style="margin-top:8px">Mijozdan tushgan ${esc(fUSD(c.T))} (${tp}%)${c.qarz > 0.5 ? ` · qarz <b>${esc(fUSD(c.qarz))}</b>` : ''}${dft ? ` · menejer daftaridan ${esc(fUSD(dft))}` : ''}</div>`
+        : `<div class="t-sub" style="margin-top:12px">Shartnoma summasi kiritilmagan · tannarx ${esc(fUSD(tan))}</div>`}
+        ${op ? `<div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px" onclick="event.stopPropagation()">
+          <div style="font-size:12px;font-weight:700;margin-bottom:6px">Tannarx tarkibi</div>
+          ${xs.length ? xs.map(([k, v]) => `<div style="display:flex;justify-content:space-between;font-size:13px;padding:3px 0"><span>${esc(lab[k] || k)}</span><span>${esc(fUSD(v))}</span></div>`).join('') : '<div class="t-sub">Xarajat yo\'q</div>'}
+          <div style="font-size:12px;font-weight:700;margin:12px 0 6px">Oxirgi xarajatlar</div>
+          ${c.a.rows.filter(isXar).sort((a, b) => String(b.sana).localeCompare(String(a.sana))).slice(0, 8).map((r) => `<div style="display:flex;justify-content:space-between;gap:8px;font-size:12px;padding:3px 0"><span>${esc(sanaF(r.sana))} · ${esc(r.vid || '—')}${r.manba === 'daftar' ? ' · <span class="muted">daftar</span>' : ''}</span><span>${esc(fUSD(usd(r)))}</span></div>`).join('') || '<div class="t-sub">—</div>'}
+        </div>` : ''}
+      </div>`; }).join('') : '<div class="empty"><div class="empty-t">Obyekt topilmadi</div></div>'}
+    </div>`;
+    // ---- bog'lanmagan menejer obyektlari ----
+    const ub = (PH.obj || []).filter((o) => !o.ish_id);
+    if (ub.length) {
+      const opts = PH.ish.filter((i) => i.holat !== 'Tugadi' && (i.nom || '').trim() && !/^\d/.test(i.nom)).sort((a, b) => a.nom.localeCompare(b.nom));
+      h += `<div class="panel"><div class="panel-h"><h3>Zakazga bog'lanmagan menejer obyektlari</h3><span class="muted" style="font-size:12px">bog'lansa, xarajatlari pasportga qo'shiladi</span></div><div style="overflow-x:auto"><table class="tbl"><tbody>
+        ${ub.map((o) => { const s = PH.rows.filter((r) => r.manba === 'daftar' && key(r.zakaz) === key(o.nom) && isXar(r)).reduce((a, r) => a + usd(r), 0);
+          return `<tr><td><b>${esc(o.nom)}</b><div class="t-sub">${esc(fUSD(s))} xarajat</div></td><td><select class="fs" onchange="phObjLink(${o.id},this.value)"><option value="">Zakazni tanlang…</option>${opts.map((i) => `<option value="${i.id}">${esc(i.nom)}</option>`).join('')}</select></td></tr>`; }).join('')}
+      </tbody></table></div></div>`;
+    }
+    $('pn-body').innerHTML = h;
+  }
+  window.phPanelDay = (d) => { PH.pf.m = 'kun'; PH.pf.kun = d; renderPanel(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+  window.phPanelOpen = (id) => { PH.pf.open = PH.pf.open === id ? null : id; renderPanel(); };
+  window.phObjLink = async (oid, ish) => {
+    if (!ish) return;
+    const { error } = await db.from('rasxod_obyektlar').update({ ish_id: +ish }).eq('id', oid);
+    if (error) { toast('⚠️', "Bog'lanmadi", error.message); return; }
+    toast('✅', "Bog'landi", 'Xarajatlar pasportga qo\'shildi'); await phLoad(); renderPanel();
+  };
+  document.addEventListener('click', (e) => {
+    const m = e.target.closest('#pn-m button'); if (m) { PH.pf.m = m.dataset.v; renderPanel(); return; }
+    const s = e.target.closest('#pn-st button'); if (s) { PH.pf.st = s.dataset.v; renderPanel(); }
+  });
+  document.addEventListener('change', (e) => {
+    if (e.target.id === 'pn-oy') { PH.pf.oy = e.target.value; renderPanel(); }
+    if (e.target.id === 'pn-kun') { PH.pf.kun = e.target.value; renderPanel(); }
+    if (e.target.id === 'pn-sort') { PH.pf.sort = e.target.value; renderPanel(); }
+  });
+  let _pq; document.addEventListener('input', (e) => { if (e.target.id === 'pn-q') { clearTimeout(_pq); _pq = setTimeout(() => { PH.pf.q = e.target.value; renderPanel(); const el = $('pn-q'); if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); } }, 300); } });
 })();

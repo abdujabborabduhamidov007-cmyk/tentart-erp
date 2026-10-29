@@ -410,6 +410,7 @@ textarea.fi{resize:vertical;min-height:80px;}
         </div>
         <div class="sb-sec" id="sb-bux">
           <div class="sb-sec-t">Buxgalteriya</div>
+          <div class="ni" data-page="panel" role="button" tabindex="0"><span class="ni-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 12h4l3-7 4 14 3-7h4"/></svg></span>Boshqaruv paneli</div>
           <div class="ni" data-page="ph" role="button" tabindex="0"><span class="ni-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg></span>Pul harakati</div>
           <div class="ni" data-page="ishlar" role="button" tabindex="0"><span class="ni-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/></svg></span>Ishlar (foyda)</div>
           <div class="ni" data-page="ishhaqqi" role="button" tabindex="0"><span class="ni-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M17 8v6M14 11h6"/></svg></span>Ish haqqi</div>
@@ -601,6 +602,9 @@ textarea.fi{resize:vertical;min-height:80px;}
 
         <!-- ===== BUXGALTERIYA: REJA VA TAHLIL ===== -->
         <div class="page" id="page-tahlil"><div id="th-body"></div></div>
+
+        <!-- ===== BUXGALTERIYA: BOSHQARUV PANELI ===== -->
+        <div class="page" id="page-panel"><div id="pn-body"></div></div>
 
         <!-- ===== BUXGALTERIYA: QOLDIQ ===== -->
         <div class="page" id="page-qoldiq">
@@ -1595,9 +1599,9 @@ document.querySelectorAll('.ni[data-page]').forEach(el=>{
     this.classList.add('on');
     document.querySelectorAll('.page').forEach(pg=>pg.classList.remove('on'));
     document.getElementById('page-'+p).classList.add('on');
-    const T={tahlil:'Reja va tahlil',ishhaqqi:'Ish haqqi',ishlar:'Ishlar — zakaz foydasi',ph:'Pul harakati',qoldiq:'Qoldiq — hamyonlar',sayt:'tentart.uz sayti',bosh:'Bosh panel',voronka:'Zamer voronkasi',kassa:'Kassa',jamoa:'Jamoa va davomat',dashboard:'Zakaz statistikasi',zakazlar:'Zakazlar',kanban:'Kanban',crm:'CRM — lidlar',moliya:'Moliya',hr:'Xodimlar kartasi',narxlar:'Narxlar bazasi',kp:'Kommersiya taklifi',kpi:'KPI va savdo',marketing:'Marketing AI',video:'Video Studio'};
+    const T={panel:'Boshqaruv paneli',tahlil:'Reja va tahlil',ishhaqqi:'Ish haqqi',ishlar:'Ishlar — zakaz foydasi',ph:'Pul harakati',qoldiq:'Qoldiq — hamyonlar',sayt:'tentart.uz sayti',bosh:'Bosh panel',voronka:'Zamer voronkasi',kassa:'Kassa',jamoa:'Jamoa va davomat',dashboard:'Zakaz statistikasi',zakazlar:'Zakazlar',kanban:'Kanban',crm:'CRM — lidlar',moliya:'Moliya',hr:'Xodimlar kartasi',narxlar:'Narxlar bazasi',kp:'Kommersiya taklifi',kpi:'KPI va savdo',marketing:'Marketing AI',video:'Video Studio'};
     document.getElementById('ptitle').textContent=T[p]||p;
-    const AL={tahlil:'',ishhaqqi:'',ishlar:'',ph:'',qoldiq:'',sayt:'',bosh:'+ Yangi zakaz',voronka:'+ Yangi zamer',kassa:'',jamoa:'',zakazlar:'+ Yangi zakaz',crm:'+ Yangi lid',hr:'+ Xodim',moliya:'+ Xarajat',kanban:'',dashboard:'+ Yangi zakaz',narxlar:'',kp:'',kpi:'',marketing:'',video:''};
+    const AL={panel:'',tahlil:'',ishhaqqi:'',ishlar:'',ph:'',qoldiq:'',sayt:'',bosh:'+ Yangi zakaz',voronka:'+ Yangi zamer',kassa:'',jamoa:'',zakazlar:'+ Yangi zakaz',crm:'+ Yangi lid',hr:'+ Xodim',moliya:'+ Xarajat',kanban:'',dashboard:'+ Yangi zakaz',narxlar:'',kp:'',kpi:'',marketing:'',video:''};
     const ab=document.getElementById('tb-add-btn');
     ab.textContent=AL[p]||'+ Yangi zakaz';ab.style.display=AL[p]===''?'none':'';
     if(document.body.classList.contains('narxsiz')&&p!=='voronka')ab.style.display='none';
