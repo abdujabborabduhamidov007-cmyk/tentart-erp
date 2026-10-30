@@ -303,7 +303,7 @@ const C={
     {id:'boshqa',l:'Boshqa',c:'#756C5F',k:[]}]
 };
 const ISHCHILI=['avans','oylik','xodim_oylik','taksi','abed'];
-const WT=[['xodim','Xodimlar (oylikka)'],['pergola','Pergola ustalari'],['oyna','Oyna ustalari']];
+const WT=[['xodim','Xodimlar (oylikka)'],['pergola','Pergola ustalari'],['oyna','Oyna ustalari'],['yollanma','Yollanma (vaqtincha)']];
 const XODIM_ISM=['abdurahmon','abduraxmon','temur','timur','abdulloh','muhammad','xushnud'];
 const wTur=w=>w.turi||(XODIM_ISM.includes(String(w.ism).trim().toLowerCase())?'xodim':'pergola');
 function wList(k){return k==='xodim_oylik'?S.I.filter(w=>wTur(w)==='xodim'):k==='oylik'?S.I.filter(w=>wTur(w)!=='xodim'):S.I;}
