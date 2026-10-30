@@ -150,7 +150,7 @@
   function dBal(rows) {
     const s = (f) => rows.filter(f).reduce((a, r) => a + n0(r.summa), 0);
     const inn = (u) => s((r) => r.bolim === 'umumiy' && r.tur === 'kirim' && u(r));
-    const out = (u) => s((r) => r.tur === 'chiqim' && u(r));
+    const out = (u) => s((r) => r.tur === 'chiqim' && !(r.bolim === 'ishga_oid' && r.kategoriya === 'oylik') && u(r));
     const kr = (r) => r.usul === 'karta', nq = (r) => r.usul !== 'karta', all = () => true;
     return { jami: inn(all) - out(all), naqd: inn(nq) - out(nq), karta: inn(kr) - out(kr), kirim: inn(all), chiqim: out(all) };
   }
