@@ -303,6 +303,11 @@ const C={
     {id:'boshqa',l:'Boshqa',c:'#756C5F',k:[]}]
 };
 const ISHCHILI=['avans','oylik','xodim_oylik','taksi','abed'];
+const WT=[['xodim','Xodimlar (oylikka)'],['pergola','Pergola ustalari'],['oyna','Oyna ustalari']];
+const XODIM_ISM=['abdurahmon','abduraxmon','temur','timur','abdulloh','muhammad','xushnud'];
+const wTur=w=>w.turi||(XODIM_ISM.includes(String(w.ism).trim().toLowerCase())?'xodim':'pergola');
+function wList(k){return k==='xodim_oylik'?S.I.filter(w=>wTur(w)==='xodim'):k==='oylik'?S.I.filter(w=>wTur(w)!=='xodim'):S.I;}
+function wOpts(k,sel){const L=wList(k);return WT.map(([t,l])=>{const g=L.filter(w=>wTur(w)===t);return g.length?`<optgroup label="${l}">${g.map(w=>`<option value="${w.id}" ${w.id===sel?'selected':''}>${esc(w.ism)}</option>`).join('')}</optgroup>`:'';}).join('');}
 const OYLAR=['yanvar','fevral','mart','aprel','may','iyun','iyul','avgust','sentabr','oktabr','noyabr','dekabr'];
 
 const S={user:null,prof:null,view:null,tab:'obyekt',oy:null,Y:[],O:[],I:[],soz:null,obj:null,showClosed:false,ishKat:'avans',profs:[],ALL:[],AO:[],AI:[],nzF:'kutilmoqda'};
@@ -380,7 +385,7 @@ async function load(){
     db.from('rasxod_sozlama').select('*').eq('egasi',v).maybeSingle()]);
   if(y.error){toast('Xatolik: '+y.error.message);return;}
   S.ALL=(y.data||[]).map(r=>({...r,summa:+r.summa}));S.AO=o.data||[];S.AI=i.data||[];
-  S.Y=S.ALL.filter(r=>r.egasi===v);S.O=S.AO.filter(r=>r.egasi===v);S.I=S.AI.filter(r=>r.egasi===v);S.soz=s.data||null;
+  S.Y=S.ALL.filter(r=>r.egasi===v);S.O=S.AO.filter(r=>r.egasi===v);S.I=(()=>{const m=new Map();S.AI.forEach(w=>{const k=String(w.ism).trim().toLowerCase();if(!m.has(k)||w.turi)m.set(k,w);});return [...m.values()].sort((a,b)=>a.ism.localeCompare(b.ism));})();S.soz=s.data||null;
   const hideSh=S.prof.rol==='Kassir'&&v!==S.user.id;
   $('t-sh').classList.toggle('hide',hideSh);if(hideSh&&S.tab==='shaxsiy')S.tab='obyekt';
   if(S.obj&&!S.O.some(x=>x.id===S.obj))S.obj=null;
@@ -455,7 +460,7 @@ async function addChiqim(bolim){
   if(bolim==='ishga_oid'&&ISHCHILI.includes(k)&&!ish){toast('Ishchini tanlang');return;}
   if(bolim==='obyekt'&&!S.obj){toast('Avval obyekt yarating');return;}
   if(bolim==='obyekt'&&!iz&&!ish){toast('Izoh yozing (nimaga sarflandi)');return;}
-  const ishN=ish?(S.I.find(w=>w.id===ish)||{}).ism:'';
+  const ishN=ish?(S.AI.find(w=>w.id===ish)||{}).ism:'';
   const row={bolim,tur:'chiqim',kategoriya:k,summa:s,izoh:iz||(ishN?cat(bolim,k).l+' — '+ishN:null),sana:(usd?$(p+'-ud'):$(p+'-d')).value||today(),obyekt_id:bolim==='obyekt'?S.obj:null,ishchi_id:ish,usul:$(p+'-pt')?.value||'naqd'};
   if(usd){row.usd=uu;row.kurs=uk;try{localStorage.setItem('rx-kurs',uk);}catch(e){}}
   const ok=await ins(row);
@@ -470,7 +475,7 @@ function autoHint(b){const p='c-'+b;const el=$(p+'-ah');if(!el)return;const sel=
   const wb=$(p+'-wb');if(wb){const need=b==='ishga_oid'?ISHCHILI.includes(S.ishKat):['usta','abed'].includes(k);wb.classList.toggle('hide',!need);}}
 function chiqimForm(b,ph){
   const opts=C[b].map(c=>`<option value="${c.id}">${esc(c.l)}</option>`).join('');
-  const wsel=`<div id="c-${b}-wb" class="mt ${b==='ishga_oid'&&ISHCHILI.includes(S.ishKat)?'':'hide'}"><label class="lab">Ishchi</label><select class="f" id="c-${b}-w"><option value="">— tanlang —</option>${S.I.map(w=>`<option value="${w.id}">${esc(w.ism)}</option>`).join('')}</select>${S.I.length?'':'<div class="auto">Avval pastda ishchi qo\'shing</div>'}</div>`;
+  const wsel=`<div id="c-${b}-wb" class="mt ${b==='ishga_oid'&&ISHCHILI.includes(S.ishKat)?'':'hide'}"><label class="lab">Ishchi</label><select class="f" id="c-${b}-w"><option value="">— tanlang —</option>${wOpts(b==='ishga_oid'?S.ishKat:'',null)}</select>${S.I.length?'':'<div class="auto">Avval pastda ishchi qo\'shing</div>'}</div>`;
   const usd=CUR[b]==='usd';
   return `<div class="pills" style="margin-bottom:10px"><button class="pill ${usd?'':'on'}" onclick="curSw('${b}','uzs')">So'mda</button><button class="pill ${usd?'on':''}" onclick="curSw('${b}','usd')">Dollarda</button></div>
   <div class="row ${usd?'hide':''}" id="c-${b}-uzs"><div><label class="lab">Summa (so'm)</label><input class="f num" id="c-${b}-s" type="number" inputmode="decimal" placeholder="150000"></div><div><label class="lab">Sana</label><input class="f" id="c-${b}-d" type="date" value="${today()}"></div></div>
@@ -617,13 +622,16 @@ function rIsh(){
     <div id="ik-xo" class="auto mt ${S.ishKat==='xodim_oylik'?'':'hide'}" style="line-height:1.5"><b>Xodim oyligi — haqiqiy pul.</b> Belgilangan oylikka ishlaydigan xodimlar (obyektga bog'lanmagan: buxgalter, sotuvchi, haydovchi, sex xodimi va h.k.). Kassadan ayriladi va umumiy xarajatga (Oylik) tushadi, hech qaysi obyekt tannarxiga qo'shilmaydi.</div>
     <div id="ik-f" class="mt">${chiqimForm('ishga_oid','ixtiyoriy izoh')}</div></div>
   ${rowsW.length?`<div class="card"><div class="ct">Ishchilar kesimida</div><div style="overflow-x:auto"><table class="tbl"><tr><th>Ishchi</th><th>Avans</th><th>Xodim oyligi</th><th>Taksi</th><th>Abed</th><th>Jami</th><th>Usta oyligi (hisob)</th><th>Obyektlardan usta puli</th><th>Farq</th></tr>${rowsW.map(x=>`<tr><td>${esc(x.w.ism)}</td><td>${fmt(x.av)}</td><td>${fmt(x.xo)}</td><td>${fmt(x.tk)}</td><td>${fmt(x.ab)}</td><td><b>${fmt(x.j)}</b></td><td>${fmt(x.oy)}</td><td>${fmt(x.us)}</td><td style="font-weight:700;color:${x.oy-x.us>0?'#B5543C':'inherit'}">${x.oy?fmt(x.oy-x.us):'—'}</td></tr>`).join('')}<tr><td>Jami</td><td>${fmt(t('av'))}</td><td>${fmt(t('xo'))}</td><td>${fmt(t('tk'))}</td><td>${fmt(t('ab'))}</td><td>${fmt(t('j'))}</td><td>${fmt(t('oy'))}</td><td>${fmt(t('us'))}</td><td></td></tr></table></div><div class="cs mt">Farq = oylik − obyektlardan berilgan usta puli. Musbat bo'lsa, ustaga hali shuncha berilishi kerak.</div></div>`:''}
-  <div class="card"><div class="ct">Ishchilar ro'yxati</div><div class="pills mt">${S.I.map(w=>`<span class="pill">${esc(w.ism)}<button class="wr" style="margin-left:6px;color:var(--text3)" onclick="delW(${w.id})" aria-label="O'chirish">×</button></span>`).join('')||'<span class="cs">Hali ishchi qo\'shilmagan</span>'}</div>
-    <div class="row mt wr"><input class="f" id="nw" placeholder="Ishchi ismi"><button class="btn" style="flex:0 0 auto" onclick="addW()">Qo'shish</button></div></div>
+  <div class="card"><div class="ct">Ishchilar ro'yxati</div><div class="cs">Abdulloh va Muhammad uchun umumiy. Ismni bosib guruhini o'zgartirish mumkin.</div>
+    ${WT.map(([t,l])=>{const g=S.I.filter(w=>wTur(w)===t);return `<div class="lab mt">${l} · ${g.length}</div><div class="pills">${g.map(w=>`<span class="pill" onclick="wTurSheet(${w.id})" style="cursor:pointer">${esc(w.ism)}<button class="wr" style="margin-left:6px;color:var(--text3)" onclick="event.stopPropagation();delW(${w.id})" aria-label="O'chirish">×</button></span>`).join('')||'<span class="cs">—</span>'}</div>`;}).join('')}
+    <div class="row mt wr"><input class="f" id="nw" placeholder="Ism"><select class="f" id="nwt" style="flex:0 0 auto;width:auto">${WT.map(([t,l])=>`<option value="${t}" ${t==='pergola'?'selected':''}>${l.split(' ')[0]}</option>`).join('')}</select><button class="btn" style="flex:0 0 auto" onclick="addW()">Qo'shish</button></div></div>
   <div class="card"><div class="ct">Tarix</div><div class="list">${items(rs,'ishga_oid')}</div></div>`;
 }
-async function addW(){const n=$('nw').value.trim();if(!n)return;const {error}=await db.from('rasxod_ishchilar').insert({ism:n});if(error){toast(error.message);return;}toast("Ishchi qo'shildi");load();}
+function wTurSheet(id){const w=S.I.find(x=>x.id===id);if(!w)return;sheet(`<div class="ct">${esc(w.ism)}</div><div class="cs">Qaysi guruhda?</div>${WT.map(([t,l])=>`<button class="btn ${wTur(w)===t?'':'ghost'} mt" style="width:100%" onclick="setWTur(${id},'${t}')">${l}</button>`).join('')}`);}
+async function setWTur(id,t){const {error}=await db.from('rasxod_ishchilar').update({turi:t}).eq('id',id);closeSheet();error?toast(error.message):(toast('Saqlandi'),load());}
+async function addW(){const n=$('nw').value.trim();if(!n)return;if(S.I.some(w=>w.ism.trim().toLowerCase()===n.toLowerCase())){toast("Bu ism ro'yxatda bor");return;}const {error}=await db.from('rasxod_ishchilar').insert({ism:n,turi:$('nwt')?.value||'pergola'});if(error){toast(error.message);return;}toast("Ishchi qo'shildi");load();}
 async function delW(id){if(!(await ask("Ishchini ro'yxatdan o'chirasizmi? (yozuvlar saqlanib qoladi)")))return;await db.from('rasxod_ishchilar').delete().eq('id',id);load();}
-document.addEventListener('click',e=>{const p=e.target.closest('.pills .pill[data-k]');if(p){S.ishKat=p.dataset.k;p.parentNode.querySelectorAll('.pill').forEach(x=>x.classList.toggle('on',x===p));autoHint('ishga_oid');$('ik-oy')&&$('ik-oy').classList.toggle('hide',S.ishKat!=='oylik');$('ik-xo')&&$('ik-xo').classList.toggle('hide',S.ishKat!=='xodim_oylik');}});
+document.addEventListener('click',e=>{const p=e.target.closest('.pills .pill[data-k]');if(p){S.ishKat=p.dataset.k;p.parentNode.querySelectorAll('.pill').forEach(x=>x.classList.toggle('on',x===p));autoHint('ishga_oid');$('ik-oy')&&$('ik-oy').classList.toggle('hide',S.ishKat!=='oylik');$('ik-xo')&&$('ik-xo').classList.toggle('hide',S.ishKat!=='xodim_oylik');const ws=$('c-ishga_oid-w');if(ws){const v=+ws.value||null;ws.innerHTML='<option value="">— tanlang —</option>'+wOpts(S.ishKat,v);}}});
 
 function rShaxsiy(){
   const all=S.Y.filter(r=>r.bolim==='shaxsiy');
@@ -664,7 +672,7 @@ function editRow(id){const r=S.Y.find(x=>x.id===id);if(!r)return;
   :`<div class="row mt"><div><label class="lab">Summa</label><input class="f num" id="er-s" type="number" inputmode="decimal" value="${r.summa}"></div><div><label class="lab">Sana</label><input class="f" id="er-d" type="date" value="${r.sana}"></div></div>`}
   <label class="lab mt">Izoh</label><input class="f" id="er-i" value="${esc(r.izoh||'')}">
   ${cats.length?`<label class="lab mt">Toifa</label><select class="f" id="er-k">${cats.map(c=>`<option value="${c.id}" ${c.id===r.kategoriya?'selected':''}>${esc(c.l)}</option>`).join('')}</select>`:''}
-  ${r.bolim!=='shaxsiy'&&r.tur==='chiqim'?`<label class="lab mt">Ishchi</label><select class="f" id="er-w"><option value="">—</option>${S.I.map(w=>`<option value="${w.id}" ${w.id===r.ishchi_id?'selected':''}>${esc(w.ism)}</option>`).join('')}</select>`:''}
+  ${r.bolim!=='shaxsiy'&&r.tur==='chiqim'?`<label class="lab mt">Ishchi</label><select class="f" id="er-w"><option value="">—</option>${wOpts('',r.ishchi_id)}</select>`:''}
   <div class="row mt"><button class="btn ghost" onclick="closeSheet()">Bekor</button><button class="btn" onclick="saveRow(${id})">Saqlash</button></div>`);}
 async function saveRow(id){const isU=!!$('er-u');const uu=isU?val('er-u'):0,uk=isU?val('er-uk'):0;const s=isU?Math.round(uu*uk):val('er-s');if(s<=0){toast('Summa noto\'g\'ri');return;}
   const u={summa:s,sana:$('er-d').value||today(),izoh:$('er-i').value.trim()||null};if(isU){u.usd=uu;u.kurs=uk;}
@@ -692,6 +700,6 @@ async function runAI(){
   if(session&&session.user)start(session.user);else $('login').classList.remove('hide');
 })();
 </script>
-<div id="ver" style="text-align:center;font-size:11px;color:#9a9286;padding:14px 0 24px">versiya 31.10b · usta va xodim oyligi</div>
+<div id="ver" style="text-align:center;font-size:11px;color:#9a9286;padding:14px 0 24px">versiya 31.10c · umumiy ishchilar ro'yxati</div>
 </body>
 </html>
