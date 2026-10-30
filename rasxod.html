@@ -295,13 +295,14 @@ const C={
     {id:'boshqa',l:'Boshqa',c:'#756C5F',k:[]}],
   ishga_oid:[
     {id:'avans',l:'Avans',c:'#234F78',k:['avans','bonak',"bo'nak",'oldindan tolov',"oldindan to'lov"]},
-    {id:'oylik',l:'Oylik',c:'#5E4A85',k:[]},
+    {id:'oylik',l:'Usta oyligi',c:'#5E4A85',k:[]},
+    {id:'xodim_oylik',l:'Xodim oyligi',c:'#3E6A7A',k:['xodim oyligi','oylik maosh','maosh']},
     {id:'taksi',l:'Taksi puli',c:'#2F6B45',k:['taksi',"yo'l kira",'yol kira',"yo'l puli",'yol puli']},
     {id:'abed',l:'Abed puli',c:'#8A6D3B',k:['abed','ovqat','tushlik','nonushta']},
     {id:'komissiya',l:'Komissiya',c:'#A9864A',k:['komissiya','tarif','p2p','otkazma',"o'tkazma",'kartaga','bankomat']},
     {id:'boshqa',l:'Boshqa',c:'#756C5F',k:[]}]
 };
-const ISHCHILI=['avans','oylik','taksi','abed'];
+const ISHCHILI=['avans','oylik','xodim_oylik','taksi','abed'];
 const OYLAR=['yanvar','fevral','mart','aprel','may','iyun','iyul','avgust','sentabr','oktabr','noyabr','dekabr'];
 
 const S={user:null,prof:null,view:null,tab:'obyekt',oy:null,Y:[],O:[],I:[],soz:null,obj:null,showClosed:false,ishKat:'avans',profs:[],ALL:[],AO:[],AI:[],nzF:'kutilmoqda'};
@@ -607,21 +608,22 @@ function rIsh(){
   const ust=S.Y.filter(r=>r.bolim==='obyekt'&&r.kategoriya==='usta'&&r.tur==='chiqim'&&inPer(r));
   const rowsW=S.I.map(w=>{const a=rs.filter(r=>r.ishchi_id===w.id);const g=k=>sum(a.filter(r=>r.kategoriya===k));
     const oy=sumAll(a.filter(hisobOnly)),us=sum(ust.filter(r=>r.ishchi_id===w.id));
-    return {w,av:g('avans'),tk:g('taksi'),ab:g('abed'),j:sum(a),oy,us};}).filter(x=>x.j>0||x.oy>0||x.us>0);
+    return {w,av:g('avans'),xo:g('xodim_oylik'),tk:g('taksi'),ab:g('abed'),j:sum(a),oy,us};}).filter(x=>x.j>0||x.oy>0||x.us>0);
   const t=k=>sum(rowsW.map(x=>({summa:x[k]})));
-  return `<div class="card"><div class="ct"><span>Ishga oid</span><span class="sp"></span><span class="num" style="font-size:20px">${fmt(tot)}</span></div><div class="cs">${S.oy==='all'?'Hamma vaqt':oyNom(S.oy)} · avans, taksi, abed va komissiyalar (oylik hisob kassaga qo'shilmaydi)</div>${bars(rs,'ishga_oid')}</div>
+  return `<div class="card"><div class="ct"><span>Ishga oid</span><span class="sp"></span><span class="num" style="font-size:20px">${fmt(tot)}</span></div><div class="cs">${S.oy==='all'?'Hamma vaqt':oyNom(S.oy)} · avans, xodim oyligi, taksi, abed va komissiyalar (usta oyligi — hisob, kassaga qo'shilmaydi)</div>${bars(rs,'ishga_oid')}</div>
   <div class="card wr"><div class="ct">Pul berish</div>
     <div class="pills mt">${C.ishga_oid.map(c=>`<button class="pill ${S.ishKat===c.id?'on':''}" data-k="${c.id}">${esc(c.l)}</button>`).join('')}</div>
-    <div id="ik-oy" class="auto mt ${S.ishKat==='oylik'?'':'hide'}" style="line-height:1.5">Oylik — <b>faqat hisob</b>. Ustaga pul har obyektda "Usta puli" bo'lib beriladi va o'sha obyekt tannarxiga tushadi. Bu yerda yozilgan oylik kassadan qayta ayrilmaydi, faqat "obyektlardan berilgan" bilan solishtiriladi.</div>
+    <div id="ik-oy" class="auto mt ${S.ishKat==='oylik'?'':'hide'}" style="line-height:1.5"><b>Usta oyligi — faqat hisob.</b> Obyektlarda ishlaydigan ustalar (pergola sostavi) puli har obyektda "Usta puli" bo'lib beriladi va o'sha obyekt tannarxiga tushadi. Bu yerga oy oxirida ustaning umumiy oyligini yozing — kassadan qayta ayrilmaydi, faqat "obyektlardan berilgan" bilan solishtiriladi.</div>
+    <div id="ik-xo" class="auto mt ${S.ishKat==='xodim_oylik'?'':'hide'}" style="line-height:1.5"><b>Xodim oyligi — haqiqiy pul.</b> Belgilangan oylikka ishlaydigan xodimlar (obyektga bog'lanmagan: buxgalter, sotuvchi, haydovchi, sex xodimi va h.k.). Kassadan ayriladi va umumiy xarajatga (Oylik) tushadi, hech qaysi obyekt tannarxiga qo'shilmaydi.</div>
     <div id="ik-f" class="mt">${chiqimForm('ishga_oid','ixtiyoriy izoh')}</div></div>
-  ${rowsW.length?`<div class="card"><div class="ct">Ishchilar kesimida</div><div style="overflow-x:auto"><table class="tbl"><tr><th>Ishchi</th><th>Avans</th><th>Taksi</th><th>Abed</th><th>Jami</th><th>Oylik (hisob)</th><th>Obyektlardan usta puli</th><th>Farq</th></tr>${rowsW.map(x=>`<tr><td>${esc(x.w.ism)}</td><td>${fmt(x.av)}</td><td>${fmt(x.tk)}</td><td>${fmt(x.ab)}</td><td><b>${fmt(x.j)}</b></td><td>${fmt(x.oy)}</td><td>${fmt(x.us)}</td><td style="font-weight:700;color:${x.oy-x.us>0?'#B5543C':'inherit'}">${x.oy?fmt(x.oy-x.us):'—'}</td></tr>`).join('')}<tr><td>Jami</td><td>${fmt(t('av'))}</td><td>${fmt(t('tk'))}</td><td>${fmt(t('ab'))}</td><td>${fmt(t('j'))}</td><td>${fmt(t('oy'))}</td><td>${fmt(t('us'))}</td><td></td></tr></table></div><div class="cs mt">Farq = oylik − obyektlardan berilgan usta puli. Musbat bo'lsa, ustaga hali shuncha berilishi kerak.</div></div>`:''}
+  ${rowsW.length?`<div class="card"><div class="ct">Ishchilar kesimida</div><div style="overflow-x:auto"><table class="tbl"><tr><th>Ishchi</th><th>Avans</th><th>Xodim oyligi</th><th>Taksi</th><th>Abed</th><th>Jami</th><th>Usta oyligi (hisob)</th><th>Obyektlardan usta puli</th><th>Farq</th></tr>${rowsW.map(x=>`<tr><td>${esc(x.w.ism)}</td><td>${fmt(x.av)}</td><td>${fmt(x.xo)}</td><td>${fmt(x.tk)}</td><td>${fmt(x.ab)}</td><td><b>${fmt(x.j)}</b></td><td>${fmt(x.oy)}</td><td>${fmt(x.us)}</td><td style="font-weight:700;color:${x.oy-x.us>0?'#B5543C':'inherit'}">${x.oy?fmt(x.oy-x.us):'—'}</td></tr>`).join('')}<tr><td>Jami</td><td>${fmt(t('av'))}</td><td>${fmt(t('xo'))}</td><td>${fmt(t('tk'))}</td><td>${fmt(t('ab'))}</td><td>${fmt(t('j'))}</td><td>${fmt(t('oy'))}</td><td>${fmt(t('us'))}</td><td></td></tr></table></div><div class="cs mt">Farq = oylik − obyektlardan berilgan usta puli. Musbat bo'lsa, ustaga hali shuncha berilishi kerak.</div></div>`:''}
   <div class="card"><div class="ct">Ishchilar ro'yxati</div><div class="pills mt">${S.I.map(w=>`<span class="pill">${esc(w.ism)}<button class="wr" style="margin-left:6px;color:var(--text3)" onclick="delW(${w.id})" aria-label="O'chirish">×</button></span>`).join('')||'<span class="cs">Hali ishchi qo\'shilmagan</span>'}</div>
     <div class="row mt wr"><input class="f" id="nw" placeholder="Ishchi ismi"><button class="btn" style="flex:0 0 auto" onclick="addW()">Qo'shish</button></div></div>
   <div class="card"><div class="ct">Tarix</div><div class="list">${items(rs,'ishga_oid')}</div></div>`;
 }
 async function addW(){const n=$('nw').value.trim();if(!n)return;const {error}=await db.from('rasxod_ishchilar').insert({ism:n});if(error){toast(error.message);return;}toast("Ishchi qo'shildi");load();}
 async function delW(id){if(!(await ask("Ishchini ro'yxatdan o'chirasizmi? (yozuvlar saqlanib qoladi)")))return;await db.from('rasxod_ishchilar').delete().eq('id',id);load();}
-document.addEventListener('click',e=>{const p=e.target.closest('.pills .pill[data-k]');if(p){S.ishKat=p.dataset.k;p.parentNode.querySelectorAll('.pill').forEach(x=>x.classList.toggle('on',x===p));autoHint('ishga_oid');$('ik-oy')&&$('ik-oy').classList.toggle('hide',S.ishKat!=='oylik');}});
+document.addEventListener('click',e=>{const p=e.target.closest('.pills .pill[data-k]');if(p){S.ishKat=p.dataset.k;p.parentNode.querySelectorAll('.pill').forEach(x=>x.classList.toggle('on',x===p));autoHint('ishga_oid');$('ik-oy')&&$('ik-oy').classList.toggle('hide',S.ishKat!=='oylik');$('ik-xo')&&$('ik-xo').classList.toggle('hide',S.ishKat!=='xodim_oylik');}});
 
 function rShaxsiy(){
   const all=S.Y.filter(r=>r.bolim==='shaxsiy');
@@ -690,6 +692,6 @@ async function runAI(){
   if(session&&session.user)start(session.user);else $('login').classList.remove('hide');
 })();
 </script>
-<div id="ver" style="text-align:center;font-size:11px;color:#9a9286;padding:14px 0 24px">versiya 31.10 · oylik</div>
+<div id="ver" style="text-align:center;font-size:11px;color:#9a9286;padding:14px 0 24px">versiya 31.10b · usta va xodim oyligi</div>
 </body>
 </html>
