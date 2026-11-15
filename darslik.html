@@ -1,0 +1,234 @@
+<!doctype html><html lang="uz"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex">
+<title>To'rt Imom Darsligi 25+</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Manrope:wght@400;600;700&display=swap">
+<style>
+*{box-sizing:border-box}body{margin:0}[hidden]{display:none!important}
+/* Layout: daftar — chapda bosqich yo'li, o'ngda bugungi dars; telefonda bitta ustun */
+:root{
+ --bg:#F2F4EF; --card:#FFFFFF; --ink:#16302A; --mute:#5E6F68; --line:#D5DDD6;
+ --acc:#C7861A; --acc2:#1F6B57; --soft:#E5EEE8; --done:#1F6B57;
+ --fd:'Bricolage Grotesque',system-ui,sans-serif; --fb:'Manrope',system-ui,sans-serif; --fa:'Amiri','Traditional Arabic',serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1A17;--card:#162420;--ink:#E4EDE8;--mute:#93A59D;--line:#2A3C36;--acc:#E0A440;--acc2:#5FC4A4;--soft:#1D2F2A;--done:#5FC4A4;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0F1A17;--card:#162420;--ink:#E4EDE8;--mute:#93A59D;--line:#2A3C36;--acc:#E0A440;--acc2:#5FC4A4;--soft:#1D2F2A;--done:#5FC4A4;color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--fb);font-size:15px;line-height:1.55}
+.wrap{max-width:1080px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font-family:var(--fd);font-weight:800;font-size:clamp(26px,5vw,38px);margin:0;line-height:1.1;text-wrap:balance}
+h2{font-family:var(--fd);font-weight:600;font-size:20px;margin:0 0 10px}
+.sub{color:var(--mute);margin:6px 0 0}
+.motto{margin:18px 0;padding:14px 16px;border-left:4px solid var(--acc);background:var(--card);border-radius:0 10px 10px 0}
+.motto .ar{font-family:var(--fa);font-size:24px;direction:rtl;text-align:right}
+.stats{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}
+.stat{flex:1 1 140px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.stat b{font-family:var(--fd);font-size:26px;display:block;font-variant-numeric:tabular-nums}
+.stat span{color:var(--mute);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+.bar{height:8px;background:var(--soft);border-radius:8px;overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;background:var(--acc2);transition:width .4s}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:18px 0 12px}
+.tabs button{font:600 14px var(--fb);padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.day{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.day.full{border-color:var(--acc2)}
+.dh{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.dh small{color:var(--mute);font-size:12px;text-transform:uppercase;letter-spacing:.06em}
+.dh h3{font-family:var(--fd);font-size:17px;margin:0}
+.ar{font-family:var(--fa);font-size:22px;direction:rtl;text-align:right;line-height:1.8}
+.src{font-size:12px;color:var(--mute)}
+.voc{display:flex;flex-wrap:wrap;gap:6px}.voc span{background:var(--soft);border-radius:8px;padding:2px 8px;font-size:13px}.voc b{font-family:var(--fa);font-size:17px;font-weight:400;margin-left:4px}
+.task{font-size:14px;background:var(--soft);border-radius:10px;padding:8px 10px}.task b{color:var(--acc)}
+.checks{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto}
+.chk{display:inline-flex;align-items:center;gap:6px;font:600 13px var(--fb);padding:6px 10px;border-radius:999px;border:1.5px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
+.chk::before{content:"";width:14px;height:14px;border-radius:4px;border:1.5px solid var(--mute)}
+.chk[aria-pressed="true"]{border-color:var(--done);color:var(--done)}
+.chk[aria-pressed="true"]::before{background:var(--done);border-color:var(--done);box-shadow:inset 0 0 0 2px var(--card)}
+.chk:focus-visible,.tabs button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.stage{margin-bottom:22px}.stage h2 span{color:var(--acc);font-size:14px;margin-right:6px}
+.wk{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.wk h3{margin:0;font-size:15px;font-family:var(--fd)}.wk p{margin:0;font-size:13.5px;color:var(--mute)}
+.meth{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.meth div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px}.meth h3{margin:0 0 4px;font-family:var(--fd);font-size:16px}.meth p{margin:0;font-size:14px;color:var(--mute)}
+.sarf summary{cursor:pointer;font-weight:700;font-size:13px;color:var(--acc2)}.sarf p{margin:6px 0;font-size:13px}.sarf b{font-family:var(--fa);font-size:18px;font-weight:400}.root{font-family:var(--fa);font-size:16px;color:var(--acc)}
+.modes{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.mode{font:600 13px var(--fb);padding:7px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}.mode[aria-pressed="true"]{border-color:var(--acc);color:var(--acc)}
+.qbox{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;max-width:640px;display:flex;flex-direction:column;gap:12px}
+.qtop{display:flex;justify-content:space-between;color:var(--mute);font-size:13px;font-variant-numeric:tabular-nums}
+.qword{font-size:30px;text-align:center}.qword.ar{font-size:34px;text-align:center}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opt,.tok{font:600 15px var(--fb);padding:12px 10px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer;min-width:0}
+.opt.arw,.tok{font-family:var(--fa);font-size:21px;font-weight:400}
+.opt.ok{border-color:var(--done);color:var(--done)}.opt.bad{border-color:#C2412D;color:#C2412D}
+.built{min-height:64px;border:1.5px dashed var(--line);border-radius:12px;padding:8px;display:flex;flex-wrap:wrap;gap:6px;direction:rtl}
+.pool{display:flex;flex-wrap:wrap;gap:6px;direction:rtl}.tok{padding:6px 10px}
+.fb{font-size:14px;min-height:20px}.fb.ok{color:var(--done)}.fb.bad{color:#C2412D}
+.next{align-self:flex-start;font:700 14px var(--fb);padding:9px 16px;border-radius:10px;border:0;background:var(--ink);color:var(--bg);cursor:pointer}
+.play{display:flex;gap:6px}.snd{font:700 13px var(--fb);padding:6px 12px;border-radius:999px;border:0;background:var(--acc);color:#fff;cursor:pointer}
+.vw{background:var(--soft);border:0;border-radius:8px;padding:3px 9px;font:13px var(--fb);color:var(--ink);cursor:pointer}.vw b{font-family:var(--fa);font-size:17px;font-weight:400;margin-left:4px}
+.big{font-size:20px;padding:14px 22px;align-self:center}
+.tw{overflow-x:auto}.nt{border-collapse:collapse;width:100%;background:var(--card);font-variant-numeric:tabular-nums}.nt th,.nt td{border-bottom:1px solid var(--line);padding:8px 10px;text-align:left;white-space:nowrap;font-size:14px}.nt th{font-size:12px;color:var(--mute);text-transform:uppercase;letter-spacing:.05em}
+.login{position:fixed;inset:0;background:var(--bg);z-index:20;display:flex;align-items:center;justify-content:center;padding:16px}.login-f{display:flex;flex-direction:column;gap:8px;max-width:360px;width:100%;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}.login-f input{font:16px var(--fb);padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}.userbar{display:flex;justify-content:flex-end;align-items:center;gap:8px;font-weight:700;margin-bottom:8px}
+.note{font-size:12px;color:var(--mute);margin-top:14px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style></head><body>
+
+<div class="login" id="login" hidden><form id="lf" class="login-f"><h2>Darslikka kirish</h2><p class="sub">Ismingiz va o'zingiz o'ylab topgan PIN (kamida 4 raqam). Keyingi safar shu bilan kirasiz.</p><label for="lname">Ism</label><input id="lname" autocomplete="name" required><label for="lpin">PIN</label><input id="lpin" type="password" inputmode="numeric" required><button class="next">Kirish</button><div class="fb bad" id="lerr"></div></form></div>
+<div class="wrap">
+ <div class="userbar"><span id="who"></span><button id="out" class="mode">Chiqish</button></div>
+ <h1>To'rt Imom Darsligi — 25+ yosh</h1>
+ <p class="sub">Kuniga 20 daqiqa · 24 hafta · Molik, Vaki', Shofiiy va Ahmad kitoblaridan</p>
+ <div class="motto">
+  <div class="ar">أَحَبُّ الْأَعْمَالِ إِلَى اللَّهِ أَدْوَمُهَا وَإِنْ قَلَّ</div>
+  <div>«Allohga eng sevimli amal — oz bo'lsa ham, doimiy bo'lganidir» (Musnad, 26307). Bu darslikning asosiy qoidasi shu.</div>
+ </div>
+ <div class="stats">
+  <div class="stat"><span>Zanjir</span><b id="streak">0 kun</b></div>
+  <div class="stat"><span>1-hafta</span><b id="w1">0%</b><div class="bar"><i id="w1b" style="width:0"></i></div></div>
+  <div class="stat"><span>Butun dastur</span><b id="all">0/24</b><div class="bar"><i id="allb" style="width:0"></i></div></div>
+ </div>
+ <div class="tabs" role="tablist">
+  <button role="tab" id="t-hafta" aria-selected="true">Bu hafta</button>
+  <button role="tab" id="t-mashq" aria-selected="false">Mashq</button>
+  <button role="tab" id="t-yol" aria-selected="false">24 haftalik yo'l</button>
+  <button role="tab" id="t-usul" aria-selected="false">Usullar</button>
+  <button role="tab" id="t-naz" aria-selected="false" hidden>Nazorat</button>
+ </div>
+ <section id="p-hafta"><h2>1-hafta: Niyat va poklik</h2><div class="grid" id="days"></div></section>
+ <section id="p-mashq" hidden>
+  <div class="modes" role="group" aria-label="Mashq turi">
+   <button class="mode" id="m-au" aria-pressed="true">Arabcha → O'zbekcha</button>
+   <button class="mode" id="m-ua" aria-pressed="false">O'zbekcha → Arabcha</button>
+   <button class="mode" id="m-es" aria-pressed="false">Eshitib top</button>
+   <button class="mode" id="m-js" aria-pressed="false">Jumla terish</button>
+  </div>
+  <div class="qbox" id="qbox"></div>
+ </section>
+ <section id="p-yol" hidden><div id="stages"></div></section>
+ <section id="p-naz" hidden><h2>Talabalar nazorati</h2><p class="sub" style="margin-bottom:10px">Har bir talabaning belgilari, vaqti va qaysi darsda turgani. Har 30 soniyada yangilanadi.</p><div class="tw" id="naz">Yuklanmoqda…</div></section>
+ <section id="p-usul" hidden><div class="meth" id="meth"></div></section>
+ <p class="note" id="savenote">Belgilar saqlanmoqda…</p>
+</div>
+
+<script>
+/* voc: [so'z, ma'no, o'zak, sarf/nahv izohi] */
+const DAYS=[
+ {t:"Niyat",ar:"إِنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ",uz:"«Amallar faqat niyatlarga qarab baholanadi».",src:"Buxoriy, 1",voc:[["إِنَّمَا","faqat","—","إِنَّ + مَا: hasr (cheklash) yuklamasi; amalini to'xtatadi, keyingi so'z marfu'"],["الْأَعْمَال","amallar","ع م ل","birligi عَمَل; ko'pligi أَفْعَال vaznida. Mubtado — marfu' (ـُ)"],["النِّيَّات","niyatlar","ن و ي","birligi نِيَّة; jam'i muannas solim (ـَات). بِـ bilan majrur (ـِ)"]],task:"Bugun ishga chiqishdan oldin niyat qil: «Halol rizq va oilam uchun»."},
+ {t:"Oz, lekin doimiy",ar:"أَحَبُّ الْأَعْمَالِ إِلَى اللَّهِ أَدْوَمُهَا وَإِنْ قَلَّ",uz:"«Allohga eng sevimli amal — oz bo'lsa ham, doimiy bo'lgani».",src:"Musnad, 26307",voc:[["أَحَبُّ","eng sevimli","ح ب ب","af'alut-tafzil (أَفْعَل — «eng …»). Mubtado, marfu'"],["أَدْوَمُ","eng doimiy","د و م","af'alut-tafzil. Xabar, marfu'; ـهَا «ularning» (amallarning)"],["قَلَّ","oz bo'ldi","ق ل ل","fe'li moziy, muzoaf (ikki harfi bir xil). وَإِنْ قَلَّ — «garchi oz bo'lsa ham»"]],task:"Har kuni qiladigan bitta kichik amalni tanla va bugun boshla."},
+ {t:"Namoz kaliti",ar:"مِفْتَاحُ الصَّلَاةِ الطُّهُورُ",uz:"«Namozning kaliti — tahorat».",src:"Musnad, 14662",voc:[["مِفْتَاح","kalit","ف ت ح","ismi ola (asbob nomi) — مِفْعَال vazni: فَتَحَ «ochdi» → «ochadigan asbob». Mubtado"],["الصَّلَاة","namoz","ص ل و","muzofun ilayh — majrur (ـِ)"],["الطُّهُور","poklanish, tahorat","ط ه ر","طُهُور (ـُ bilan) — poklanish amali; طَهُور (ـَ bilan) — pok qiluvchi suv. Bu yerda xabar, marfu'"]],task:"Muvattodan tahorat farzlarini o'qi. Tahoratni shoshilmasdan ol."},
+ {t:"Iymonning yarmi",ar:"الطُّهُورُ شَطْرُ الْإِيمَانِ",uz:"«Poklik iymonning yarmidir».",src:"Musnad, 22909",voc:[["شَطْر","yarim","ش ط ر","xabar, marfu'; o'zidan keyingi so'zga muzof"],["الْإِيمَان","iymon","أ م ن","آمَنَ (أَفْعَلَ) fe'lining masdari — إِفْعَال vazni. Muzofun ilayh, majrur"]],task:"Uyda yoki ish joyingda bitta joyni tartibga keltir."},
+ {t:"Sakkiz eshik",ar:"فُتِحَتْ لَهُ ثَمَانِيَةُ أَبْوَابِ الْجَنَّةِ يَدْخُلُ مِنْ أَيِّهَا شَاءَ",uz:"Chiroyli tahoratdan keyin shahodat aytgan kishiga «jannatning sakkiz eshigi ochiladi, xohlaganidan kiradi».",src:"Musnad, 121",voc:[["فُتِحَتْ","ochildi","ف ت ح","fe'li moziy majhul (fu'ila), muannas ـَتْ. Noibi fo'ili — ثَمَانِيَةُ"],["أَبْوَاب","eshiklar","ب و ب","birligi بَاب; ko'pligi أَفْعَال vaznida. Muzofun ilayh, majrur"],["يَدْخُلُ","kiradi","د خ ل","fe'li muzori' (hozirgi-kelasi zamon), marfu'"],["شَاءَ","xohladi","ش ي أ","fe'li moziy; ajvaf (o'rta harfi illatli)"]],task:"Har tahoratdan keyin shahodatni ayt (kuniga 5 marta)."},
+ {t:"Daryo misoli",ar:"أَرَأَيْتُمْ لَوْ أَنَّ نَهَرًا بِبَابِ أَحَدِكُمْ يَغْتَسِلُ مِنْهُ كُلَّ يَوْمٍ خَمْسَ مَرَّاتٍ",uz:"«Birortangizning eshigi oldida daryo oqsa va u kuniga besh marta unda yuvinsa, kiri qoladimi?» Besh vaqt namoz ham gunohlarni shunday yuvadi.",src:"Musnad, 8924",voc:[["نَهَرًا","daryo","ن ه ر","أَنَّ ning ismi — mansub (ـًا)"],["بَاب","eshik","ب و ب","بِـ bilan majrur: بِبَابِ «eshigida»"],["يَغْتَسِلُ","yuvinadi","غ س ل","اِفْتَعَلَ (ifti'al) bobi: غَسَلَ «yuvdi» → اِغْتَسَلَ «o'zini yuvdi»"],["مَرَّات","marta","م ر ر","birligi مَرَّة; jam'i muannas solim; خَمْسَ مَرَّاتٍ — son bilan"]],task:"Bugun besh vaqtni ham vaqtida o'qi. Har biridan keyin ✓ qo'y."},
+ {t:"Takror va majlis",ar:"إِنَّ أَوَّلَ مَا يُحَاسَبُ بِهِ النَّاسُ يَوْمَ الْقِيَامَةِ مِنْ أَعْمَالِهِمُ الصَّلَاةُ",uz:"«Qiyomatda odamlar amallaridan birinchi bo'lib namozdan hisob beradi».",src:"Musnad, 9494",voc:[["أَوَّلَ","birinchi","أ و ل","إِنَّ ning ismi — mansub (ـَ)"],["يُحَاسَبُ","hisob qilinadi","ح س ب","فَاعَلَ (mufo'ala) bobi, muzori' majhul"],["الْقِيَامَة","qiyomat","ق و م","قَامَ «turdi» o'zagidan — «tirilib turish kuni»; muzofun ilayh, majrur"],["الصَّلَاةُ","namoz","ص ل و","إِنَّ ning xabari — marfu' (ـُ)"]],task:"Haftaning 6 ta asarini yoddan takrorla. Bittasini oilangga yoki birodaringga tushuntir."}
+];
+const STAGES=[
+ {n:"Ibodat poydevori",w:[["Niyat va poklik","Musnad: tahorat fazilati","Shahodat duosi"],["Namoz vaqtlari","Muvatto: «Vuqut»","Besh vaqtni vaqtida o'qish"],["Namoz sifati","Muvatto: namoz bo'limi","Bir namozni xushu' bilan o'qish"],["Jamoat va juma","Muvatto, Musnad","Haftada 5 marta jamoat"]]},
+ {n:"Halol kasb va savdo",w:[["Halol rizq","Musnad: kasb hadislari","Bir kunlik daromadni halollik bilan tekshirish"],["Savdo odobi","Muvatto: «Buyu'»","Xaridorga aybni aytish"],["Aldov, ihtikor, ribo","Muvatto, Musnad 135","Shubhali bitimni to'xtatish"],["Hukm qanday chiqariladi","Shofiiy: «Risola» kirish","Ishchi haqini vaqtida berish"]]},
+ {n:"Oila",w:[["Er va xotin","Musnad: oila asarlari","Oilaga telefonsiz 1 soat"],["Farzand tarbiyasi","Musnad 6756, 7649","Farzandni o'pish, birga namoz"],["Ota-ona","Musnad 8344, 27528","Ota-onaga xizmat yoki qo'ng'iroq"],["Qarindoshlar","Musnad 6524, 13585","Uzilgan bitta aloqani tiklash"]]},
+ {n:"Qalb va axloq",w:[["Ixlos","Vaki': «Zuhd»","Bitta yashirin yaxshilik"],["Til ofati","Ahmad: «Zuhd»","Bir kun g'iybatsiz"],["Kibr va tavozu'","Vaki', Ahmad","Kichiklarga birinchi salom berish"],["Sabr va tavakkul","Ahmad: «Zuhd»","Qiyin ishda «Alloh yetarli» deyish"]]},
+ {n:"Odob va jamiyat",w:[["Birodarchilik","Musnad","Birodarni ko'rgani borish"],["Sodiqlik va omonat","Musnad 12383, 15424","Va'dani o'z vaqtida bajarish"],["Mehmondorchilik","Musnad, Muvatto","Mehmonni chiroyli kutish"],["Asar majlisi","Ahmad: «Zuhd»","Haftalik majlis o'tkazish"]]},
+ {n:"Takror va ustozlik",w:[["40 asar: 1–20","O'z daftaringiz","Yoddan aytib berish"],["40 asar: 21–40","O'z daftaringiz","Yoddan aytib berish"],["O'rgatish","Jamoa yoki oila","Bitta dars o'tish"],["Yakun","Butun dastur","Keyingi 6 oy rejasini tuzish"]]}
+];
+const METH=[
+ ["Oz, lekin har kuni","20 daqiqa yetadi. Bitta uzun kundan ko'ra har kungi qisqa dars kuchliroq. «Ozi bo'lsa ham, doimiysi» — Musnad 26307."],
+ ["Zanjir","Har kuni kamida bitta belgi qo'ysangiz, zanjir uzaymaydi. Tepadagi raqam kunlarni sanaydi. Zanjirni uzmaslik o'zi motivatsiya beradi."],
+ ["1–3–7 takror","O'qigan asarni ertasi kuni, 3 kundan keyin va 7-kunda takrorlang. Miya shunda uzoq eslab qoladi (spaced repetition)."],
+ ["Ilm → amal","Har bir asarga bitta kichik amal biriktirilgan. «Amal qildim» belgisi eng muhimi: ilm amalda ko'rinadi."],
+ ["O'rgatib o'rganish","7-kuni bitta asarni boshqa odamga tushuntiring. O'zingiz tushuntira olgan narsani chuqur tushungan bo'lasiz."],
+ ["Yengillik qoidasi","Kun qoldirib ketsangiz, qarz yig'ilmaydi. Ertasi kuni ikki barobar emas, oddiygina davom etasiz. «Osonlashtiringlar, qiyinlashtirmanglar» — Musnad 12333."],
+ ["Juma majlisi","Haftada bir marta birodarlar bilan 30 daqiqa: har kim bittadan asar o'qiydi va qanday amal qilganini aytadi."]
+];
+const KEYS=["o","y","a"], LBL={o:"O'qidim",y:"Yodladim",a:"Amal qildim"};
+let S={c:{},log:{}}; let ref=null, lsOK=true;
+const today=()=>new Date().toISOString().slice(0,10);
+function load(){try{const r=localStorage.getItem("t4i25");if(r)S=Object.assign({c:{},log:{}},JSON.parse(r))}catch(e){lsOK=false}}
+let tmr=null;
+const SB="https://zheszanbqkcckxwnrycu.supabase.co",KEY="sb_publishable_JEZ8oYMa1RWRzomTwlYeJw_w0tlLr9J";
+async function rpc(fn,args){const r=await fetch(SB+"/rest/v1/rpc/"+fn,{method:"POST",headers:{"apikey":KEY,"Content-Type":"application/json"},body:JSON.stringify(args)});const j=await r.json().catch(()=>null);if(!r.ok)throw new Error((j&&j.message)||"Xato");return j}
+let ME=null;try{ME=JSON.parse(localStorage.getItem("t4i25me")||"null")}catch(e){}
+function save(){try{localStorage.setItem("t4i25",JSON.stringify(S))}catch(e){}
+ if(ME){clearTimeout(tmr);tmr=setTimeout(()=>rpc("darslik_save",{p_name:ME.n,p_pin:ME.p,p_data:S}).then(ok=>note(ok?"Saqlandi":"Saqlanmadi — qayta kiring")).catch(()=>note("Internet yo'q — keyin saqlanadi")),800)}}
+function note(t){document.getElementById("savenote").textContent=t}
+function streak(){let n=0,d=new Date();for(;;){const k=d.toISOString().slice(0,10);if(S.log[k]){n++;d.setDate(d.getDate()-1)}else if(n===0&&k===today()){d.setDate(d.getDate()-1)}else break}return n}
+function chk(id,label){const b=document.createElement("button");b.className="chk";b.id=id;b.textContent=label;b.setAttribute("aria-pressed",!!S.c[id]);
+ b.onclick=()=>{S.c[id]=!S.c[id];if(S.c[id])S.log[today()]=1;b.setAttribute("aria-pressed",S.c[id]);save();stats()};return b}
+function render(){
+ const g=document.getElementById("days");g.innerHTML="";
+ DAYS.forEach((d,i)=>{const el=document.createElement("article");el.className="day";
+  el.innerHTML=`<div class="dh"><h3>${d.t}</h3><small>${i+1}-kun</small></div><div class="ar">${d.ar}</div><div class="play"><button class="snd" data-say="${d.ar}">▶ Tinglash</button><button class="snd" data-say="${d.ar}" data-slow="1">▶ Sekin</button></div><div>${d.uz}</div><div class="src">${d.src}</div><div class="voc">${d.voc.map(v=>`<button class="vw" data-say="${v[0]}" title="Tinglash"><b>${v[0]}</b> ${v[1]}</button>`).join("")}</div><details class="sarf"><summary>Sarf va nahv</summary>${d.voc.map(v=>`<p><b>${v[0]}</b> · o'zak: <span class="root">${v[2]}</span><br>${v[3]}</p>`).join("")}</details><div class="task"><b>Amal:</b> ${d.task}</div>`;
+  const c=document.createElement("div");c.className="checks";KEYS.forEach(k=>c.appendChild(chk(`d${i}${k}`,LBL[k])));el.appendChild(c);
+  if(KEYS.every(k=>S.c[`d${i}${k}`]))el.classList.add("full");g.appendChild(el)});
+ const st=document.getElementById("stages");st.innerHTML="";let wn=0;
+ STAGES.forEach((s,si)=>{const sec=document.createElement("div");sec.className="stage";sec.innerHTML=`<h2><span>${si+1}-bosqich</span>${s.n}</h2>`;const gr=document.createElement("div");gr.className="grid";
+  s.w.forEach(w=>{wn++;const el=document.createElement("div");el.className="wk";el.innerHTML=`<h3>${wn}-hafta · ${w[0]}</h3><p>Manba: ${w[1]}</p><p>Amal: ${w[2]}</p>`;const c=document.createElement("div");c.className="checks";c.appendChild(chk(`w${wn}`,"Hafta tugadi"));el.appendChild(c);gr.appendChild(el)});
+  sec.appendChild(gr);st.appendChild(sec)});
+ document.getElementById("meth").innerHTML=METH.map(m=>`<div><h3>${m[0]}</h3><p>${m[1]}</p></div>`).join("");
+ stats()}
+function stats(){let d=0;DAYS.forEach((x,i)=>KEYS.forEach(k=>{if(S.c[`d${i}${k}`])d++}));const p=Math.round(d/21*100);
+ document.getElementById("w1").textContent=p+"%";document.getElementById("w1b").style.width=p+"%";
+ let w=0;for(let i=1;i<=24;i++)if(S.c["w"+i])w++;document.getElementById("all").textContent=w+"/24";document.getElementById("allb").style.width=(w/24*100)+"%";
+ document.getElementById("streak").textContent=streak()+" kun";
+ document.querySelectorAll(".day").forEach((el,i)=>el.classList.toggle("full",KEYS.every(k=>S.c[`d${i}${k}`])))}
+/* ---- Mashq: so'z topish (2 yo'nalish) va jumla terish; xatolar navbat oxiriga qaytadi ---- */
+const POOL=DAYS.flatMap(d=>d.voc.map(v=>({ar:v[0],uz:v[1]})));
+const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+let mode="au",Q=[],qi=0,score=0,tries=0;
+function startMode(m){mode=m;["au","ua","es","js"].forEach(x=>document.getElementById("m-"+x).setAttribute("aria-pressed",x===m));
+ Q=m==="js"?shuf(DAYS.map((d,i)=>i)):shuf(POOL);qi=0;score=0;tries=0;ask()}
+let booted=false;
+function ask(){const box=document.getElementById("qbox");box.innerHTML="";
+ if(qi>=Q.length){box.innerHTML=`<h2>Tugadi!</h2><p>${tries} urinishdan ${score} tasi birinchi urinishda to'g'ri.</p>`;const b=document.createElement("button");b.className="next";b.textContent="Qaytadan";b.onclick=()=>startMode(mode);box.appendChild(b);return}
+ const top=document.createElement("div");top.className="qtop";top.innerHTML=`<span>${qi+1} / ${Q.length}</span><span>To'g'ri: ${score}</span>`;box.appendChild(top);
+ const fb=document.createElement("div");fb.className="fb";
+ const nx=document.createElement("button");nx.className="next";nx.textContent="Keyingisi";nx.hidden=true;nx.onclick=()=>{qi++;ask()};
+ if(mode==="js"){const d=DAYS[Q[qi]],words=d.ar.split(" ");let built=[];
+  box.insertAdjacentHTML("beforeend",`<div>${d.uz}</div><div class="play"><button class="snd" data-say="${d.ar}" data-slow="1">▶ Matnni eshitish</button></div><div class="src">Arabcha matnni so'zlarni bosib, to'g'ri tartibda tering</div>`);
+  const bl=document.createElement("div");bl.className="built";const pl=document.createElement("div");pl.className="pool";
+  const draw=()=>{bl.innerHTML="";pl.innerHTML="";built.forEach((w,k)=>{const t=document.createElement("button");t.className="tok";t.textContent=w.w;t.onclick=()=>{built.splice(k,1);draw()};bl.appendChild(t)});
+   pool.forEach(w=>{if(built.includes(w))return;const t=document.createElement("button");t.className="tok";t.textContent=w.w;t.onclick=()=>{built.push(w);draw();check()};pl.appendChild(t)})};
+  const pool=shuf(words.map((w,k)=>({w,k})));let first=true;
+  const check=()=>{if(built.length<words.length)return;tries++;if(built.map(x=>x.w).join(" ")===d.ar){if(first)score++;fb.className="fb ok";fb.textContent="To'g'ri! Barakalloh.";nx.hidden=false}else{first=false;fb.className="fb bad";fb.textContent="Tartib xato. So'zni bosib qaytaring va qayta tering.";}};
+  box.append(bl,pl,fb,nx);draw();return}
+ const it=Q[qi],toUz=mode!=="ua";
+ if(mode==="es"){box.insertAdjacentHTML("beforeend",`<button class="snd big" data-say="${it.ar}">▶ Qayta eshitish</button><div class="src" style="text-align:center">So'zni eshiting va ma'nosini toping</div>`);say(it.ar)}
+ else box.insertAdjacentHTML("beforeend",`<div class="qword ${toUz?"ar":""}" style="${toUz?"font-family:var(--fa)":""}">${toUz?it.ar:it.uz}</div>`);
+ const wrong=shuf(POOL.filter(p=>p.uz!==it.uz)).slice(0,3),opts=shuf([it,...wrong]),grid=document.createElement("div");grid.className="opts";let first=true;
+ opts.forEach(o=>{const b=document.createElement("button");b.className="opt"+(toUz?"":" arw");b.textContent=toUz?o.uz:o.ar;
+  b.onclick=()=>{if(!nx.hidden)return;if(o===it){b.classList.add("ok");if(first){score++}else{Q.push(it)}tries++;fb.className="fb ok";fb.textContent=first?"To'g'ri!":"To'g'ri. Bu so'z oxirida yana chiqadi.";nx.hidden=false}else{first=false;b.classList.add("bad");fb.className="fb bad";fb.textContent="Yana urinib ko'ring."}};grid.appendChild(b)});
+ box.append(grid,fb,nx)}
+["au","ua","es","js"].forEach(m=>document.getElementById("m-"+m).onclick=()=>startMode(m));
+/* Ovoz: avval Claude ovozi (tts, arabcha), bo'lmasa brauzerning arabcha ovozi */
+let TTS=null;
+async function say(text,slow){const rate=slow?0.7:0.9;
+ if(TTS){try{await TTS.speak(text,{language:"ar",rate});return}catch(e){if(e&&e.code==="not_granted")TTS=null}}
+ try{if("speechSynthesis" in window){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang="ar-SA";u.rate=slow?0.6:0.85;
+  const v=speechSynthesis.getVoices().find(x=>x.lang&&x.lang.startsWith("ar"));if(v)u.voice=v;speechSynthesis.speak(u)}}catch(e){}}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-say]");if(b)say(b.dataset.say,!!b.dataset.slow)});
+
+startMode("au");
+["hafta","mashq","yol","usul","naz"].forEach(n=>document.getElementById("t-"+n).onclick=()=>{["hafta","mashq","yol","usul","naz"].forEach(m=>{document.getElementById("p-"+m).hidden=m!==n;document.getElementById("t-"+m).setAttribute("aria-selected",m===n)})});
+load();render();note(lsOK?"Belgilar shu brauzerda saqlanadi":"Belgilar saqlanmayapti");
+/* Vaqt hisobi: sahifa ochiq va ko'rinib turgan har 15 soniya qo'shiladi */
+S.time=S.time||{};let dirtyT=false;
+setInterval(()=>{if(document.visibilityState==="visible"&&document.hasFocus()){const k=today();S.time[k]=(S.time[k]||0)+15;dirtyT=true}},15000);
+setInterval(()=>{if(dirtyT){dirtyT=false;save()}},60000);
+function pos(st){for(let i=0;i<DAYS.length;i++){if(!KEYS.every(k=>st.c&&st.c[`d${i}${k}`]))return `1-hafta, ${i+1}-kun`}let w=1;while(st.c&&st.c["w"+w])w++;return w>24?"Dastur tugadi":`${w}-hafta`}
+const fmt=s=>{s=s||0;const h=Math.floor(s/3600),m=Math.floor(s%3600/60);return h?`${h} soat ${m} daq`:`${m} daq`};
+function table(rows){const t=today();return rows.length?`<table class="nt"><thead><tr><th>Talaba</th><th>Hozir</th><th>Bugun</th><th>Jami vaqt</th><th>1-hafta</th><th>Haftalar</th><th>Oxirgi faollik</th></tr></thead><tbody>${rows.map(r=>{const v=r.data||{},c=v.c||{},tm=v.time||{};let d=0;DAYS.forEach((x,i)=>KEYS.forEach(k=>{if(c[`d${i}${k}`])d++}));let w=0;for(let i=1;i<=24;i++)if(c["w"+i])w++;const tot=Object.values(tm).reduce((a,b)=>a+b,0);const last=r.updated_at?new Date(r.updated_at).toLocaleString("uz"):"—";
+ return `<tr><td>${esc(r.name)}</td><td>${pos(v)}</td><td>${fmt(tm[t])}</td><td>${fmt(tot)}</td><td>${Math.round(d/21*100)}%</td><td>${w}/24</td><td>${last}</td></tr>`}).join("")}</tbody></table>`:"<p>Hali hech kim boshlamagan.</p>"}
+let APIN=null;
+async function adminLoad(){try{const rows=await rpc("darslik_admin_list",{p_pin:APIN});document.getElementById("naz").innerHTML=table(rows)}catch(e){document.getElementById("naz").textContent=e.message}}
+async function adminOpen(){const has=await rpc("darslik_admin_exists",{}).catch(()=>true);const box=document.getElementById("naz");
+ box.innerHTML=`<form id="af" class="login-f"><label for="apin">${has?"Admin PIN":"Yangi admin PIN o'rnating (kamida 6 raqam)"}</label><input id="apin" type="password" inputmode="numeric" autocomplete="off"><button class="next">${has?"Kirish":"O'rnatish"}</button><div class="fb bad" id="aerr"></div></form>`;
+ document.getElementById("af").onsubmit=async e=>{e.preventDefault();const v=document.getElementById("apin").value;try{if(!has){const ok=await rpc("darslik_admin_set",{p_pin:v});if(!ok)throw new Error("Admin PIN allaqachon o'rnatilgan")}APIN=v;await adminLoad();setInterval(adminLoad,30000)}catch(err){document.getElementById("aerr").textContent=err.message}}}
+if(new URLSearchParams(location.search).has("admin")){document.getElementById("t-naz").hidden=false;adminOpen()}
+function showLogin(){document.getElementById("login").hidden=false}
+document.getElementById("lf").onsubmit=async e=>{e.preventDefault();const n=document.getElementById("lname").value.trim(),p=document.getElementById("lpin").value.trim(),er=document.getElementById("lerr");er.textContent="";
+ try{const r=await rpc("darslik_join",{p_name:n,p_pin:p});if(!r.ok){er.textContent="Bu ism band yoki PIN noto'g'ri";return}
+  ME={n,p};try{localStorage.setItem("t4i25me",JSON.stringify(ME))}catch(e){}
+  const v=r.data||{};S={c:Object.assign({},v.c,S.c),log:Object.assign({},v.log,S.log),time:Object.assign({},v.time,S.time)};
+  document.getElementById("login").hidden=true;document.getElementById("who").textContent=n;render();save()}catch(err){er.textContent=err.message}};
+document.getElementById("out").onclick=()=>{try{localStorage.removeItem("t4i25me");localStorage.removeItem("t4i25")}catch(e){}location.reload()};
+if(ME){document.getElementById("who").textContent=ME.n;rpc("darslik_join",{p_name:ME.n,p_pin:ME.p}).then(r=>{if(!r.ok){showLogin();return}const v=r.data||{};S={c:Object.assign({},v.c,S.c),log:Object.assign({},v.log,S.log),time:Object.assign({},v.time,S.time)};render();note("Saqlanadi — istalgan telefonda shu ism va PIN bilan kiring")}).catch(()=>note("Internet yo'q — belgilar telefonda turadi"))}else showLogin();
+function esc(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML}
+</script>
+
+</body></html>

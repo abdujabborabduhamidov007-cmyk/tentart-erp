@@ -1,6 +1,10 @@
 {
  "rewrites": [
   {
+   "source": "/darslik",
+   "destination": "/darslik.html"
+  },
+  {
    "source": "/rasxod",
    "destination": "/rasxod.html"
   },
