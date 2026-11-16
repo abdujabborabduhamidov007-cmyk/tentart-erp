@@ -501,7 +501,8 @@
 
     // Rasxod tarkibi
     const by = {};
-    rows.filter((r) => r.tur === 'chiqim' && r.kategoriya !== 'otkazma' && r.kategoriya !== 'konvertatsiya').forEach((r) => { const k = katL(r); by[k] = (by[k] || 0) + n0(r.summa) * (r.valyuta === 'usd' ? n0(r.kurs) || 12000 : 1); });
+    rows.filter((r) => r.tur === 'chiqim' && r.kategoriya !== 'otkazma' && r.kategoriya !== 'konvertatsiya' && r.valyuta !== 'usd').forEach((r) => { const k = katL(r); by[k] = (by[k] || 0) + n0(r.summa); });
+    const usdOut = rows.filter((r) => r.tur === 'chiqim' && r.kategoriya !== 'otkazma' && r.kategoriya !== 'konvertatsiya' && r.valyuta === 'usd').reduce((a, r) => a + n0(r.summa), 0);
     const arr = Object.entries(by).sort((a, b) => b[1] - a[1]);
     const tot = arr.reduce((a, [, v]) => a + v, 0) || 1;
     $('ks-split').innerHTML = arr.length ? arr.slice(0, 8).map(([k, v]) => `<div style="display:grid;grid-template-columns:120px minmax(0,1fr) 84px;gap:12px;align-items:center;font-size:13px"><span style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(k)}</span><div class="prog" style="height:8px"><div class="prog-f" style="width:${Math.round((v / tot) * 100)}%"></div></div><span class="muted" style="text-align:right">${esc(mln(v))}</span></div>`).join('')
@@ -512,7 +513,8 @@
     const usd = conv.reduce((a, r) => a + n0(r.usd), 0);
     const berildi = (KB.dft || []).filter((r) => String(r.sana).startsWith(KB.ksMonth) && r.kategoriya === 'otkazma' && r.tur === 'chiqim' && r.valyuta !== 'usd').reduce((a, r) => a + n0(r.summa), 0);
     const line = (l, v) => `<div style="display:flex;justify-content:space-between;gap:12px;font-size:14px;border-bottom:1px solid #ECE4D4;padding:10px 0"><span class="muted">${l}</span><b>${v}</b></div>`;
-    $('ks-fx').innerHTML = line("Shu oy $ → so'm", '$' + esc(money(usd, 'USD').replace('$', '')))
+    $('ks-fx').innerHTML = line('Shu oy dollar hamyondan xarajat', esc(money(usdOut, 'USD')))
+      + line("Shu oy $ → so'm", '$' + esc(money(usd, 'USD').replace('$', '')))
       + line("Shu oy so'mga aylandi", esc(money(conv.reduce((a, r) => a + n0(r.summa), 0))) + " so'm")
       + line("Shu oy pul berildi (o'tkazma)", esc(money(berildi)) + " so'm");
   }

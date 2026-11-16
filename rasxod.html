@@ -79,6 +79,7 @@ body.ro .wr{display:none!important}
 .bal-row{display:flex;gap:10px;margin-top:10px}
 .bal-usd{display:flex;align-items:baseline;gap:10px;margin-top:6px;background:var(--ink2);border-radius:12px;padding:8px 12px}
 .bal-usd span{font-size:12px;color:#BFB4A0;flex:1}.bal-usd b{font-family:var(--serif);font-size:24px;color:#9FD3B0}.bal-usd b.neg{color:#E7A08F}
+.usdv{color:#2F6B45;white-space:nowrap}
 .vtag{font-size:11px;font-weight:700;color:#2F6B45;background:#E5EFE7;border-radius:6px;padding:1px 5px;margin-left:4px}
 .bal-c{flex:1;background:var(--ink2);border-radius:12px;padding:9px 12px}
 .bal-c span{display:block;font-size:11px;color:#BFB4A0;font-weight:600}
@@ -207,10 +208,14 @@ body.ro .wr{display:none!important}
       <div class="bal">
         <div class="bal-k">So'm hamyon · qoldiq</div>
         <div class="bal-v num" id="g-bal">0<small>so'm</small></div>
-        <div class="bal-usd"><span>Dollar hamyon</span><b class="num" id="g-usd">$0</b></div>
         <div class="bal-row">
-          <div class="bal-c"><span>Tushgan (prixod)</span><b class="num" id="g-in">0</b></div>
-          <div class="bal-c"><span>Sarflangan (hammasi)</span><b class="num" id="g-out">0</b></div>
+          <div class="bal-c"><span>Tushgan (so'm)</span><b class="num" id="g-in">0</b></div>
+          <div class="bal-c"><span>Sarflangan (so'm)</span><b class="num" id="g-out">0</b></div>
+        </div>
+        <div class="bal-usd" style="margin-top:12px"><span>Dollar hamyon · qoldiq</span><b class="num" id="g-usd">$0</b></div>
+        <div class="bal-row" style="margin-top:6px">
+          <div class="bal-c"><span>Tushgan ($)</span><b class="num" id="g-uin">$0</b></div>
+          <div class="bal-c"><span>Sarflangan ($)</span><b class="num" id="g-uout">$0</b></div>
         </div>
         <div class="bal-act wr">
           <button class="btn gold sm" onclick="togg('gf-in')">+ Prixod</button>
@@ -410,8 +415,11 @@ function buildOy(){
 const inPer=r=>S.oy==='all'||mk(r.sana)===S.oy;
 // "Oylik (hisob)" — faqat hisob: pul obyektlarda "Usta puli" bo'lib allaqachon berilgan, kassadan ikkinchi marta chiqmaydi
 const hisobOnly=r=>r.bolim==='ishga_oid'&&r.kategoriya==='oylik';
-const sum=a=>a.reduce((s,r)=>s+(hisobOnly(r)?0:eq(r)),0);
-const sumAll=a=>a.reduce((s,r)=>s+eq(r),0);
+const sum=a=>a.reduce((s,r)=>s+(hisobOnly(r)||isUsd(r)?0:r.summa),0);
+const sumU=a=>a.reduce((s,r)=>s+(hisobOnly(r)||!isUsd(r)?0:r.summa),0);
+// so'm + dollar alohida ko'rsatiladi (konvertatsiyasiz)
+const T=(a,sg='')=>{const x=sum(a),u=sumU(a);return (x||!u?sg+fmt(x):'')+(u?`${x?' · ':''}<span class="usdv">${sg}${fU(u)}</span>`:'');};
+const sumAll=a=>a.reduce((s,r)=>s+(isUsd(r)?0:r.summa),0);
 // Dollar hamyon: valyuta='usd' yozuvlar summasi dollarda; hisobot jamlarida so'm ekvivalenti (kurs bo'yicha) olinadi
 const isUsd=r=>r.valyuta==='usd';
 function eq(r){return isUsd(r)?r.summa*(+r.kurs||lastKurs()||0):r.summa;}
@@ -455,7 +463,7 @@ async function addKirim(bolim,p){
     hap();toast('Saqlandi');$('gi-s').value='';$('gi-i').value='';await load();return;
   }
   const kv=p==='gi'?VS.gi:'uzs';
-  const ok=await ins({bolim,tur:'kirim',kategoriya:'prixod',summa:s,valyuta:kv,kurs:kv==='usd'?(lastKurs()||null):null,izoh:$(p+'-i')?.value.trim()||null,sana:$(p+'-d')?.value||today(),obyekt_id:bolim==='obyekt'?S.obj:null,usul:kv==='usd'?'naqd':($(p+'-pt')?.value||'naqd')});
+  const ok=await ins({bolim,tur:'kirim',kategoriya:'prixod',summa:s,valyuta:kv,izoh:$(p+'-i')?.value.trim()||null,sana:$(p+'-d')?.value||today(),obyekt_id:bolim==='obyekt'?S.obj:null,usul:kv==='usd'?'naqd':($(p+'-pt')?.value||'naqd')});
   if(ok){$(p+'-s').value='';if($(p+'-i'))$(p+'-i').value='';}
 }
 async function addConv(bolim,p){
@@ -489,7 +497,7 @@ async function addChiqim(bolim){
   if(bolim==='obyekt'&&!iz&&!ish){toast('Izoh yozing (nimaga sarflandi)');return;}
   const ishN=ish?(S.AI.find(w=>w.id===ish)||{}).ism:'';
   const row={bolim,tur:'chiqim',kategoriya:k,summa:s,izoh:iz||(ishN?cat(bolim,k).l+' — '+ishN:null),sana:(usd?$(p+'-ud'):$(p+'-d')).value||today(),obyekt_id:bolim==='obyekt'?S.obj:null,ishchi_id:ish,usul:$(p+'-pt')?.value||'naqd'};
-  if(usd){row.valyuta='usd';row.usul='naqd';row.kurs=uk||lastKurs()||null;if(uk)try{localStorage.setItem('rx-kurs',uk);}catch(e){}}
+  if(usd){row.valyuta='usd';row.usul='naqd';}
   const ok=await ins(row);
   if(ok){$(p+'-s').value='';$(p+'-u').value='';$(p+'-i').value='';if($(p+'-k'))$(p+'-k').value='';autoHint(bolim);}
 }
@@ -497,7 +505,7 @@ const CUR={};
 function lastKurs(){const k=S.Y.filter(r=>+r.kurs>0).sort((a,b)=>String(b.sana).localeCompare(String(a.sana))||b.id-a.id)[0];if(k)return +k.kurs;try{return +localStorage.getItem('rx-kurs')||null;}catch(e){return null;}}
 function curSw(b,c){CUR[b]=c;const u=c==='usd';$('c-'+b+'-uzs').classList.toggle('hide',u);$('c-'+b+'-usd').classList.toggle('hide',!u);
   const pl=$('c-'+b+'-uzs').previousElementSibling.querySelectorAll('.pill');pl[0].classList.toggle('on',!u);pl[1].classList.toggle('on',u);if(u)cuPrev(b);}
-function cuPrev(b){const u=val('c-'+b+'-u'),k=val('c-'+b+'-uk');const av=S.Y?wallet(S.Y,'usd'):0;$('c-'+b+'-upv').innerHTML=`<b>Dollar hamyondan</b> ayriladi (hozir ${fU(av)})`+(u&&k?` · hisobotda ≈ ${fmt(u*k)} so'm`:'');}
+function cuPrev(b){const av=S.Y?wallet(S.Y,'usd'):0;$('c-'+b+'-upv').innerHTML=`<b>Dollar hamyondan</b> dollar bo'lib ayriladi (hozir ${fU(av)}) — so'mga aylantirilmaydi`;}
 function autoHint(b){const p='c-'+b;const el=$(p+'-ah');if(!el)return;const sel=$(p+'-k')?.value;const k=sel||(b==='ishga_oid'?S.ishKat:detect(b,$(p+'-i').value));el.innerHTML=sel?'':`Toifa avtomatik: <b>${esc(cat(b,k).l)}</b>`;
   const wb=$(p+'-wb');if(wb){const need=b==='ishga_oid'?ISHCHILI.includes(S.ishKat):['usta','abed'].includes(k);wb.classList.toggle('hide',!need);}}
 function chiqimForm(b,ph){
@@ -506,8 +514,7 @@ function chiqimForm(b,ph){
   const usd=CUR[b]==='usd';
   return `<div class="pills" style="margin-bottom:10px"><button class="pill ${usd?'':'on'}" onclick="curSw('${b}','uzs')">So'mda</button><button class="pill ${usd?'on':''}" onclick="curSw('${b}','usd')">Dollarda</button></div>
   <div class="row ${usd?'hide':''}" id="c-${b}-uzs"><div><label class="lab">Summa (so'm)</label><input class="f num" id="c-${b}-s" type="number" inputmode="decimal" placeholder="150000"></div><div><label class="lab">Sana</label><input class="f" id="c-${b}-d" type="date" value="${today()}"></div></div>
-  <div class="${usd?'':'hide'}" id="c-${b}-usd"><div class="row"><div><label class="lab">Summa ($)</label><input class="f num" id="c-${b}-u" type="number" inputmode="decimal" placeholder="500" oninput="cuPrev('${b}')"></div><div><label class="lab">Kurs (hisobot uchun)</label><input class="f num" id="c-${b}-uk" type="number" inputmode="decimal" placeholder="12650" value="${lastKurs()||''}" oninput="cuPrev('${b}')"></div></div>
-  <div class="row mt"><div><label class="lab">Sana</label><input class="f" id="c-${b}-ud" type="date" value="${today()}"></div><div></div></div><div class="pv" style="color:var(--muted,#5E574C)" id="c-${b}-upv">Dollar hamyondan ayriladi</div></div>
+  <div class="${usd?'':'hide'}" id="c-${b}-usd"><div class="row"><div><label class="lab">Summa ($)</label><input class="f num" id="c-${b}-u" type="number" inputmode="decimal" placeholder="500" oninput="cuPrev('${b}')"></div><div><label class="lab">Sana</label><input class="f" id="c-${b}-ud" type="date" value="${today()}"></div></div><div class="pv" style="color:var(--muted,#5E574C)" id="c-${b}-upv">Dollar hamyondan ayriladi</div></div>
   <label class="lab mt">Izoh</label><input class="f" id="c-${b}-i" placeholder="${ph}" oninput="autoHint('${b}')">
   <div class="row mt">${b!=='ishga_oid'?`<div><label class="lab">Toifa</label><select class="f" id="c-${b}-k" onchange="autoHint('${b}')"><option value="">Avtomatik</option>${opts}</select></div>`:''}${b!=='shaxsiy'?`<div style="flex:0 0 36%"><label class="lab">To'lov</label>${usulSel('c-'+b+'-pt')}</div>`:''}</div>
   <div class="auto" id="c-${b}-ah"></div>${b!=='shaxsiy'?wsel:''}
@@ -519,8 +526,8 @@ function items(arr,b,opt={}){
   if(!arr.length)return `<div class="empty">${opt.empty||'Hozircha yozuv yo\'q'}</div>`;
   const by={};arr.forEach(r=>(by[r.sana]=by[r.sana]||[]).push(r));
   return Object.keys(by).sort().reverse().map(d=>{
-    const rs=by[d];const t=sum(rs.filter(r=>r.tur==='chiqim'));
-    return `<div class="dh"><span>${kunNom(d)}</span><span class="num">${t?'−'+fmt(t):''}</span></div>`+rs.map(r=>{
+    const rs=by[d];const cr=rs.filter(xarajat);
+    return `<div class="dh"><span>${kunNom(d)}</span><span class="num">${cr.length?T(cr,'−'):''}</span></div>`+rs.map(r=>{
       const c=rowCat(r);
       const w=r.ishchi_id?(S.AI.find(x=>x.id===r.ishchi_id)||{}).ism:'';
       const o=opt.obj&&r.obyekt_id?(S.AO.find(x=>x.id===r.obyekt_id)||{}).nom:'';
@@ -544,10 +551,10 @@ function tqBadge(r){
   return '<span class="tq wait">tekshiruvda</span>';
 }
 function bars(arr,b){
-  arr=arr.filter(r=>r.kategoriya!=='konvertatsiya');const by={};arr.forEach(r=>by[r.kategoriya]=(by[r.kategoriya]||0)+eq(r));
-  const tot=sum(arr)||1;const ks=Object.keys(by).sort((a,c)=>by[c]-by[a]);
+  arr=arr.filter(r=>r.kategoriya!=='konvertatsiya');const by={};arr.forEach(r=>{const k=r.kategoriya+'|'+(isUsd(r)?'usd':'uzs');by[k]=(by[k]||0)+r.summa;});
+  const tot={uzs:sum(arr)||1,usd:sumU(arr)||1};const ks=Object.keys(by).sort((a,c)=>(a.endsWith('usd')-c.endsWith('usd'))||by[c]-by[a]);
   if(!ks.length)return '';
-  return `<div class="bars">${ks.map(k=>{const c=cat(b,k);return `<div><div class="bar-h"><span>${esc(c.l)}</span><span class="num">${fmt(by[k])} · ${Math.round(by[k]/tot*100)}%</span></div><div class="bar"><i style="width:${by[k]/tot*100}%;background:${c.c}"></i></div></div>`;}).join('')}</div>`;
+  return `<div class="bars">${ks.map(k=>{const [kk,v]=k.split('|');const c=cat(b,kk);const pc=by[k]/tot[v]*100;return `<div><div class="bar-h"><span>${esc(c.l)}${v==='usd'?' <span class="vtag">$</span>':''}</span><span class="num">${v==='usd'?fU(by[k]):fmt(by[k])} · ${Math.round(pc)}%</span></div><div class="bar"><i style="width:${pc}%;background:${c.c}"></i></div></div>`;}).join('')}</div>`;
 }
 
 // ── render ──
@@ -559,6 +566,7 @@ function render(){
   const out=sum(U.filter(r=>r.tur==='chiqim'));
   const bal=gIn-out,ub=wallet(S.Y,'usd');
   $('g-usd').textContent=fU(ub);$('g-usd').classList.toggle('neg',ub<0);
+  const UU=S.Y.filter(isUsd);$('g-uin').textContent=fU(sumU(UU.filter(r=>r.bolim==='umumiy'&&r.tur==='kirim')));$('g-uout').textContent=fU(sumU(UU.filter(r=>r.tur==='chiqim')));
   $('g-bal').className='bal-v num'+(bal<0?' neg':'');$('g-bal').innerHTML=(bal<0?'−':'')+fmt(Math.abs(bal))+'<small>so\'m</small>';
   $('g-in').textContent=fmt(gIn);$('g-out').textContent=fmt(out);
   $('g-hist-l').innerHTML=`<div style="color:#D9CFBD">${items(S.Y.filter(r=>r.bolim==='umumiy'),'umumiy',{empty:'Prixod hali kiritilmagan'})}</div>`;
@@ -583,7 +591,7 @@ function rNazorat(){
     ${st.length?`<table class="tbl"><tr><th>Kim</th><th>Kirim</th><th>Chiqim</th><th>Qoldiq so'm</th><th>Qoldiq $</th></tr>${st.map(x=>`<tr><td>${esc(x.p.ism)}${x.w?` <span class="tq wait">${x.w}</span>`:''}${x.s?` <span class="tq q">${x.s}?</span>`:''}</td><td>${fM(x.ki)}</td><td>${fM(x.ch)}</td><td><b class="${x.q<0?'neg':''}">${x.q<0?'−':''}${fM(Math.abs(x.q))}</b></td><td><b class="${x.u<0?'neg':''}">${fU(x.u)}</b></td></tr>`).join('')}<tr><td>Jami</td><td>${fM(sum(st.map(x=>({summa:x.ki}))))}</td><td>${fM(sum(st.map(x=>({summa:x.ch}))))}</td><td>${fM(sum(st.map(x=>({summa:x.q}))))}</td><td>${fU(st.reduce((a,x)=>a+x.u,0))}</td></tr></table>`:'<div class="empty">Hali yozuv yo\'q</div>'}</div>
   <div class="card"><div class="ct">Tekshirish</div><div class="cs">Har bir yozuvni ko'rib, ✓ bilan tasdiqlang yoki ? bilan savol bering. Kassaga va ERP'ga yozuvlar avtomatik tushgan — qayta kiritish shart emas.</div>
     <div class="pills mt"><button class="pill ${S.nzF==='kutilmoqda'?'on':''}" onclick="S.nzF='kutilmoqda';render()">Tekshirilmagan (${nW})</button><button class="pill ${S.nzF==='savol'?'on':''}" onclick="S.nzF='savol';render()">Savol (${nS})</button><button class="pill ${S.nzF==='tasdiqlandi'?'on':''}" onclick="S.nzF='tasdiqlandi';render()">Tasdiqlangan</button></div>
-    ${groups.length?groups.map(g=>`<div class="ph"><b>${esc(g.p.ism)}</b><span class="cs">${g.a.length} ta · ${fmt(sum(g.a.filter(r=>r.tur==='chiqim')))} chiqim</span><span class="sp"></span>${S.nzF!=='tasdiqlandi'?`<button class="btn green sm" onclick="tasdiq([${g.a.map(r=>r.id).join(',')}],'tasdiqlandi')">Hammasi ✓</button>`:''}</div>${g.a.map(nzItem).join('')}`).join(''):`<div class="empty">${S.nzF==='kutilmoqda'?'Hammasi tekshirilgan 👍':'Yozuv yo\'q'}</div>`}
+    ${groups.length?groups.map(g=>`<div class="ph"><b>${esc(g.p.ism)}</b><span class="cs">${g.a.length} ta · ${T(g.a.filter(r=>r.tur==='chiqim'))} chiqim</span><span class="sp"></span>${S.nzF!=='tasdiqlandi'?`<button class="btn green sm" onclick="tasdiq([${g.a.map(r=>r.id).join(',')}],'tasdiqlandi')">Hammasi ✓</button>`:''}</div>${g.a.map(nzItem).join('')}`).join(''):`<div class="empty">${S.nzF==='kutilmoqda'?'Hammasi tekshirilgan 👍':'Yozuv yo\'q'}</div>`}
   </div>`;
 }
 function nzItem(r){
@@ -601,9 +609,9 @@ function savolBer(id){const r=S.ALL.find(x=>x.id===id);sheet(`<div class="ct">Sa
 
 function rObyekt(){
   const objs=S.O.filter(o=>S.showClosed||!o.yopilgan||o.id===S.obj);
-  const st=o=>{const rs=S.Y.filter(r=>r.obyekt_id===o.id);const i=sum(rs.filter(r=>r.tur==='kirim')),x=sum(rs.filter(r=>r.tur==='chiqim'));return {i,x,b:i-x,rs};};
+  const st=o=>{const rs=S.Y.filter(r=>r.obyekt_id===o.id);const ki=rs.filter(r=>r.tur==='kirim'),ch=rs.filter(xarajat);const i=sum(ki),x=sum(ch),iu=sumU(ki),xu=sumU(ch);return {i,x,b:i-x,iu,xu,bu:iu-xu,rs};};
   const closedN=S.O.filter(o=>o.yopilgan).length;
-  let h=`<div class="chips">${objs.map(o=>{const s=st(o);return `<button class="chip ${o.id===S.obj?'on':''} ${o.yopilgan?'off':''}" onclick="S.obj=${o.id};render()"><b>${esc(o.nom)}</b><span class="num">−${fmt(s.x)}</span></button>`;}).join('')}<button class="chip add wr" onclick="$('nobj').classList.toggle('hide')">+ Obyekt</button></div>
+  let h=`<div class="chips">${objs.map(o=>{const s=st(o);return `<button class="chip ${o.id===S.obj?'on':''} ${o.yopilgan?'off':''}" onclick="S.obj=${o.id};render()"><b>${esc(o.nom)}</b><span class="num">−${fmt(s.x)}${s.xu?' · −'+fU(s.xu):''}</span></button>`;}).join('')}<button class="chip add wr" onclick="$('nobj').classList.toggle('hide')">+ Obyekt</button></div>
   ${closedN?`<button class="link" onclick="S.showClosed=!S.showClosed;render()">${S.showClosed?'Yopilganlarni yashirish':`Yopilgan obyektlar (${closedN})`}</button>`:''}
   <div class="card wr ${S.O.length?'hide':''}" id="nobj"><div class="ct">Yangi obyekt</div>
     <label class="lab mt">Nomi</label><input class="f" id="no-n" placeholder="masalan: Yunusobod, pergola 4×6">
@@ -615,6 +623,7 @@ function rObyekt(){
   h+=`<div class="card"><div class="ct"><span>${esc(o.nom)}</span><span class="sp"></span>${o.yopilgan?'<span class="tag">YOPILGAN</span>':''}</div>
     <div class="cs">${o.deadline?'Muddat: '+kunNom(o.deadline)+' · '+dl(o.deadline):'Muddat belgilanmagan'} <button class="link wr" onclick="editObj()">o'zgartirish</button></div>
     <div class="kpis"><div class="kpi"><span>Tushgan</span><b class="num pos">${fmt(s.i)}</b></div><div class="kpi"><span>Sarflangan</span><b class="num">${fmt(s.x)}</b></div><div class="kpi"><span>Qoldiq</span><b class="num ${s.b<0?'neg':''}">${s.b<0?'−':''}${fmt(Math.abs(s.b))}</b></div></div>
+    ${s.iu||s.xu?`<div class="kpis"><div class="kpi"><span>Tushgan $</span><b class="num pos">${fU(s.iu)}</b></div><div class="kpi"><span>Sarflangan $</span><b class="num">${fU(s.xu)}</b></div><div class="kpi"><span>Qoldiq $</span><b class="num ${s.bu<0?'neg':''}">${fU(s.bu)}</b></div></div>`:''}
     ${bars(ch,'obyekt')}</div>
   <div class="card wr"><div class="ct">Xarajat yozish</div>${chiqimForm('obyekt','masalan: profil, bolt, silikon')}</div>
   <div class="card wr"><div class="ct">Obyektga pul tushdi</div>
@@ -642,15 +651,15 @@ function rIsh(){
   const ust=S.Y.filter(r=>r.bolim==='obyekt'&&r.kategoriya==='usta'&&r.tur==='chiqim'&&inPer(r));
   const rowsW=S.I.map(w=>{const a=rs.filter(r=>r.ishchi_id===w.id);const g=k=>sum(a.filter(r=>r.kategoriya===k));
     const oy=sumAll(a.filter(hisobOnly)),us=sum(ust.filter(r=>r.ishchi_id===w.id));
-    return {w,av:g('avans'),xo:g('xodim_oylik'),tk:g('taksi'),ab:g('abed'),j:sum(a),oy,us};}).filter(x=>x.j>0||x.oy>0||x.us>0);
+    return {w,av:g('avans'),xo:g('xodim_oylik'),tk:g('taksi'),ab:g('abed'),j:sum(a),ju:sumU(a),oy,us};}).filter(x=>x.j>0||x.ju>0||x.oy>0||x.us>0);
   const t=k=>sum(rowsW.map(x=>({summa:x[k]})));
-  return `<div class="card"><div class="ct"><span>Ishga oid</span><span class="sp"></span><span class="num" style="font-size:20px">${fmt(tot)}</span></div><div class="cs">${S.oy==='all'?'Hamma vaqt':oyNom(S.oy)} · avans, xodim oyligi, taksi, abed va komissiyalar (usta oyligi — hisob, kassaga qo'shilmaydi)</div>${bars(rs,'ishga_oid')}</div>
+  return `<div class="card"><div class="ct"><span>Ishga oid</span><span class="sp"></span><span class="num" style="font-size:20px">${T(rs)}</span></div><div class="cs">${S.oy==='all'?'Hamma vaqt':oyNom(S.oy)} · avans, xodim oyligi, taksi, abed va komissiyalar (usta oyligi — hisob, kassaga qo'shilmaydi)</div>${bars(rs,'ishga_oid')}</div>
   <div class="card wr"><div class="ct">Pul berish</div>
     <div class="pills mt">${C.ishga_oid.map(c=>`<button class="pill ${S.ishKat===c.id?'on':''}" data-k="${c.id}">${esc(c.l)}</button>`).join('')}</div>
     <div id="ik-oy" class="auto mt ${S.ishKat==='oylik'?'':'hide'}" style="line-height:1.5"><b>Usta oyligi — faqat hisob.</b> Obyektlarda ishlaydigan ustalar (pergola sostavi) puli har obyektda "Usta puli" bo'lib beriladi va o'sha obyekt tannarxiga tushadi. Bu yerga oy oxirida ustaning umumiy oyligini yozing — kassadan qayta ayrilmaydi, faqat "obyektlardan berilgan" bilan solishtiriladi.</div>
     <div id="ik-xo" class="auto mt ${S.ishKat==='xodim_oylik'?'':'hide'}" style="line-height:1.5"><b>Xodim oyligi — haqiqiy pul.</b> Belgilangan oylikka ishlaydigan xodimlar (obyektga bog'lanmagan: buxgalter, sotuvchi, haydovchi, sex xodimi va h.k.). Kassadan ayriladi va umumiy xarajatga (Oylik) tushadi, hech qaysi obyekt tannarxiga qo'shilmaydi.</div>
     <div id="ik-f" class="mt">${chiqimForm('ishga_oid','ixtiyoriy izoh')}</div></div>
-  ${rowsW.length?`<div class="card"><div class="ct">Ishchilar kesimida</div><div style="overflow-x:auto"><table class="tbl"><tr><th>Ishchi</th><th>Avans</th><th>Xodim oyligi</th><th>Taksi</th><th>Abed</th><th>Jami</th><th>Usta oyligi (hisob)</th><th>Obyektlardan usta puli</th><th>Farq</th></tr>${rowsW.map(x=>`<tr><td>${esc(x.w.ism)}</td><td>${fmt(x.av)}</td><td>${fmt(x.xo)}</td><td>${fmt(x.tk)}</td><td>${fmt(x.ab)}</td><td><b>${fmt(x.j)}</b></td><td>${fmt(x.oy)}</td><td>${fmt(x.us)}</td><td style="font-weight:700;color:${x.oy-x.us>0?'#B5543C':'inherit'}">${x.oy?fmt(x.oy-x.us):'—'}</td></tr>`).join('')}<tr><td>Jami</td><td>${fmt(t('av'))}</td><td>${fmt(t('xo'))}</td><td>${fmt(t('tk'))}</td><td>${fmt(t('ab'))}</td><td>${fmt(t('j'))}</td><td>${fmt(t('oy'))}</td><td>${fmt(t('us'))}</td><td></td></tr></table></div><div class="cs mt">Farq = oylik − obyektlardan berilgan usta puli. Musbat bo'lsa, ustaga hali shuncha berilishi kerak.</div></div>`:''}
+  ${rowsW.length?`<div class="card"><div class="ct">Ishchilar kesimida</div><div style="overflow-x:auto"><table class="tbl"><tr><th>Ishchi</th><th>Avans</th><th>Xodim oyligi</th><th>Taksi</th><th>Abed</th><th>Jami</th><th>Dollarda</th><th>Usta oyligi (hisob)</th><th>Obyektlardan usta puli</th><th>Farq</th></tr>${rowsW.map(x=>`<tr><td>${esc(x.w.ism)}</td><td>${fmt(x.av)}</td><td>${fmt(x.xo)}</td><td>${fmt(x.tk)}</td><td>${fmt(x.ab)}</td><td><b>${fmt(x.j)}</b></td><td>${x.ju?fU(x.ju):'—'}</td><td>${fmt(x.oy)}</td><td>${fmt(x.us)}</td><td style="font-weight:700;color:${x.oy-x.us>0?'#B5543C':'inherit'}">${x.oy?fmt(x.oy-x.us):'—'}</td></tr>`).join('')}<tr><td>Jami</td><td>${fmt(t('av'))}</td><td>${fmt(t('xo'))}</td><td>${fmt(t('tk'))}</td><td>${fmt(t('ab'))}</td><td>${fmt(t('j'))}</td><td>${fU(rowsW.reduce((a,x)=>a+x.ju,0))}</td><td>${fmt(t('oy'))}</td><td>${fmt(t('us'))}</td><td></td></tr></table></div><div class="cs mt">Farq = oylik − obyektlardan berilgan usta puli. Musbat bo'lsa, ustaga hali shuncha berilishi kerak.</div></div>`:''}
   <div class="card"><div class="ct">Ishchilar ro'yxati</div><div class="cs">Abdulloh va Muhammad uchun umumiy. Ismni bosib guruhini o'zgartirish mumkin.</div>
     ${WT.map(([t,l])=>{const g=S.I.filter(w=>wTur(w)===t);return `<div class="lab mt">${l} · ${g.length}</div><div class="pills">${g.map(w=>`<span class="pill" onclick="wTurSheet(${w.id})" style="cursor:pointer">${esc(w.ism)}<button class="wr" style="margin-left:6px;color:var(--text3)" onclick="event.stopPropagation();delW(${w.id})" aria-label="O'chirish">×</button></span>`).join('')||'<span class="cs">—</span>'}</div>`;}).join('')}
     <div class="row mt wr"><input class="f" id="nw" placeholder="Ism"><select class="f" id="nwt" style="flex:0 0 auto;width:auto">${WT.map(([t,l])=>`<option value="${t}" ${t==='pergola'?'selected':''}>${l.split(' ')[0]}</option>`).join('')}</select><button class="btn" style="flex:0 0 auto" onclick="addW()">Qo'shish</button></div></div>
@@ -675,16 +684,16 @@ function rShaxsiy(){
   // oxirgi 7 kun
   const l7=[];for(let i=6;i>=0;i--){const x=new Date();x.setDate(x.getDate()-i);const k=x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0');l7.push([k,sum(ch.filter(r=>r.sana===k))]);}
   const mx=Math.max(1,...l7.map(x=>x[1]));
-  return `<div class="card"><div class="ct"><span>Shu oy</span><span class="sp"></span><span class="num" style="font-size:20px">${fmt(mt)}</span></div>
+  return `<div class="card"><div class="ct"><span>Shu oy</span><span class="sp"></span><span class="num" style="font-size:20px">${T(ch.filter(r=>mk(r.sana)===cm))}</span></div>
     ${bud?`<div class="cs">Byudjet ${fmt(bud)} so'm · ${rem>=0?`qoldi <b>${fmt(rem)}</b> · kuniga ~${fmt(rem/left)}`:`<b class="neg">${fmt(-rem)} so'm oshib ketdi</b>`}</div><div class="prog"><i style="width:${pct}%;background:${pc}"></i></div>`:`<div class="cs">Oylik byudjet belgilanmagan</div>`}
     <button class="link mt wr" onclick="setBud()">${bud?'Byudjetni o\'zgartirish':'Byudjet belgilash'}</button>
     <div style="display:flex;align-items:flex-end;gap:6px;height:70px;margin-top:14px">${l7.map(([k,v])=>`<div style="flex:1;text-align:center"><div style="height:${Math.max(3,v/mx*52)}px;background:${k===today()?'var(--ink)':'var(--gold)'};border-radius:5px 5px 2px 2px"></div><div style="font-size:10px;color:var(--text3);margin-top:3px">${+k.slice(8)}</div></div>`).join('')}</div></div>
   <div class="card wr"><div class="ct">Xarajat yozish</div>${chiqimForm('shaxsiy','masalan: tushlik, taksi, internet')}</div>
-  <div class="card"><div class="ct"><span>Shaxsiy hamyon</span><span class="sp"></span><span class="num ${pb<0?'neg':'pos'}" style="font-size:20px">${pb<0?'−':''}${fmt(Math.abs(pb))}</span></div><div class="cs">Olingan ${fmt(sum(ki))} − sarflangan ${fmt(sum(ch))}</div>
+  <div class="card"><div class="ct"><span>Shaxsiy hamyon</span><span class="sp"></span><span class="num ${pb<0?'neg':'pos'}" style="font-size:20px">${pb<0?'−':''}${fmt(Math.abs(pb))}</span></div><div class="cs">Olingan ${fmt(sum(ki))} − sarflangan ${fmt(sum(ch))}${sumU(ch)?' · dollarda sarflangan '+fU(sumU(ch)):''}</div>
     <div class="wr"><div class="pills mt"><button class="pill on" id="sk-1" onclick="skSw(1)">Pul olindi</button><button class="pill" id="sk-2" onclick="skSw(2)">$ → so'm</button></div>
     <div id="sk-a" class="mt"><div class="row"><div><label class="lab">Summa (so'm)</label><input class="f num" id="si-s" type="number" inputmode="decimal"></div><div><label class="lab">Sana</label><input class="f" id="si-d" type="date" value="${today()}"></div></div><label class="lab mt">Kimdan / izoh</label><input class="f" id="si-i" placeholder="masalan: akamdan olindi"><button class="btn green full mt" onclick="addKirim('shaxsiy','si')">Saqlash</button></div>
     <div id="sk-b" class="mt hide">${convForm('sc')}<button class="btn green full mt" onclick="addConv('shaxsiy','sc')">Saqlash</button></div></div></div>
-  <div class="card"><div class="ct"><span>Toifalar</span><span class="sp"></span><span class="num" style="font-size:18px">${fmt(pt)}</span></div><div class="cs">${S.oy==='all'?'Hamma vaqt':oyNom(S.oy)}</div>${bars(per,'shaxsiy')||'<div class="empty">Bu davrda xarajat yo\'q</div>'}</div>
+  <div class="card"><div class="ct"><span>Toifalar</span><span class="sp"></span><span class="num" style="font-size:18px">${T(per)}</span></div><div class="cs">${S.oy==='all'?'Hamma vaqt':oyNom(S.oy)}</div>${bars(per,'shaxsiy')||'<div class="empty">Bu davrda xarajat yo\'q</div>'}</div>
   <div class="card"><div class="ct">Tarix</div><div class="list">${items(all.filter(inPer),'shaxsiy')}</div></div>`;
 }
 function skSw(n){$('sk-1').classList.toggle('on',n===1);$('sk-2').classList.toggle('on',n===2);$('sk-a').classList.toggle('hide',n!==1);$('sk-b').classList.toggle('hide',n!==2);}
@@ -730,6 +739,6 @@ async function runAI(){
   if(session&&session.user)start(session.user);else $('login').classList.remove('hide');
 })();
 </script>
-<div id="ver" style="text-align:center;font-size:11px;color:#9a9286;padding:14px 0 24px">versiya 31.10d · so'm va dollar hamyon</div>
+<div id="ver" style="text-align:center;font-size:11px;color:#9a9286;padding:14px 0 24px">versiya 16.11 · dollar alohida hisob</div>
 </body>
 </html>
