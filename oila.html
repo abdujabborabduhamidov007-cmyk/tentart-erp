@@ -258,8 +258,10 @@ nav button.on{color:var(--acc);font-weight:600}
   <section class="view" id="v-dep">
     <div class="card">
       <div class="lbl">Depozitlarda jami</div>
-      <div class="big" id="depTotal">0 so'm</div>
-      <div class="small" id="depTotalUsd"></div>
+      <div class="stats" style="margin-top:6px">
+        <div class="stat"><div class="small">So'mda</div><b id="depTotal" style="font-size:20px">0 so'm</b></div>
+        <div class="stat"><div class="small">Dollarda</div><b id="depTotalUsd" style="font-size:20px">$0</b></div>
+      </div>
       <div class="small" style="margin-top:6px">Bu pullar sizniki, lekin cho'ntak va kassaga tushmagan. Oylik prixod va fondlarga qo'shilmaydi.</div>
     </div>
     <div id="depList"></div>
@@ -348,6 +350,7 @@ nav button.on{color:var(--acc);font-weight:600}
   <h2 id="dmTitle"></h2>
   <div class="small" id="dmBal" style="margin-bottom:8px"></div>
   <input id="dmAmt" class="amount" inputmode="numeric" autocomplete="off">
+  <div class="curbar"><div class="seg" id="dmCur"><button data-dmcur="uzs" class="on">so'm</button><button data-dmcur="usd">$</button></div></div>
   <input id="dmNote" placeholder="Izoh (ixtiyoriy)" autocomplete="off" style="margin:8px 0">
   <input id="dmDate" type="date">
   <div class="two"><button class="btn ghost" id="dmNo">Bekor</button><button class="btn" id="dmYes">Saqlash</button></div>
@@ -355,8 +358,9 @@ nav button.on{color:var(--acc);font-weight:600}
 <div class="modal" id="depN"><div class="sheet">
   <h2>Yangi depozit</h2>
   <input id="dnName" placeholder="Nomi: masalan, Bank depoziti, Seyf, Qarzga berilgan" autocomplete="off">
+  <div class="small" style="margin-top:8px">Boshlang'ich summa (ixtiyoriy). Keyin bitta depozitga so'm ham, dollar ham qo'shsa bo'ladi.</div>
   <div class="curbar"><div class="seg" id="dnCur"><button data-dncur="uzs" class="on">so'm</button><button data-dncur="usd">$</button></div></div>
-  <input id="dnAmt" class="amount" inputmode="numeric" placeholder="Boshlang'ich summa (ixtiyoriy)" style="margin-top:8px;font-size:18px">
+  <input id="dnAmt" class="amount" inputmode="numeric" placeholder="0" style="margin-top:8px;font-size:18px">
   <div class="two"><button class="btn ghost" id="dnNo">Bekor</button><button class="btn" id="dnYes">Qo'shish</button></div>
 </div></div>
 <div class="toast" id="toast"></div>
@@ -843,23 +847,26 @@ $("saveSet").onclick = async ()=>{
 /* ---------- DEPOZITLAR ---------- */
 let deps = [], depOpen = {}, dmState = null, dnCur = "uzs", unsubDep = null;
 function cleanDep(x,id){ x=x||{}; return {id, n:String(x.n||"").slice(0,60), v:x.v==="usd"?"usd":"uzs", vq:+x.vq||0,
-  h:Array.isArray(x.h)? x.h.map(m=>({id:String(m&&m.id||""), t:m&&m.t==="-"?"-":"+", s:+(m&&m.s)||0, iz:String(m&&m.iz||"").slice(0,120), sn:String(m&&m.sn||""), vq:+(m&&m.vq)||0})).filter(m=>m.s>0) : []}; }
-function depBal(d){ return d.h.reduce((s,m)=>s+(m.t==="+"?m.s:-m.s),0); }
-function depUzs(d){ return d.v==="usd" ? depBal(d)*lastKurs() : depBal(d); }
-function depMoney(d,n){ return d.v==="usd" ? usd(n) : som(n); }
+  h:Array.isArray(x.h)? x.h.map(m=>({id:String(m&&m.id||""), t:m&&m.t==="-"?"-":"+", s:+(m&&m.s)||0, v:(m&&m.v)==="usd"?"usd":(m&&m.v)==="uzs"?"uzs":(x.v==="usd"?"usd":"uzs"), iz:String(m&&m.iz||"").slice(0,120), sn:String(m&&m.sn||""), vq:+(m&&m.vq)||0})).filter(m=>m.s>0) : []}; }
+function depBal(d,v){ return d.h.filter(m=>m.v===v).reduce((s,m)=>s+(m.t==="+"?m.s:-m.s),0); }
+function depHas(d,v){ return d.h.some(m=>m.v===v); }
+function sgn(n,f){ return (n<0?"−":"")+f(Math.abs(n)); }
+function depBalTxt(d){ const a=[]; const u=depBal(d,"uzs"), s=depBal(d,"usd");
+  if(depHas(d,"uzs")||!depHas(d,"usd")) a.push(`<span style="color:${u<0?"var(--bad)":"inherit"}">${sgn(u,som)}</span>`);
+  if(depHas(d,"usd")) a.push(`<span style="color:${s<0?"var(--bad)":"inherit"}">${sgn(s,usd)}</span>`);
+  return a.join("<br>"); }
 function renderDeps(){
-  const tot = deps.reduce((s,d)=>s+depUzs(d),0), K=lastKurs();
-  $("depTotal").textContent = som(tot); $("depTotalUsd").textContent = K? "≈ "+usd(tot/K) : "";
-  if($("hDep")) $("hDep").textContent = som(tot);
+  const tu = deps.reduce((s,d)=>s+depBal(d,"uzs"),0), td = deps.reduce((s,d)=>s+depBal(d,"usd"),0);
+  $("depTotal").textContent = sgn(tu,som); $("depTotalUsd").textContent = sgn(td,usd);
+  if($("hDep")) $("hDep").textContent = sgn(tu,som) + (td? " · "+sgn(td,usd) : "");
   const list=[...deps].sort((a,b)=>a.vq-b.vq);
-  $("depList").innerHTML = list.length? list.map(d=>{ const b=depBal(d);
+  $("depList").innerHTML = list.length? list.map(d=>{
     const hist = depOpen[d.id] ? `<div class="hl">${d.h.length? [...d.h].sort((a,b)=>b.sn.localeCompare(a.sn)||b.vq-a.vq).map(m=>{ const [y,mo,dd]=(m.sn||"--").split("-");
       return `<div class="item"><div class="ic">${m.t==="+"?"➕":"➖"}</div><div class="mid"><div>${m.t==="+"?"Qo'shildi":"Olindi"}</div><div>${+dd||""} ${MONTHS[+mo-1]||""} ${y||""}${m.iz?" · "+esc(m.iz):""}</div></div>
-      <div class="sum" style="color:${m.t==="+"?"var(--acc)":"var(--bad)"}">${m.t}${d.v==="usd"?"$":""}${fmt(m.s)}</div><button class="del" data-dmdel="${esc(d.id)}|${esc(m.id)}" aria-label="O'chirish">🗑️</button></div>`; }).join("")
+      <div class="sum" style="color:${m.t==="+"?"var(--acc)":"var(--bad)"}">${m.t}${m.v==="usd"?"$"+fmt(m.s):fmt(m.s)+" so'm"}</div><button class="del" data-dmdel="${esc(d.id)}|${esc(m.id)}" aria-label="O'chirish">🗑️</button></div>`; }).join("")
       : `<div class="empty">Hali harakat yo'q</div>`}
       <button class="del" data-ddel="${esc(d.id)}" style="margin-top:6px;font-size:13px;color:var(--bad)">🗑️ Depozitni o'chirish</button></div>` : "";
-    return `<div class="dep"><div class="top"><span class="nm">🏦 ${esc(d.n)}</span><span class="bal" style="color:${b<0?"var(--bad)":"var(--ink)"}">${depMoney(d,b)}</span></div>
-      ${d.v==="usd"&&K? `<div class="small" style="text-align:right">≈ ${som(b*K)}</div>`:""}
+    return `<div class="dep"><div class="top"><span class="nm">🏦 ${esc(d.n)}</span><span class="bal" style="text-align:right;line-height:1.25">${depBalTxt(d)}</span></div>
       <div class="acts"><button class="plus" data-dplus="${esc(d.id)}">+ Qo'shish</button><button class="minus" data-dminus="${esc(d.id)}">− Olish</button><button class="hist" data-dhist="${esc(d.id)}">${depOpen[d.id]?"▲":"Tarix"}</button></div>${hist}</div>`; }).join("")
     : `<div class="card"><div class="empty">Hali depozit yo'q — pastdagi tugma bilan qo'shing</div></div>`;
 }
@@ -877,17 +884,19 @@ function subscribeDeps(){
     unsubDep = db.collection("depozitlar").onSnapshot(s=>{ deps = s.docs.filter(d=>d.exists).map(d=>cleanDep(d.data(),d.id)); renderDeps(); }, ()=>{});
   } else { deps = ls.get("oila_dep",[]).map(x=>cleanDep(x,x.id)); renderDeps(); }
 }
+let dmCur="uzs";
+function setDmCur(c){ dmCur=c; document.querySelectorAll("[data-dmcur]").forEach(b=>b.classList.toggle("on",b.dataset.dmcur===c)); $("dmAmt").placeholder = c==="usd"?"$0":"0 so'm"; }
 function openMove(id,t){ const d=deps.find(x=>x.id===id); if(!d) return; dmState={id,t};
   $("dmTitle").textContent = (t==="+"?"➕ Qo'shish: ":"➖ Olish: ")+d.n;
-  $("dmBal").textContent = "Hozir: "+depMoney(d,depBal(d));
-  $("dmAmt").value=""; $("dmAmt").placeholder = d.v==="usd"?"$0":"0 so'm"; $("dmNote").value=""; $("dmDate").value=ymd(new Date());
+  $("dmBal").innerHTML = "Hozir: "+depBalTxt(d).replace("<br>"," · ");
+  $("dmAmt").value=""; setDmCur(d.h.length? d.h[d.h.length-1].v : d.v); $("dmNote").value=""; $("dmDate").value=ymd(new Date());
   $("dmYes").style.background = t==="+"?"var(--acc)":"var(--bad)"; $("depM").classList.add("on"); setTimeout(()=>$("dmAmt").focus(),50); }
 $("dmAmt").addEventListener("input",e=>fmtInput(e.target));
 $("dnAmt").addEventListener("input",e=>fmtInput(e.target));
 $("dmNo").onclick=()=>$("depM").classList.remove("on");
 $("dmYes").onclick=async()=>{ const s=parseNum($("dmAmt").value); if(!s){ toast("Summani yozing"); return; }
   const d=deps.find(x=>x.id===dmState.id); if(!d) return;
-  const nd={...d, h:[...d.h, {id:"m"+Date.now().toString(36)+Math.random().toString(36).slice(2,5), t:dmState.t, s, iz:$("dmNote").value.trim().slice(0,120), sn:$("dmDate").value||ymd(new Date()), vq:Date.now()}]};
+  const nd={...d, h:[...d.h, {id:"m"+Date.now().toString(36)+Math.random().toString(36).slice(2,5), t:dmState.t, s, v:dmCur, iz:$("dmNote").value.trim().slice(0,120), sn:$("dmDate").value||ymd(new Date()), vq:Date.now()}]};
   $("dmYes").disabled=true;
   try{ await saveDep(nd); $("depM").classList.remove("on"); toast(dmState.t==="+"?"✓ Qo'shildi":"✓ Ayirildi"); }catch(e){ toast("Saqlanmadi"); }
   $("dmYes").disabled=false; };
@@ -895,9 +904,10 @@ $("depAdd").onclick=()=>{ $("dnName").value=""; $("dnAmt").value=""; dnCur="uzs"
 $("dnNo").onclick=()=>$("depN").classList.remove("on");
 $("dnYes").onclick=async()=>{ const n=$("dnName").value.trim(); if(!n){ toast("Nomini yozing"); return; }
   const s=parseNum($("dnAmt").value); const now=Date.now();
-  const d={id:"d"+now.toString(36), n:n.slice(0,60), v:dnCur, vq:now, h: s? [{id:"m"+now.toString(36), t:"+", s, iz:"Boshlang'ich summa", sn:ymd(new Date()), vq:now}] : []};
+  const d={id:"d"+now.toString(36), n:n.slice(0,60), v:dnCur, vq:now, h: s? [{id:"m"+now.toString(36), t:"+", s, v:dnCur, iz:"Boshlang'ich summa", sn:ymd(new Date()), vq:now}] : []};
   try{ await saveDep(d); $("depN").classList.remove("on"); toast("✓ Depozit qo'shildi"); }catch(e){ toast("Saqlanmadi"); } };
 document.addEventListener("click", async e=>{
+  const dc=e.target.closest("[data-dmcur]"); if(dc){ setDmCur(dc.dataset.dmcur); return; }
   const c=e.target.closest("[data-dncur]"); if(c){ dnCur=c.dataset.dncur; document.querySelectorAll("[data-dncur]").forEach(b=>b.classList.toggle("on",b===c)); return; }
   const pl=e.target.closest("[data-dplus]"); if(pl){ openMove(pl.dataset.dplus,"+"); return; }
   const mi=e.target.closest("[data-dminus]"); if(mi){ openMove(mi.dataset.dminus,"-"); return; }
