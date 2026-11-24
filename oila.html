@@ -305,6 +305,13 @@ nav button.on{color:var(--acc);font-weight:600}
       <button class="btn ghost" id="addFix" style="margin-top:8px">+ Harajat qo'shish</button>
     </div>
     <button class="btn" id="saveSet">Sozlamani saqlash</button>
+    <div class="card" style="margin-top:14px">
+      <h2>🔑 Parolni o'zgartirish</h2>
+      <div class="small" style="margin-bottom:8px">Yangi parolni o'zingiz yozasiz (kamida 6 belgi). Bu parol ERP'ga kirish uchun ham o'zgaradi.</div>
+      <input id="np1" type="password" placeholder="Yangi parol" autocomplete="new-password" style="margin-bottom:8px">
+      <input id="np2" type="password" placeholder="Yangi parolni takrorlang" autocomplete="new-password">
+      <button class="btn" id="npSave">Parolni saqlash</button>
+    </div>
     <button class="btn ghost" id="logout" style="margin-top:10px">Chiqish</button>
     <div class="status" style="margin-top:14px" id="setNote"></div>
   </section>
@@ -973,6 +980,12 @@ async function doLogin(){
 }
 $("lb").onclick=doLogin;
 $("lp").addEventListener("keydown",e=>{ if(e.key==="Enter") doLogin(); });
+$("npSave").onclick=async()=>{ const a=$("np1").value, c=$("np2").value;
+  if(a.length<6){ toast("Parol kamida 6 belgi bo'lsin"); return; }
+  if(a!==c){ toast("Ikkala parol bir xil emas"); return; }
+  $("npSave").disabled=true; const {error}=await sb.auth.updateUser({password:a}); $("npSave").disabled=false;
+  if(error){ toast("O'zgarmadi: "+error.message); return; }
+  $("np1").value=""; $("np2").value=""; toast("✓ Parol o'zgardi"); };
 $("logout").onclick=async()=>{ await sb.auth.signOut(); location.reload(); };
 async function start(user){
   $("login").style.display="none"; $("appWrap").style.display="block"; $("nav").style.display="";
