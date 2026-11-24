@@ -503,6 +503,8 @@ document.addEventListener("click", e=>{
   const ej=e.target.closest("[data-ej]"); if(ej){ eState.joy=ej.dataset.ej; eJoyChips(); drawEFunds(); return; }
   const fd=e.target.closest("[data-fd]"); if(fd){ selFund=fd.dataset.fd; drawFunds(); return; }
   const efd=e.target.closest("[data-efd]"); if(efd){ eState.fond=efd.dataset.efd; drawEFunds(); return; }
+  const mkb=e.target.closest("[data-mark]"); if(mkb){ setMark(mkb.dataset.mark,true); toast("✓ Oldin berilgan deb belgilandi"); return; }
+  const umb=e.target.closest("[data-unmark]"); if(umb){ setMark(umb.dataset.unmark,false); toast("Belgi olib tashlandi"); return; }
   const pay=e.target.closest("[data-pay]"); if(pay){ openPay(pay.dataset.pay); return; }
   const rf=e.target.closest("[data-rf]"); if(rf){ rf.closest(".fixed-ed").remove(); return; }
   const c=e.target.closest("[data-c]"); if(c){ selCat=c.dataset.c; selFund=defaultFund(selCat); drawFunds();
@@ -605,18 +607,24 @@ function render(){
 function incTotal(){ return incRows.reduce((s,r)=>s+uzs(r),0); }
 function fixUzs(f){ return f.valyuta==="usd" ? f.summa*lastKurs() : f.valyuta==="foiz" ? Math.round(incTotal()*f.summa/100) : f.summa; }
 function fixName(f){ return f.nomi || CAT[f.cat].n; }
+let marks = {};   // "2026-11_fixId" -> {oy,k}  — kuzatuvdan oldin berilgan (rasxod sifatida yozilmaydi)
+function marked(k){ return !!marks[monthKey()+"_"+k]; }
+async function setMark(k,on){ const id=monthKey()+"_"+k;
+  try{ if(on) await db.collection("belgi").doc(id).set({oy:monthKey(),k}); else await db.collection("belgi").doc(id).delete(); }catch(e){ toast("Saqlanmadi"); } }
+function subscribeMarks(){ db.collection("belgi").onSnapshot(s=>{ marks={}; s.docs.forEach(d=>{ if(d.exists) marks[d.id]=d.data(); }); render(); }); }
 function fixActual(f){ const r=rows.find(x=>x.doimiy===f.id); return r? uzs(r) : fixUzs(f); }
-function unpaidFixed(){ return (settings.doimiy||[]).filter(f=>!rows.some(r=>r.doimiy===f.id)); }
+function unpaidFixed(){ return (settings.doimiy||[]).filter(f=>!rows.some(r=>r.doimiy===f.id) && !marked(f.id)); }
 function renderFixed(){
   const fx=settings.doimiy||[];
   if(!fx.length){ $("fixList").innerHTML=`<div class="empty">Yo'q — ⚙️ Sozlamadan qo'shing</div>`; $("fixLeft").textContent=""; return; }
-  let lastJ=""; $("fixList").innerHTML = fx.map(f=>{ const c=CAT[f.cat]; const paid=rows.find(r=>r.doimiy===f.id);
-    const amt = paid? `to'landi: ${money(paid)}` : !f.summa? "summa kiritilmagan" : f.valyuta==="usd"? usd(f.summa)+" / oy" : f.valyuta==="foiz"? `prixodning ${f.summa}% = ${som(fixUzs(f))}` : som(f.summa)+" / oy";
+  let lastJ=""; $("fixList").innerHTML = fx.map(f=>{ const c=CAT[f.cat]; const paid=rows.find(r=>r.doimiy===f.id); const mk=!paid && marked(f.id);
+    const amt = paid? `to'landi: ${money(paid)}` : mk? `oldin berilgan · rasxodga yozilmadi` : !f.summa? "summa kiritilmagan" : f.valyuta==="usd"? usd(f.summa)+" / oy" : f.valyuta==="foiz"? `prixodning ${f.summa}% = ${som(fixUzs(f))}` : som(f.summa)+" / oy";
     const hdr = f.joy!==lastJ ? `<div class="day">${JOY[f.joy].e} ${JOY[f.joy].n}</div>` : ""; lastJ=f.joy;
     
     const noInc = f.valyuta==="foiz" && !fixUzs(f);
     return hdr + `<div class="fixrow"><div class="ic" style="font-size:22px">${c.e}</div><div class="mid"><div>${esc(fixName(f))}</div><div class="small">${amt}</div></div>
-      ${paid? `<span class="paid">✓ To'landi</span>` : noInc? `<span class="small">Prixod yo'q</span>` : `<button class="paybtn" data-pay="${esc(f.id)}">To'lash</button>`}</div>`; }).join("");
+      ${paid? `<span class="paid">✓ To'landi</span>` : mk? `<button class="del" data-unmark="${esc(f.id)}" style="color:var(--acc);font-weight:600;font-size:14px">✓ Oldin berilgan ↺</button>` : noInc? `<span class="small">Prixod yo'q</span>` :
+        `<div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end"><button class="paybtn" data-pay="${esc(f.id)}">To'lash</button><button class="del" data-mark="${esc(f.id)}" style="font-size:12px;padding:2px 0">oldin berilgan</button></div>`}</div>`; }).join("");
   const un=unpaidFixed(); const s=un.reduce((a,f)=>a+fixUzs(f),0);
   $("fixLeft").textContent = un.length? `To'lanmagan: ${fmt(s)} so'm` : "Hammasi to'landi ✓";
 }
@@ -641,7 +649,9 @@ function renderInc(){
   const S = sd.reduce((s,x)=>s+sdU(x),0);
   const R = Math.max(t-A-F-S,0);
   const sdUsed={}; rows.filter(r=>!r.doimiy && r.joy==="saudiya").forEach(r=>{ const k=saudPart(r.kategoriya); sdUsed[k]=(sdUsed[k]||0)+uzs(r); });
-  const sdSub = sd.map(x=>{ const a=sdU(x), u=sdUsed[x.id]||0; return `<div class="nums" style="margin-top:4px"><span>${esc(x.n)} ${x.valyuta==="usd"?"$"+fmt(x.summa):""}</span><span>${fmt(u)} / ${fmt(a)}</span><span style="color:${a-u<0?"var(--bad)":"var(--acc)"}">${a-u<0?"−":""}${fmt(Math.abs(a-u))}</span></div>`; }).join("");
+  const sdMk = marked("saudiya");
+  const sdSub = (sdMk? `<div class="nums" style="margin-top:6px"><span style="color:var(--acc)">✓ Bu oy oldin berilgan (rasxodga yozilmadi)</span><button class="del" data-unmark="saudiya" style="font-size:12px">↺ bekor</button></div>`
+      : `<div style="margin-top:6px"><button class="del" data-mark="saudiya" style="font-size:12px;color:var(--acc);padding:2px 0">✓ Bu oy oldin berilgan deb belgilash</button></div>`) + sd.map(x=>{ const a=sdU(x), u=(sdUsed[x.id]||0)+(sdMk?a:0); return `<div class="nums" style="margin-top:4px"><span>${esc(x.n)} ${x.valyuta==="usd"?"$"+fmt(x.summa):""}</span><span>${fmt(u)} / ${fmt(a)}</span><span style="color:${a-u<0?"var(--bad)":"var(--acc)"}">${a-u<0?"−":""}${fmt(Math.abs(a-u))}</span></div>`; }).join("");
   const fl = [...av.map(x=>({...x,a:t*x.f/100,base:x.f+"% prixoddan"})), {id:"saudiya",n:"🇸🇦 Saudiya (ota-onam)",a:S,base:"belgilangan",sub:sdSub}, ...sp.map(x=>({...x,a:R*x.f/100,base:x.f+"% qolgandan"}))];
   const calc = `<div class="calc">
     <div class="row"><span>Jami prixod</span><b>${fmt(t)}</b></div>
@@ -650,7 +660,7 @@ function renderInc(){
     <div class="row"><span>− Saudiya fondi</span><span>${fmt(S)}</span></div>
     <div class="row tot"><span>= Qolgani (bo'linadi)</span><b>${fmt(R)}</b></div>
     ${t-A-F-S<0?`<div class="small" style="color:var(--bad)">⚠️ Prixod yetmayapti: ${fmt(A+F+S-t)} so'm kam</div>`:""}</div>`;
-  const fh = calc + fl.map(x=>{ const a=x.a, u=used[x.id]||0, left=a-u, p=a? u/a*100 : (u?100:0);
+  const fh = calc + fl.map(x=>{ const a=x.a, u=(used[x.id]||0)+(x.id==="saudiya"&&sdMk?a:0), left=a-u, p=a? u/a*100 : (u?100:0);
     return `<div class="fund"><div class="row"><span><b>${esc(x.n)}</b> <span class="small">${x.base}</span></span><b style="color:${left<0?"var(--bad)":"var(--acc)"}">${left<0?"−":""}${fmt(Math.abs(left))}</b></div>
       <div class="bar${p>=100?" b":p>=80?" w":""}" style="height:7px;margin:6px 0 2px"><i style="width:${Math.min(p,100)}%"></i></div>
       <div class="nums"><span>Ajratildi: <b>${fmt(a)}</b></span><span>Berildi: <b>${fmt(u)}</b></span><span>${left<0?"Oshdi":"Qoldi"}</span></div>${x.sub||""}</div>`; }).join("")
@@ -1059,7 +1069,7 @@ async function start(user){
     if(x && x.cats && typeof x.cats==="object") for(const k in x.cats) if(CAT[k]) cats[k]=+x.cats[k]||0;
     settings={limit:+(x&&x.limit)||0, cats, ...normFormula(x), fv:FORM_VER, kurs:+(x&&x.kurs)||0, doimiy:normFixed(x&&x.doimiy, x&&x.fixv), fixv:FIX_VER, saudiya:normSaud(x&&x.saudiya)}; drawFunds(); render();
   });
-  subscribeMonth(); subscribeDeps(); subscribeJam();
+  subscribeMonth(); subscribeDeps(); subscribeJam(); subscribeMarks();
 }
 init();
 </script>
