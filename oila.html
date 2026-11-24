@@ -151,6 +151,7 @@ nav button.on{color:var(--acc);font-weight:600}
       </div>
       <div class="row small" style="margin-top:10px"><span>🏦 Depozitlarda (alohida turgan pul)</span><b id="hDep" style="color:var(--ink)">0</b></div>
     </div>
+    <div class="card jamcard" style="border:2px solid var(--acc)"></div>
 
     <div class="card">
       <div class="lbl">Shu oy sarflandi</div>
@@ -256,6 +257,7 @@ nav button.on{color:var(--acc);font-weight:600}
 
   <!-- SOZLAMA -->
   <section class="view" id="v-dep">
+    <div class="card jamcard" style="border:2px solid var(--acc)"></div>
     <div class="card">
       <div class="lbl">Depozitlarda jami</div>
       <div class="stats" style="margin-top:6px">
@@ -313,6 +315,11 @@ nav button.on{color:var(--acc);font-weight:600}
       <input id="np1" type="password" placeholder="Yangi parol" autocomplete="new-password" style="margin-bottom:8px">
       <input id="np2" type="password" placeholder="Yangi parolni takrorlang" autocomplete="new-password">
       <button class="btn" id="npSave">Parolni saqlash</button>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h2>💰 Toza jamg'armadan olish</h2>
+      <div class="small" style="margin-bottom:8px">Bu pulga tegilmaydi. Faqat juda zarur bo'lsa oling — ikki marta tasdiqlanadi.</div>
+      <button class="btn" id="jamOut" style="background:var(--badbg);color:var(--bad)">Jamg'armadan olish</button>
     </div>
     <button class="btn ghost" id="logout" style="margin-top:10px">Chiqish</button>
     <div class="status" style="margin-top:14px" id="setNote"></div>
@@ -649,6 +656,7 @@ function renderInc(){
       <div class="nums"><span>Ajratildi: <b>${fmt(a)}</b></span><span>Berildi: <b>${fmt(u)}</b></span><span>${left<0?"Oshdi":"Qoldi"}</span></div>${x.sub||""}</div>`; }).join("")
     ;
   $("split").innerHTML = fh; $("fundsHome").innerHTML = fh;
+  { const jf=fl.find(x=>x.id==="jamgarma"); window.__jamFund = jf ? {a:jf.a, u:used.jamgarma||0} : null; }
   $("fundHint").textContent = t? `Shu oy prixodi ${som(t)} — fondlarga bo'lindi` : "Prixod yozilsa, fondlarga avtomatik bo'linadi";
   const noFund = rows.filter(r=>!r.doimiy && !fl.some(x=>x.id===fundOf(r))).reduce((s,r)=>s+uzs(r),0);
   if(noFund) $("fundHint").textContent += ` · ${fmt(noFund)} so'm fondsiz rasxod`;
@@ -879,6 +887,44 @@ async function removeDep(id){
   if(mode==="db") await db.collection("depozitlar").doc(id).delete();
   else { const all=ls.get("oila_dep",[]).filter(x=>x.id!==id); ls.set("oila_dep",all); deps=all.map(x=>cleanDep(x,x.id)); renderDeps(); }
 }
+
+/* ---------- TOZA JAMG'ARMA (qulflangan) ---------- */
+let jam = {h:[]}, jamOpen=false;
+function renderJam(){
+  const u = depBal(jam,"uzs"), d = depBal(jam,"usd");
+  const hist = jamOpen ? `<div class="hl">${jam.h.length? [...jam.h].sort((a,b)=>b.sn.localeCompare(a.sn)||b.vq-a.vq).map(m=>{ const [y,mo,dd]=(m.sn||"--").split("-");
+      return `<div class="item"><div class="ic">${m.t==="+"?"➕":"➖"}</div><div class="mid"><div>${m.t==="+"?"Qo'shildi":"Olindi"}</div><div>${+dd||""} ${MONTHS[+mo-1]||""} ${y||""}${m.iz?" · "+esc(m.iz):""}</div></div>
+      <div class="sum" style="color:${m.t==="+"?"var(--acc)":"var(--bad)"}">${m.t}${m.v==="usd"?"$"+fmt(m.s):fmt(m.s)+" so'm"}</div><button class="del" data-jdel="${esc(m.id)}" aria-label="O'chirish">🗑️</button></div>`; }).join("")
+      : `<div class="empty">Hali yozuv yo'q</div>`}</div>` : "";
+  const html = `<div class="row"><h2 style="margin:0">💰 Toza jamg'arma</h2><span class="small">🔒 harajat qilinmaydi</span></div>
+    <div class="stats" style="margin-top:10px">
+      <div class="stat"><div class="small">Dollarda</div><b style="font-size:20px;color:var(--acc)">${sgn(d,usd)}</b></div>
+      <div class="stat"><div class="small">So'mda</div><b style="font-size:20px;color:var(--acc)">${sgn(u,som)}</b></div>
+    </div>
+    <div class="small" style="margin-top:6px">Prixod hisoblanmaydi — undan ehson qayta olinmaydi.</div>
+    <div class="two"><button class="btn" data-jadd style="margin-top:0">+ Qo'shish</button><button class="btn ghost" data-jhist style="margin-top:0">${jamOpen?"▲ Yopish":"Tarix"}</button></div>${hist}`;
+  document.querySelectorAll(".jamcard").forEach(el=>el.innerHTML=html);
+}
+async function saveJam(nj){ await db.doc("jamgarma/asosiy").set({h:nj.h}); }
+function subscribeJam(){ db.doc("jamgarma/asosiy").onSnapshot(s=>{ jam = cleanDep(s.exists? s.data() : {h:[]}, "asosiy"); renderJam(); }); }
+function openJam(t){ dmState={jam:true,t};
+  $("dmTitle").textContent = t==="+" ? "💰 Jamg'armaga qo'shish" : "⚠️ Jamg'armadan olish";
+  const jf=window.__jamFund;
+  $("dmBal").innerHTML = "Hozir: "+sgn(depBal(jam,"usd"),usd)+" · "+sgn(depBal(jam,"uzs"),som) +
+    (t==="+" && jf ? `<br>Shu oy Jamg'arma fondi: ajratildi ${fmt(jf.a)} so'm, ishlatildi ${fmt(jf.u)}, qoldi <b>${fmt(jf.a-jf.u)} so'm</b>` : "");
+  $("dmAmt").value=""; setDmCur("usd");
+  $("dmNote").value = t==="+" ? MONTHS[cur.m]+" jamg'armasi" : ""; $("dmDate").value=ymd(new Date());
+  $("dmYes").style.background = t==="+"?"var(--acc)":"var(--bad)"; $("depM").classList.add("on"); setTimeout(()=>$("dmAmt").focus(),50); }
+$("jamOut").onclick=()=>{ const b=$("jamOut"); if(b.dataset.sure!=="1"){ b.dataset.sure="1"; b.textContent="Rostdan ham jamg'armadan olasizmi? Yana bir bosing"; return; }
+  b.dataset.sure=""; b.textContent="Jamg'armadan olish"; openJam("-"); };
+document.addEventListener("click", async e=>{
+  if(e.target.closest("[data-jadd]")){ openJam("+"); return; }
+  if(e.target.closest("[data-jhist]")){ jamOpen=!jamOpen; renderJam(); return; }
+  const jd=e.target.closest("[data-jdel]"); if(jd){
+    if(jd.dataset.sure!=="1"){ jd.dataset.sure="1"; jd.textContent="O'chirilsinmi?"; jd.style.color="var(--bad)"; jd.style.fontSize="12px"; return; }
+    try{ await saveJam({h:jam.h.filter(m=>m.id!==jd.dataset.jdel)}); toast("O'chirildi"); }catch(err){ toast("O'chirib bo'lmadi"); } }
+});
+
 function subscribeDeps(){
   if(mode==="db"){
     unsubDep = db.collection("depozitlar").onSnapshot(s=>{ deps = s.docs.filter(d=>d.exists).map(d=>cleanDep(d.data(),d.id)); renderDeps(); }, ()=>{});
@@ -895,6 +941,11 @@ $("dmAmt").addEventListener("input",e=>fmtInput(e.target));
 $("dnAmt").addEventListener("input",e=>fmtInput(e.target));
 $("dmNo").onclick=()=>$("depM").classList.remove("on");
 $("dmYes").onclick=async()=>{ const s=parseNum($("dmAmt").value); if(!s){ toast("Summani yozing"); return; }
+  if(dmState.jam){
+    const m={id:"m"+Date.now().toString(36)+Math.random().toString(36).slice(2,5), t:dmState.t, s, v:dmCur, iz:$("dmNote").value.trim().slice(0,120), sn:$("dmDate").value||ymd(new Date()), vq:Date.now()};
+    $("dmYes").disabled=true;
+    try{ await saveJam({h:[...jam.h, m]}); $("depM").classList.remove("on"); toast(dmState.t==="+"?"✓ Jamg'armaga qo'shildi":"✓ Olindi"); }catch(e){ toast("Saqlanmadi"); }
+    $("dmYes").disabled=false; return; }
   const d=deps.find(x=>x.id===dmState.id); if(!d) return;
   const nd={...d, h:[...d.h, {id:"m"+Date.now().toString(36)+Math.random().toString(36).slice(2,5), t:dmState.t, s, v:dmCur, iz:$("dmNote").value.trim().slice(0,120), sn:$("dmDate").value||ymd(new Date()), vq:Date.now()}]};
   $("dmYes").disabled=true;
@@ -1008,7 +1059,7 @@ async function start(user){
     if(x && x.cats && typeof x.cats==="object") for(const k in x.cats) if(CAT[k]) cats[k]=+x.cats[k]||0;
     settings={limit:+(x&&x.limit)||0, cats, ...normFormula(x), fv:FORM_VER, kurs:+(x&&x.kurs)||0, doimiy:normFixed(x&&x.doimiy, x&&x.fixv), fixv:FIX_VER, saudiya:normSaud(x&&x.saudiya)}; drawFunds(); render();
   });
-  subscribeMonth(); subscribeDeps();
+  subscribeMonth(); subscribeDeps(); subscribeJam();
 }
 init();
 </script>
