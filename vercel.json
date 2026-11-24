@@ -1,6 +1,10 @@
 {
  "rewrites": [
   {
+   "source": "/oila",
+   "destination": "/oila.html"
+  },
+  {
    "source": "/darslik",
    "destination": "/darslik.html"
   },
@@ -72,6 +76,32 @@
   {
    "source": "/",
    "headers": [
+    {
+     "key": "Cache-Control",
+     "value": "no-cache, no-store, must-revalidate"
+    }
+   ]
+  },
+  {
+   "source": "/oila.html",
+   "headers": [
+    {
+     "key": "X-Robots-Tag",
+     "value": "noindex, nofollow"
+    },
+    {
+     "key": "Cache-Control",
+     "value": "no-cache, no-store, must-revalidate"
+    }
+   ]
+  },
+  {
+   "source": "/oila",
+   "headers": [
+    {
+     "key": "X-Robots-Tag",
+     "value": "noindex, nofollow"
+    },
     {
      "key": "Cache-Control",
      "value": "no-cache, no-store, must-revalidate"
