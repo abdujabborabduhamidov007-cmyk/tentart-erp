@@ -115,11 +115,15 @@
 
     const rows = filtered();
     const sIn = rows.filter((r) => r.turi === 'prixod' || r.turi === 'eski_prixod').reduce((a, r) => a + n0(r.summa_usd), 0);
-    const sOut = rows.filter((r) => r.turi === 'rasxod' || r.turi === 'eski_rasxod').reduce((a, r) => a + n0(r.summa_usd), 0);
+    const isOut = (r) => r.turi === 'rasxod' || r.turi === 'eski_rasxod';
+    const isBfb = (r) => isOut(r) && ['kassa', 'foyda'].includes(key(r.vid)); // Excel "Kassa" = BFB Groupga topshirilgan pul — umumiy rasxodga kirmaydi
+    const sOut = rows.filter((r) => isOut(r) && !isBfb(r)).reduce((a, r) => a + n0(r.summa_usd), 0);
+    const sBfb = rows.filter(isBfb).reduce((a, r) => a + n0(r.summa_usd), 0);
     const unt = PH.rows.filter((r) => r.manba === 'daftar' && (PH.tq[r.manba_id] || {}).tasdiq !== 'tasdiqlandi').length;
     $('ph-cards').innerHTML = `<div class="sc dark"><div class="sc-l">Prixod (tanlangan)</div><div class="sc-v">${esc(fUSD(sIn))}</div><div class="sc-s">dollar ekvivalentida</div></div>
-      <div class="sc"><div class="sc-l">Rasxod (tanlangan)</div><div class="sc-v">${esc(fUSD(sOut))}</div><div class="sc-s">dollar ekvivalentida</div></div>
-      <div class="sc"><div class="sc-l">Natija</div><div class="sc-v ${sIn - sOut >= 0 ? 'pos' : 'neg'}" style="font-weight:600">${esc(fUSD(sIn - sOut))}</div><div class="sc-s">${rows.length} ta yozuv</div></div>
+      <div class="sc"><div class="sc-l">Umumiy rasxod (tanlangan)</div><div class="sc-v">${esc(fUSD(sOut))}</div><div class="sc-s">BFB to'lovisiz · dollar ekvivalentida</div></div>
+      <div class="sc"><div class="sc-l">BFB Groupga topshirilgan</div><div class="sc-v">${esc(fUSD(sBfb))}</div><div class="sc-s">Excel'da "Kassa" — alohida hisob</div></div>
+      <div class="sc"><div class="sc-l">Natija (qo'ldagi pul)</div><div class="sc-v ${sIn - sOut - sBfb >= 0 ? 'pos' : 'neg'}" style="font-weight:600">${esc(fUSD(sIn - sOut - sBfb))}</div><div class="sc-s">prixod − rasxod − BFB · ${rows.length} ta yozuv</div></div>
       <div class="sc"><div class="sc-l">Daftardan, tekshirilmagan</div><div class="sc-v">${unt}</div><div class="sc-s">${unt ? '<a href="/rasxod" style="color:inherit">Nazoratda tasdiqlang →</a>' : 'hammasi tekshirilgan'}</div></div>`;
 
     const show = rows.slice(0, PH.limit);
@@ -281,7 +285,7 @@
     const sysB = (k, cur) => upto.reduce((a, r) => a + (r.valyuta === cur ? (r.kimga === k ? r.summa : 0) - (r.kimdan === k ? r.summa : 0) : 0), 0);
     const card = (l, a, dark) => `<div class="sc${dark ? ' dark' : ''}"><div class="sc-l">${l}</div><div class="sc-v" style="font-size:30px">${esc(fUSD(a.usd))}</div><div class="sc-s">${esc(money(a.uzs, 'uzs'))} naqd · ${esc(money(a.karta, 'uzs'))} karta</div></div>`;
     $('qd-cards').innerHTML = card('Jami qoldiq', tot.all, true) + card('Pergola (asosiy)', tot.asosiy) + card("Oyna (qo'shimcha)", tot.qoshimcha)
-      + `<div class="sc"><div class="sc-l">Kassaga topshirilgan</div><div class="sc-v" style="font-size:30px">${esc(fUSD(sysB('kassa', 'usd')))}</div><div class="sc-s">${esc(money(sysB('kassa', 'uzs'), 'uzs'))}${tot.nul ? ` · <span class="neg">${tot.nul} ta hisobda yo'nalishsiz yozuv bor</span>` : ''}</div></div>`;
+      + `<div class="sc"><div class="sc-l">Kassa — BFB Groupga topshirilgan</div><div class="sc-v" style="font-size:30px">${esc(fUSD(sysB('kassa', 'usd')))}</div><div class="sc-s">${esc(money(sysB('kassa', 'uzs'), 'uzs'))}${tot.nul ? ` · <span class="neg">${tot.nul} ta hisobda yo'nalishsiz yozuv bor</span>` : ''}</div></div>`;
     $('qd-body').innerHTML = html || '<div class="empty"><div class="empty-t">Ma\'lumot yo\'q</div></div>';
     $('qd-note').textContent = f.tur === 'all' ? 'Boshidan buyon' : f.tur === 'oy' ? oyNom(f.oy) + ' bo\'yicha kirim/chiqim; oxirgi ustun — oy oxiridagi qoldiq' : sanaF(f.kun || today()) + ' kuni; oxirgi ustun — kun oxiridagi qoldiq';
   }
@@ -377,7 +381,7 @@
     const rows = c.a.rows.slice(0, 40).map((r) => `<tr><td class="muted">${esc(sanaF(r.sana))}</td><td>${esc(TURI[r.turi] || r.turi)}</td><td>${esc(r.vid || r.izoh || '')}</td><td style="text-align:right">${esc(money(r.summa, r.valyuta))}</td><td style="text-align:right" class="muted">${esc(fUSD(r.summa_usd))}</td></tr>`).join('');
     const inp = (id, l, v, t) => `<div><label class="fl" for="${id}">${l}</label><input class="fi" id="${id}" ${t ? `type="${t}"` : 'inputmode="decimal"'} value="${esc(v ?? '')}"></div>`;
     return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px">
-      <div><h4 style="font-size:18px;margin-bottom:6px">To'lovlar</h4>${tl}${line('Jami tushgan', c.T)}${line('Kassaga topshirilgan', c.K, i.qolda_kassa != null)}</div>
+      <div><h4 style="font-size:18px;margin-bottom:6px">To'lovlar</h4>${tl}${line('Jami tushgan', c.T)}${line('BFB Groupga topshirilgan (kassa)', c.K, i.qolda_kassa != null)}</div>
       <div><h4 style="font-size:18px;margin-bottom:6px">Xarajatlar</h4>${xl}${line('Jami xarajat', c.X)}</div>
       <div><h4 style="font-size:18px;margin-bottom:6px">Natija</h4>${line('Summa', c.S)}${line('Qolgan qarz', c.qarz)}${line('Reja qoldiq (summa − kassa − xarajat)', c.plan)}${line("Qo'ldagi pul", c.pul)}
         ${c.kun != null ? `<div class="muted" style="font-size:13px;margin-top:8px">${c.kun} kun${c.kunlik != null ? ' · kuniga ' + esc(fUSD(c.kunlik)) : ''}</div>` : ''}</div>
@@ -406,7 +410,7 @@
       .map((i) => ({ i, c: calc(i) }))
       .sort((x, y) => (y.c.kech === 2) - (x.c.kech === 2) || String(x.i.deadline || '9999').localeCompare(String(y.i.deadline || '9999')) || y.i.id - x.i.id);
     const sm = (k) => list.reduce((a, x) => a + n0(x.c[k]), 0);
-    const T = sm('T'), X = sm('X'), S = sm('S'), Q = sm('qarz');
+    const T = sm('T'), X = sm('X'), S = sm('S'), Q = sm('qarz'), K = sm('K');
     const seg = (id, cur, opts) => `<div class="seg" id="${id}">${opts.map(([v, l]) => `<button data-v="${v}" class="${cur === v ? 'on' : ''}">${l}</button>`).join('')}</div>`;
     const dl = (i, c) => i.deadline ? `<span class="${c.kech === 2 ? 'neg' : 'muted'}">⏱ ${esc(sanaF(i.deadline))}${c.muddat ? ' · ' + esc(c.muddat) : ''}</span>` : '<span class="muted">⏱ muddat yo\'q</span>';
     const hc = { Tugadi: 'b-tayyor', Jarayonda: 'b-olchov', Boshlanmagan: 'b-new' };
@@ -417,7 +421,7 @@
     <section class="sg">
       <div class="sc"><div class="sc-l">Jami prixod</div><div class="sc-v pos">${esc(fUSD(T))}</div><div class="sc-s">${list.length} ta obyekt · shartnomalar ${esc(fUSD(S))}</div></div>
       <div class="sc"><div class="sc-l">Jami rasxod</div><div class="sc-v neg">${esc(fUSD(X))}</div><div class="sc-s">material, oylik, yo'lkira…</div></div>
-      <div class="sc dark"><div class="sc-l">Jami qoldiq (prixod − rasxod)</div><div class="sc-v">${esc(fUSD(T - X))}</div><div class="sc-s">${T ? Math.round(((T - X) / T) * 100) + '% prixoddan' : ''}</div></div>
+      <div class="sc dark"><div class="sc-l">Jami qoldiq (prixod − rasxod)</div><div class="sc-v">${esc(fUSD(T - X))}</div><div class="sc-s">shundan BFBga topshirilgan ${esc(fUSD(K))} · qo'lda ${esc(fUSD(T - X - K))}</div></div>
       <div class="sc"><div class="sc-l">Mijozlardan olinadigan</div><div class="sc-v">${esc(fUSD(Math.max(0, Q)))}</div><div class="sc-s">shartnoma − to'langan</div></div>
     </section>`;
     h += list.length ? `<div class="ob-grid">${list.map(({ i, c }) => {
@@ -823,7 +827,7 @@
     } else {
       const ls = sel.filter((r) => isPri(r) || isXar(r) || isKas(r)).sort((a, b) => isPri(b) - isPri(a) || usd(b) - usd(a));
       h += `<div class="panel" style="margin-bottom:20px"><div class="panel-h"><h3>${esc(sanaF(f.kun))} — ${ls.length} ta yozuv</h3></div><div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Turi</th><th>Kim</th><th>Obyekt</th><th>Nima uchun</th><th style="text-align:right">Summa</th></tr></thead><tbody>
-        ${ls.length ? ls.map((r) => `<tr><td>${isPri(r) ? '<span class="badge b-tayyor">Prixod</span>' : isKas(r) ? '<span class="badge b-smeta">Kassaga</span>' : '<span class="badge b-chiq">Rasxod</span>'}${r.manba === 'daftar' ? '<div class="t-sub">menejer daftari</div>' : ''}</td><td>${esc(hNom(isPri(r) ? r.kimga : r.kimdan))}</td><td>${esc(r.zakaz || '—')}</td><td>${esc([r.vid, r.oluvchi, r.izoh].filter(Boolean).join(' · ') || '—')}</td><td style="text-align:right;font-weight:600" class="${isPri(r) ? 'pos' : 'neg'}">${esc(money(r.summa, r.valyuta))}${r.valyuta === 'uzs' && usd(r) ? `<div class="t-sub">${esc(fUSD(usd(r)))}</div>` : ''}</td></tr>`).join('')
+        ${ls.length ? ls.map((r) => `<tr><td>${isPri(r) ? '<span class="badge b-tayyor">Prixod</span>' : isKas(r) ? '<span class="badge b-smeta">BFB (kassa)</span>' : '<span class="badge b-chiq">Rasxod</span>'}${r.manba === 'daftar' ? '<div class="t-sub">menejer daftari</div>' : ''}</td><td>${esc(hNom(isPri(r) ? r.kimga : r.kimdan))}</td><td>${esc(r.zakaz || '—')}</td><td>${esc([r.vid, r.oluvchi, r.izoh].filter(Boolean).join(' · ') || '—')}</td><td style="text-align:right;font-weight:600" class="${isPri(r) ? 'pos' : 'neg'}">${esc(money(r.summa, r.valyuta))}${r.valyuta === 'uzs' && usd(r) ? `<div class="t-sub">${esc(fUSD(usd(r)))}</div>` : ''}</td></tr>`).join('')
           : '<tr><td colspan="5"><div class="empty"><div class="empty-t">Bu kunda yozuv yo\'q</div></div></td></tr>'}</tbody></table></div></div>`;
     }
     // ---- obyekt pasportlari ----
