@@ -123,7 +123,7 @@
     $('ph-cards').innerHTML = `<div class="sc dark"><div class="sc-l">Prixod (tanlangan)</div><div class="sc-v">${esc(fUSD(sIn))}</div><div class="sc-s">dollar ekvivalentida</div></div>
       <div class="sc"><div class="sc-l">Umumiy rasxod (tanlangan)</div><div class="sc-v">${esc(fUSD(sOut))}</div><div class="sc-s">BFB to'lovisiz · dollar ekvivalentida</div></div>
       <div class="sc"><div class="sc-l">BFB Groupga topshirilgan</div><div class="sc-v">${esc(fUSD(sBfb))}</div><div class="sc-s">Excel'da "Kassa" — alohida hisob</div></div>
-      <div class="sc"><div class="sc-l">Natija (qo'ldagi pul)</div><div class="sc-v ${sIn - sOut - sBfb >= 0 ? 'pos' : 'neg'}" style="font-weight:600">${esc(fUSD(sIn - sOut - sBfb))}</div><div class="sc-s">prixod − rasxod − BFB · ${rows.length} ta yozuv</div></div>
+      <div class="sc"><div class="sc-l">Kassa qoldig'i</div><div class="sc-v ${sIn - sOut - sBfb >= 0 ? 'pos' : 'neg'}" style="font-weight:600">${esc(fUSD(sIn - sOut - sBfb))}</div><div class="sc-s">prixod − rasxod − BFB · ${rows.length} ta yozuv</div></div>
       <div class="sc"><div class="sc-l">Daftardan, tekshirilmagan</div><div class="sc-v">${unt}</div><div class="sc-s">${unt ? '<a href="/rasxod" style="color:inherit">Nazoratda tasdiqlang →</a>' : 'hammasi tekshirilgan'}</div></div>`;
 
     const show = rows.slice(0, PH.limit);
@@ -350,7 +350,7 @@
     $('ish-cards').innerHTML = `<div class="sc dark"><div class="sc-l">Zakazlar summasi</div><div class="sc-v">${esc(fUSD(sm('S')))}</div><div class="sc-s">${list.length} ta ish</div></div>
       <div class="sc"><div class="sc-l">Tushgan</div><div class="sc-v">${esc(fUSD(T))}</div><div class="sc-s">Mijozlar qarzi: <b>${esc(fUSD(sm('qarz')))}</b></div></div>
       <div class="sc"><div class="sc-l">Xarajat + kassaga</div><div class="sc-v">${esc(fUSD(sm('X') + sm('K')))}</div><div class="sc-s">xarajat ${esc(fUSD(sm('X')))} · kassaga ${esc(fUSD(sm('K')))}</div></div>
-      <div class="sc"><div class="sc-l">Qo'ldagi pul (tushgan − kassa − xarajat)</div><div class="sc-v ${P >= 0 ? 'pos' : 'neg'}" style="font-weight:600">${esc(fUSD(P))}</div><div class="sc-s">${T ? Math.round((P / T) * 100) + '% tushumdan' : ''}${kechN ? ` · <span class="neg">${kechN} ta ish kechikmoqda</span>` : ''}</div></div>`;
+      <div class="sc"><div class="sc-l">Kassa qoldig'i (tushgan − BFB − xarajat)</div><div class="sc-v ${P >= 0 ? 'pos' : 'neg'}" style="font-weight:600">${esc(fUSD(P))}</div><div class="sc-s">${T ? Math.round((P / T) * 100) + '% tushumdan' : ''}${kechN ? ` · <span class="neg">${kechN} ta ish kechikmoqda</span>` : ''}</div></div>`;
     const hc = { Tugadi: 'b-tayyor', Jarayonda: 'b-olchov', Boshlanmagan: 'b-new' };
     $('ish-tbody').innerHTML = list.length ? list.map(({ i, c }) => {
       const pr = c.S ? Math.min(100, Math.max(0, Math.round((c.T / c.S) * 100))) : 0;
@@ -383,7 +383,7 @@
     return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px">
       <div><h4 style="font-size:18px;margin-bottom:6px">To'lovlar</h4>${tl}${line('Jami tushgan', c.T)}${line('BFB Groupga topshirilgan (kassa)', c.K, i.qolda_kassa != null)}</div>
       <div><h4 style="font-size:18px;margin-bottom:6px">Xarajatlar</h4>${xl}${line('Jami xarajat', c.X)}</div>
-      <div><h4 style="font-size:18px;margin-bottom:6px">Natija</h4>${line('Summa', c.S)}${line('Qolgan qarz', c.qarz)}${line('Reja qoldiq (summa − kassa − xarajat)', c.plan)}${line("Qo'ldagi pul", c.pul)}
+      <div><h4 style="font-size:18px;margin-bottom:6px">Natija</h4>${line('Summa', c.S)}${c.S > 0 && c.qarz < -0.5 ? line("Ortiqcha to'langan (kassadan qaytariladi)", -c.qarz) : line('Mijoz qarzi', Math.max(0, c.qarz))}${line('Reja qoldiq (summa − BFB − xarajat)', c.plan)}${line("Kassa qoldig'i (tushgan − BFB − rasxod" + (c.S > 0 && c.qarz < -0.5 ? ' − ortiqcha)' : ')'), c.pul - (c.S > 0 ? Math.max(0, -c.qarz) : 0))}
         ${c.kun != null ? `<div class="muted" style="font-size:13px;margin-top:8px">${c.kun} kun${c.kunlik != null ? ' · kuniga ' + esc(fUSD(c.kunlik)) : ''}</div>` : ''}</div>
     </div>
     <form onsubmit="return false" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:18px" onclick="event.stopPropagation()">
@@ -410,7 +410,10 @@
       .map((i) => ({ i, c: calc(i) }))
       .sort((x, y) => (y.c.kech === 2) - (x.c.kech === 2) || String(x.i.deadline || '9999').localeCompare(String(y.i.deadline || '9999')) || y.i.id - x.i.id);
     const sm = (k) => list.reduce((a, x) => a + n0(x.c[k]), 0);
-    const T = sm('T'), X = sm('X'), S = sm('S'), Q = sm('qarz'), K = sm('K');
+    // Pul yo'li: mijoz to'lovi → BFB Groupga (material) → qolgani katta kassaga prixod → obyekt rasxodlari shu kassadan.
+    // Mijoz shartnomadan ko'p to'lasa — "ortiqcha to'langan", qarz emas; u kassadan qaytariladi.
+    list.forEach((x) => { const c = x.c; c.qarzP = c.S > 0 ? Math.max(0, c.S - c.T) : 0; c.ort = c.S > 0 ? Math.max(0, c.T - c.S) : 0; c.kIn = c.T - c.K; c.kq = c.T - c.K - c.X - c.ort; });
+    const T = sm('T'), X = sm('X'), S = sm('S'), K = sm('K'), Q = sm('qarzP'), O = sm('ort'), KQ = sm('kq');
     const seg = (id, cur, opts) => `<div class="seg" id="${id}">${opts.map(([v, l]) => `<button data-v="${v}" class="${cur === v ? 'on' : ''}">${l}</button>`).join('')}</div>`;
     const dl = (i, c) => i.deadline ? `<span class="${c.kech === 2 ? 'neg' : 'muted'}">⏱ ${esc(sanaF(i.deadline))}${c.muddat ? ' · ' + esc(c.muddat) : ''}</span>` : '<span class="muted">⏱ muddat yo\'q</span>';
     const hc = { Tugadi: 'b-tayyor', Jarayonda: 'b-olchov', Boshlanmagan: 'b-new' };
@@ -419,19 +422,22 @@
       ${seg('ob-h', f.h, [['Jarayonda', 'Jarayonda'], ['Tugadi', 'Tugadi'], ['', 'Hammasi']])}
       <input class="fs" id="ob-q" placeholder="Qidirish: nom" value="${esc(f.q)}" style="min-height:40px;max-width:220px"></div>
     <section class="sg">
-      <div class="sc"><div class="sc-l">Jami prixod</div><div class="sc-v pos">${esc(fUSD(T))}</div><div class="sc-s">${list.length} ta obyekt · shartnomalar ${esc(fUSD(S))}</div></div>
-      <div class="sc"><div class="sc-l">Jami rasxod</div><div class="sc-v neg">${esc(fUSD(X))}</div><div class="sc-s">material, oylik, yo'lkira…</div></div>
-      <div class="sc dark"><div class="sc-l">Jami qoldiq (prixod − rasxod)</div><div class="sc-v">${esc(fUSD(T - X))}</div><div class="sc-s">shundan BFBga topshirilgan ${esc(fUSD(K))} · qo'lda ${esc(fUSD(T - X - K))}</div></div>
-      <div class="sc"><div class="sc-l">Mijozlardan olinadigan</div><div class="sc-v">${esc(fUSD(Math.max(0, Q)))}</div><div class="sc-s">shartnoma − to'langan</div></div>
+      <div class="sc"><div class="sc-l">1 · Mijozlardan tushgan</div><div class="sc-v pos">${esc(fUSD(T))}</div><div class="sc-s">${list.length} ta obyekt · shartnomalar ${esc(fUSD(S))}</div></div>
+      <div class="sc"><div class="sc-l">2 · BFB Groupga (material)</div><div class="sc-v">${esc(fUSD(K))}</div><div class="sc-s">Excel'da "Kassa" · rasxodga kirmaydi</div></div>
+      <div class="sc"><div class="sc-l">3 · Katta kassaga prixod</div><div class="sc-v pos">${esc(fUSD(T - K))}</div><div class="sc-s">tushgan − BFB</div></div>
+      <div class="sc"><div class="sc-l">4 · Obyekt rasxodlari</div><div class="sc-v neg">${esc(fUSD(X))}</div><div class="sc-s">taksi, oylik, xoztovar, metall…</div></div>
+      <div class="sc dark"><div class="sc-l">5 · Kassa qoldig'i</div><div class="sc-v">${esc(fUSD(KQ))}</div><div class="sc-s">kassaga prixod − rasxod${O ? ' − ortiqcha to\'lov' : ''}</div></div>
+      <div class="sc"><div class="sc-l">Mijozlar qarzi</div><div class="sc-v">${esc(fUSD(Q))}</div><div class="sc-s">${O ? `ortiqcha to'langan: <b>${esc(fUSD(O))}</b> (qaytariladi)` : 'shartnoma − to\'langan'}</div></div>
     </section>`;
     h += list.length ? `<div class="ob-grid">${list.map(({ i, c }) => {
       const pr = c.S ? Math.min(100, Math.max(0, Math.round((c.T / c.S) * 100))) : 0;
       return `<div class="ob-card ${PH.ob.open === i.id ? 'on' : ''}" onclick="phObOpen(${i.id})" role="button" tabindex="0">
         <div class="ob-top"><div class="ob-nom">${esc(i.nom)}</div>${i.holat ? `<span class="badge ${hc[i.holat] || ''}">${esc(i.holat)}</span>` : ''}</div>
         <div class="ob-sub">${esc([ROYXAT[i.royxat], i.kv ? i.kv + ' m²' : '', i.kod].filter(Boolean).join(' · '))}</div>
-        <div class="ob-nums"><div><span>Jami summa</span><b>${esc(fUSD(c.S))}</b></div><div><span>Avans (to'langan)</span><b class="pos">${esc(fUSD(c.T))}</b></div><div><span>Qoldiq</span><b class="${c.qarz > 0.5 ? 'neg' : ''}">${esc(fUSD(Math.max(0, c.qarz)))}</b></div></div>
+        <div class="ob-nums"><div><span>Jami summa</span><b>${esc(fUSD(c.S))}</b></div><div><span>Avans (to'langan)</span><b class="pos">${esc(fUSD(c.T))}</b></div>${c.ort > 0.5 ? `<div><span>Ortiqcha to'langan</span><b style="color:#B26A00">+${esc(fUSD(c.ort))}</b></div>` : `<div><span>Qarz (qoldiq)</span><b class="${c.qarzP > 0.5 ? 'neg' : ''}">${esc(fUSD(c.qarzP))}</b></div>`}</div>
         <div class="prog" style="margin:10px 0 8px"><div class="prog-f" style="width:${pr}%"></div></div>
-        <div class="ob-foot">${dl(i, c)}<span>rasxod <b>${esc(fUSD(c.X))}</b></span></div></div>`;
+        <div class="ob-foot" style="margin-bottom:6px"><span class="muted">BFB ${esc(fUSD(c.K))} · kassaga ${esc(fUSD(c.kIn))} · rasxod ${esc(fUSD(c.X))}</span><span>kassada <b class="${c.kq < 0 ? 'neg' : ''}">${esc(fUSD(c.kq))}</b></span></div>
+        <div class="ob-foot">${dl(i, c)}</div></div>`;
     }).join('')}</div>` : '<div class="empty"><div class="empty-t">Obyekt topilmadi</div></div>';
     const o = PH.ob.open && list.find((x) => x.i.id === PH.ob.open);
     if (o) {
@@ -440,8 +446,9 @@
       const line = (l, v, cls) => `<div style="display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid #ECE4D4;font-size:14px"><span>${l}</span><b class="${cls || ''}">${esc(fUSD(v))}</b></div>`;
       h += `<div class="panel" id="ob-detail" style="margin-top:18px"><div class="panel-h"><h3>${esc(i.nom)}</h3><button class="btn btn-g btn-sm" onclick="phObOpen(${i.id})">Yopish ✕</button></div>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
-          ${line('Jami summa (shartnoma)', c.S)}${line('To\'langan (avans)', c.T, 'pos')}${line('Mijoz qoldig\'i', Math.max(0, c.qarz), c.qarz > 0.5 ? 'neg' : '')}
-          ${line('Jami rasxod', c.X, 'neg')}${line('Qoldiq (prixod − rasxod)', c.T - c.X)}${usta ? line(`Ustalar haqi reja (${i.kv} m² × $${USTA_KV})`, usta) : ''}
+          ${line('Shartnoma summasi', c.S)}${line('1 · Mijoz to\'ladi', c.T, 'pos')}${c.ort > 0.5 ? line('Ortiqcha to\'langan (kassadan qaytariladi)', c.ort) : line('Mijoz qarzi', c.qarzP, c.qarzP > 0.5 ? 'neg' : '')}
+          ${line('2 · BFB Groupga (material)', c.K)}${line('3 · Katta kassaga prixod', c.kIn, 'pos')}${line('4 · Rasxodlar (shu kassadan)', c.X, 'neg')}
+          ${line('5 · Kassa qoldig\'i', c.kq, c.kq < 0 ? 'neg' : '')}${usta ? line(`Ustalar haqi reja (${i.kv} m² × $${USTA_KV})`, usta) : ''}
         </div>
         <div style="margin-top:6px">${ishDetail(i, c)}</div></div>`;
     }
