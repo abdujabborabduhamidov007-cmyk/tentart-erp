@@ -70,13 +70,14 @@
     phRender();
   }
   window.phRenderPage = async function (p) {
-    if (!['panel', 'ph', 'qoldiq', 'ishlar', 'ishhaqqi', 'tahlil'].includes(p)) return;
+    if (!['panel', 'obyekt', 'ph', 'qoldiq', 'ishlar', 'ishhaqqi', 'tahlil'].includes(p)) return;
     if (!PH.loaded) { $('ph-tbody') && ($('ph-tbody').innerHTML = '<tr><td colspan="9"><div class="empty"><div class="empty-t">Yuklanmoqda…</div></div></td></tr>'); await phStart(); }
     else phRender();
   };
   function phRender() {
     const p = document.querySelector('.ni.on')?.dataset.page;
     if (p === 'panel') renderPanel();
+    if (p === 'obyekt') renderObyekt();
     if (p === 'ph') renderPH();
     if (p === 'qoldiq') renderQoldiq();
     if (p === 'ishlar') renderIshlar();
@@ -392,6 +393,63 @@
     ${rows ? `<div class="scroll-x" style="margin-top:16px"><table class="tbl" style="min-width:600px"><thead><tr><th>Sana</th><th>Turi</th><th>Vid / izoh</th><th style="text-align:right">Summa</th><th style="text-align:right">$</th></tr></thead><tbody>${rows}</tbody></table>${c.a.rows.length > 40 ? `<div class="muted" style="font-size:12px;margin-top:6px">Yana ${c.a.rows.length - 40} ta yozuv — Pul harakati'da "${esc(i.nom)}" deb qidiring</div>` : ''}</div>` : ''}`;
   }
   window.phIshCalc = (i) => calc(i);
+
+  // ---------- Obyektlar — kartalar ----------
+  // Har bir zakaz = bitta karta. Shu nomdagi barcha prixod/rasxod kartaga tushadi (ERP "Ishlar" bilan bir xil hisob).
+  PH.ob = { r: 'asosiy', h: 'Jarayonda', q: '', open: null };
+  const USTA_KV = 10; // usta sostav: har m² uchun $10 (metall ish haqqi alohida kelishiladi)
+  function renderObyekt() {
+    if (!$('ob-body')) return;
+    buildAgg();
+    const f = PH.ob; const q = key(f.q);
+    const list = PH.ish.filter((i) => (!f.r || i.royxat === f.r) && (!f.h || (i.holat || '') === f.h) && (!q || key(i.nom).includes(q) || key(i.kod).includes(q)))
+      .map((i) => ({ i, c: calc(i) }))
+      .sort((x, y) => (y.c.kech === 2) - (x.c.kech === 2) || String(x.i.deadline || '9999').localeCompare(String(y.i.deadline || '9999')) || y.i.id - x.i.id);
+    const sm = (k) => list.reduce((a, x) => a + n0(x.c[k]), 0);
+    const T = sm('T'), X = sm('X'), S = sm('S'), Q = sm('qarz');
+    const seg = (id, cur, opts) => `<div class="seg" id="${id}">${opts.map(([v, l]) => `<button data-v="${v}" class="${cur === v ? 'on' : ''}">${l}</button>`).join('')}</div>`;
+    const dl = (i, c) => i.deadline ? `<span class="${c.kech === 2 ? 'neg' : 'muted'}">⏱ ${esc(sanaF(i.deadline))}${c.muddat ? ' · ' + esc(c.muddat) : ''}</span>` : '<span class="muted">⏱ muddat yo\'q</span>';
+    const hc = { Tugadi: 'b-tayyor', Jarayonda: 'b-olchov', Boshlanmagan: 'b-new' };
+    let h = `<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px">
+      ${seg('ob-r', f.r, [['asosiy', 'Asosiy'], ['ozimiz', "O'zimiz"], ['proalyum', 'Proalyum'], ['', 'Hammasi']])}
+      ${seg('ob-h', f.h, [['Jarayonda', 'Jarayonda'], ['Tugadi', 'Tugadi'], ['', 'Hammasi']])}
+      <input class="fs" id="ob-q" placeholder="Qidirish: nom" value="${esc(f.q)}" style="min-height:40px;max-width:220px"></div>
+    <section class="sg">
+      <div class="sc"><div class="sc-l">Jami prixod</div><div class="sc-v pos">${esc(fUSD(T))}</div><div class="sc-s">${list.length} ta obyekt · shartnomalar ${esc(fUSD(S))}</div></div>
+      <div class="sc"><div class="sc-l">Jami rasxod</div><div class="sc-v neg">${esc(fUSD(X))}</div><div class="sc-s">material, oylik, yo'lkira…</div></div>
+      <div class="sc dark"><div class="sc-l">Jami qoldiq (prixod − rasxod)</div><div class="sc-v">${esc(fUSD(T - X))}</div><div class="sc-s">${T ? Math.round(((T - X) / T) * 100) + '% prixoddan' : ''}</div></div>
+      <div class="sc"><div class="sc-l">Mijozlardan olinadigan</div><div class="sc-v">${esc(fUSD(Math.max(0, Q)))}</div><div class="sc-s">shartnoma − to'langan</div></div>
+    </section>`;
+    h += list.length ? `<div class="ob-grid">${list.map(({ i, c }) => {
+      const pr = c.S ? Math.min(100, Math.max(0, Math.round((c.T / c.S) * 100))) : 0;
+      return `<div class="ob-card ${PH.ob.open === i.id ? 'on' : ''}" onclick="phObOpen(${i.id})" role="button" tabindex="0">
+        <div class="ob-top"><div class="ob-nom">${esc(i.nom)}</div>${i.holat ? `<span class="badge ${hc[i.holat] || ''}">${esc(i.holat)}</span>` : ''}</div>
+        <div class="ob-sub">${esc([ROYXAT[i.royxat], i.kv ? i.kv + ' m²' : '', i.kod].filter(Boolean).join(' · '))}</div>
+        <div class="ob-nums"><div><span>Jami summa</span><b>${esc(fUSD(c.S))}</b></div><div><span>Avans (to'langan)</span><b class="pos">${esc(fUSD(c.T))}</b></div><div><span>Qoldiq</span><b class="${c.qarz > 0.5 ? 'neg' : ''}">${esc(fUSD(Math.max(0, c.qarz)))}</b></div></div>
+        <div class="prog" style="margin:10px 0 8px"><div class="prog-f" style="width:${pr}%"></div></div>
+        <div class="ob-foot">${dl(i, c)}<span>rasxod <b>${esc(fUSD(c.X))}</b></span></div></div>`;
+    }).join('')}</div>` : '<div class="empty"><div class="empty-t">Obyekt topilmadi</div></div>';
+    const o = PH.ob.open && list.find((x) => x.i.id === PH.ob.open);
+    if (o) {
+      const { i, c } = o;
+      const usta = n0(i.kv) * USTA_KV;
+      const line = (l, v, cls) => `<div style="display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px solid #ECE4D4;font-size:14px"><span>${l}</span><b class="${cls || ''}">${esc(fUSD(v))}</b></div>`;
+      h += `<div class="panel" id="ob-detail" style="margin-top:18px"><div class="panel-h"><h3>${esc(i.nom)}</h3><button class="btn btn-g btn-sm" onclick="phObOpen(${i.id})">Yopish ✕</button></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px">
+          ${line('Jami summa (shartnoma)', c.S)}${line('To\'langan (avans)', c.T, 'pos')}${line('Mijoz qoldig\'i', Math.max(0, c.qarz), c.qarz > 0.5 ? 'neg' : '')}
+          ${line('Jami rasxod', c.X, 'neg')}${line('Qoldiq (prixod − rasxod)', c.T - c.X)}${usta ? line(`Ustalar haqi reja (${i.kv} m² × $${USTA_KV})`, usta) : ''}
+        </div>
+        <div style="margin-top:6px">${ishDetail(i, c)}</div></div>`;
+    }
+    $('ob-body').innerHTML = h;
+    if (o) { const d = $('ob-detail'); if (d && PH.ob.scroll) { PH.ob.scroll = false; d.scrollIntoView({ behavior: 'smooth', block: 'start' }); } }
+  }
+  window.phObOpen = (id) => { PH.ob.open = PH.ob.open === id ? null : id; PH.ob.scroll = !!PH.ob.open; renderObyekt(); };
+  document.addEventListener('click', (e) => {
+    const r = e.target.closest('#ob-r button'); if (r) { PH.ob.r = r.dataset.v; PH.ob.open = null; renderObyekt(); return; }
+    const h = e.target.closest('#ob-h button'); if (h) { PH.ob.h = h.dataset.v; PH.ob.open = null; renderObyekt(); }
+  });
+  let _oq; document.addEventListener('input', (e) => { if (e.target.id === 'ob-q') { clearTimeout(_oq); _oq = setTimeout(() => { PH.ob.q = e.target.value; renderObyekt(); const el = $('ob-q'); if (el) { el.focus(); el.setSelectionRange(el.value.length, el.value.length); } }, 300); } });
   window.phIshToggle = function (id) { PH.ishOpen = PH.ishOpen === id ? null : id; renderIshlar(); };
   window.phIshSave = async function (id) {
     const i = PH.ish.find((x) => x.id === id); if (!i) return;
@@ -403,13 +461,13 @@
       deadline: nv('ie-dl'), boshlandi: nv('ie-bs'), bitdi: nv('ie-bt'), holat: nv('ie-h'), royxat: $('ie-r').value, qolda_xarajat: qx, updated_at: new Date().toISOString() };
     const { error } = await db.from('ishlar').update(u).eq('id', id);
     if (error) { toast('⚠️', 'Saqlanmadi', error.message); return; }
-    Object.assign(i, u); toast('✅', 'Saqlandi', i.nom); renderIshlar();
+    Object.assign(i, u); toast('✅', 'Saqlandi', i.nom); phRender();
   };
   window.phIshDel = async function (id) {
     const i = PH.ish.find((x) => x.id === id); if (!i || !confirm(`"${i.nom}" ro'yxatdan o'chirilsinmi? (Pul harakatidagi yozuvlar qoladi)`)) return;
     const { error } = await db.from('ishlar').delete().eq('id', id);
     if (error) { toast('⚠️', "O'chmadi", error.message); return; }
-    PH.ish = PH.ish.filter((x) => x.id !== id); PH.ishOpen = null; renderIshlar();
+    PH.ish = PH.ish.filter((x) => x.id !== id); PH.ishOpen = null; PH.ob.open = null; phRender();
   };
   window.phIshNew = async function (nom) {
     nom = nom || prompt('Zakaz nomi (Pul harakatidagi "Zakaz" bilan bir xil yozing):'); if (!nom || !nom.trim()) return;
