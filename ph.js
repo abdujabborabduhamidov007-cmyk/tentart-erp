@@ -49,7 +49,7 @@
         (data || []).forEach((x) => { PH.tq[x.id] = x; });
       }
       const { data: ish } = await db.from('ishlar').select('*').order('id');
-      PH.ish = ish || []; PH.agg = null;
+      PH.ish = (ish || []).filter((x) => !x.yashirin); PH.agg = null;
       const [d1, d2, d3, d4] = await Promise.all([db.from('ih_davr').select('*').order('id'), db.from('ih_ishchi').select('*').order('tartib').order('id'),
         db.from('ih_ish').select('*').order('tartib').order('id'), db.from('oylik_xodim').select('*').order('tartib').order('id')]);
       PH.ihD = d1.data || []; PH.ihW = d2.data || []; PH.ihJ = d3.data || []; PH.oyl = d4.data || [];
