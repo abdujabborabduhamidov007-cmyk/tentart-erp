@@ -418,6 +418,7 @@ textarea.fi{resize:vertical;min-height:80px;}
         </div>
         <div class="sb-sec" id="sb-bux">
           <div class="sb-sec-t">Buxgalteriya</div>
+          <div class="ni" data-page="tz" role="button" tabindex="0"><span class="ni-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 5h16M4 10h16M4 15h10M4 20h7"/><circle cx="18" cy="18" r="3"/></svg></span>Zakazlar (BFB)</div>
           <div class="ni" data-page="obyekt" role="button" tabindex="0"><span class="ni-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="4" width="8" height="7" rx="1.5"/><rect x="13" y="4" width="8" height="7" rx="1.5"/><rect x="3" y="13" width="8" height="7" rx="1.5"/><rect x="13" y="13" width="8" height="7" rx="1.5"/></svg></span>Obyektlar</div>
           <div class="ni" data-page="panel" role="button" tabindex="0"><span class="ni-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 12h4l3-7 4 14 3-7h4"/></svg></span>Boshqaruv paneli</div>
           <div class="ni" data-page="ph" role="button" tabindex="0"><span class="ni-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 7h13l-3-3M20 17H7l3 3"/></svg></span>Pul harakati</div>
@@ -615,6 +616,7 @@ textarea.fi{resize:vertical;min-height:80px;}
         <!-- ===== BUXGALTERIYA: BOSHQARUV PANELI ===== -->
         <div class="page" id="page-panel"><div id="pn-body"></div></div>
         <div class="page" id="page-obyekt"><div id="ob-body"></div></div>
+        <div class="page" id="page-tz"><div id="tz-body"></div></div>
 
         <!-- ===== BUXGALTERIYA: QOLDIQ ===== -->
         <div class="page" id="page-qoldiq">
@@ -1609,15 +1611,16 @@ document.querySelectorAll('.ni[data-page]').forEach(el=>{
     this.classList.add('on');
     document.querySelectorAll('.page').forEach(pg=>pg.classList.remove('on'));
     document.getElementById('page-'+p).classList.add('on');
-    const T={obyekt:'Obyektlar — kartalar',panel:'Boshqaruv paneli',tahlil:'Reja va tahlil',ishhaqqi:'Ish haqqi',ishlar:'Ishlar — zakaz foydasi',ph:'Pul harakati',qoldiq:'Qoldiq — hamyonlar',sayt:'tentart.uz sayti',bosh:'Bosh panel',voronka:'Zamer voronkasi',kassa:'Kassa',jamoa:'Jamoa va davomat',dashboard:'Zakaz statistikasi',zakazlar:'Zakazlar',kanban:'Kanban',crm:'CRM — lidlar',moliya:'Moliya',hr:'Xodimlar kartasi',narxlar:'Narxlar bazasi',kp:'Kommersiya taklifi',kpi:'KPI va savdo',marketing:'Marketing AI',video:'Video Studio'};
+    const T={tz:'Tentart zakazlari — BFB hisobi va monitoring',obyekt:'Obyektlar — kartalar',panel:'Boshqaruv paneli',tahlil:'Reja va tahlil',ishhaqqi:'Ish haqqi',ishlar:'Ishlar — zakaz foydasi',ph:'Pul harakati',qoldiq:'Qoldiq — hamyonlar',sayt:'tentart.uz sayti',bosh:'Bosh panel',voronka:'Zamer voronkasi',kassa:'Kassa',jamoa:'Jamoa va davomat',dashboard:'Zakaz statistikasi',zakazlar:'Zakazlar',kanban:'Kanban',crm:'CRM — lidlar',moliya:'Moliya',hr:'Xodimlar kartasi',narxlar:'Narxlar bazasi',kp:'Kommersiya taklifi',kpi:'KPI va savdo',marketing:'Marketing AI',video:'Video Studio'};
     document.getElementById('ptitle').textContent=T[p]||p;
-    const AL={obyekt:'',panel:'',tahlil:'',ishhaqqi:'',ishlar:'',ph:'',qoldiq:'',sayt:'',bosh:'+ Yangi zakaz',voronka:'+ Yangi zamer',kassa:'',jamoa:'',zakazlar:'+ Yangi zakaz',crm:'+ Yangi lid',hr:'+ Xodim',moliya:'+ Xarajat',kanban:'',dashboard:'+ Yangi zakaz',narxlar:'',kp:'',kpi:'',marketing:'',video:''};
+    const AL={tz:'',obyekt:'',panel:'',tahlil:'',ishhaqqi:'',ishlar:'',ph:'',qoldiq:'',sayt:'',bosh:'+ Yangi zakaz',voronka:'+ Yangi zamer',kassa:'',jamoa:'',zakazlar:'+ Yangi zakaz',crm:'+ Yangi lid',hr:'+ Xodim',moliya:'+ Xarajat',kanban:'',dashboard:'+ Yangi zakaz',narxlar:'',kp:'',kpi:'',marketing:'',video:''};
     const ab=document.getElementById('tb-add-btn');
     ab.textContent=AL[p]||'+ Yangi zakaz';ab.style.display=AL[p]===''?'none':'';
     if(document.body.classList.contains('narxsiz')&&p!=='voronka')ab.style.display='none';
     if(p==='kanban')renderKanban();
     if(window.kbRenderPage)kbRenderPage(p);
     if(window.phRenderPage)phRenderPage(p);
+    if(window.tzRenderPage)tzRenderPage(p);
     if(p==='moliya')renderMoliya();
     if(p==='hr')renderHR();
     if(p==='narxlar'){renderNarxTable('pergola');}
@@ -3538,5 +3541,6 @@ function kpDownload(){
 </div></div>
 <script src="kb.js"></script>
 <script src="ph.js"></script>
+<script src="tz.js"></script>
 </body>
 </html>
