@@ -728,7 +728,7 @@ async function runAI(){
   const list=rs.slice(0,80).map(r=>`${r.sana} | ${cat(b,r.kategoriya).l} | ${isUsd(r)?fU(r.summa):Math.round(r.summa)+" so'm"} | ${r.izoh||'-'}`).join('\n');
   const prompt=`${nom} xarajatlari (sana | toifa | summa | izoh):\n\n${list}\n\nJami: ${Math.round(sum(rs))} so'm.\nO'zbek tilida qisqa (150-220 so'z) javob ber: 1) asosiy xulosa 2) qaysi toifada ortiqcha sarf 3) tejash bo'yicha 2-3 aniq tavsiya. Markdown belgilarisiz, oddiy matn.`;
   $('ai-b').disabled=true;$('ai-b').textContent='Tahlil qilinmoqda…';$('ai-o').textContent='';
-  try{const r=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt,maxTokens:900})});const j=await r.json();$('ai-o').textContent=j.text||j.error||'Javob kelmadi';}
+  try{const {data:{session:ss}}=await db.auth.getSession();const r=await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json',...(ss?.access_token?{Authorization:'Bearer '+ss.access_token}:{})},body:JSON.stringify({prompt,maxTokens:900})});const j=await r.json();$('ai-o').textContent=j.text||j.error||'Javob kelmadi';}
   catch(e){$('ai-o').textContent='Xatolik: '+e.message;}
   $('ai-b').disabled=false;$('ai-b').textContent='Tahlil qilish';
 }

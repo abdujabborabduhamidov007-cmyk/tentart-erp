@@ -28,7 +28,8 @@ Build bosqichi yo'q: oddiy statik HTML + JS, Vercel'da. Backend — Supabase (`z
 ## Xavfsizlik
 - Supabase anon key brauzerda ochiq — **yagona himoya RLS**. Yangi jadval qo'shsang, RLS'ni yoqib, rolga qarab policy yoz. RLS'siz jadval = hammaga ochiq.
 - Repo **public**. Hech qachon service_role key, parol, token yozma.
-- `api/claude.js` hozir `Access-Control-Allow-Origin: *` va tekshiruvsiz — ya'ni begona sayt ham API kalitni ishlata oladi. O'zgartirishdan oldin Abdujabbordan so'ra.
+- `api/claude.js` himoyalangan: faqat bizning saytlardan, faqat tizimga kirgan va `profiles`da bor xodim tokeni bilan, faqat ruxsat etilgan modellar. Yangi sahifadan `/api/claude` chaqirsang, `Authorization: Bearer <session.access_token>` yubor (erp.html'da `aiHeaders()` bor).
+- Ochiq muammo: `profiles` jadvalida `staff_all` policy har qanday kirgan foydalanuvchiga hamma narsani (yozishni ham) ruxsat beradi. Supabase'da ochiq ro'yxatdan o'tish (signup) o'chiq bo'lishi shart.
 
 ## Ish tartibi (Boris Cherny usuli)
 1. **Avval o'qi, keyin yoz.** Kerakli joyni `grep` bilan top (`erp.html` 3500+ qator — butun faylni o'qima).

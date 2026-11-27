@@ -2852,10 +2852,17 @@ function mkTab(name, el) {
   el.style.border = '1px solid var(--accent)';
 }
 
+async function aiHeaders(){
+  const {data:{session}}=await db.auth.getSession();
+  const h={'Content-Type':'application/json'};
+  if(session?.access_token) h.Authorization='Bearer '+session.access_token;
+  return h;
+}
+
 async function callAI(prompt, systemPrompt) {
   const resp = await fetch('/api/claude', {
     method:'POST',
-    headers:{'Content-Type':'application/json'},
+    headers: await aiHeaders(),
     body: JSON.stringify({ prompt, systemPrompt })
   });
   const data = await resp.json();
@@ -3461,7 +3468,7 @@ Faqat JSON formatida javob ber, boshqa hech narsa yozma:
   try {
     const resp = await fetch('/api/claude', {
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers: await aiHeaders(),
       body: JSON.stringify({
         prompt: JSON.stringify(payload),
         systemPrompt,
