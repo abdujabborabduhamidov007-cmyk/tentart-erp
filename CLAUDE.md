@@ -29,7 +29,8 @@ Build bosqichi yo'q: oddiy statik HTML + JS, Vercel'da. Backend — Supabase (`z
 - Supabase anon key brauzerda ochiq — **yagona himoya RLS**. Yangi jadval qo'shsang, RLS'ni yoqib, rolga qarab policy yoz. RLS'siz jadval = hammaga ochiq.
 - Repo **public**. Hech qachon service_role key, parol, token yozma.
 - `api/claude.js` himoyalangan: faqat bizning saytlardan, faqat tizimga kirgan va `profiles`da bor xodim tokeni bilan, faqat ruxsat etilgan modellar. Yangi sahifadan `/api/claude` chaqirsang, `Authorization: Bearer <session.access_token>` yubor (erp.html'da `aiHeaders()` bor).
-- Ochiq muammo: `profiles` jadvalida `staff_all` policy har qanday kirgan foydalanuvchiga hamma narsani (yozishni ham) ruxsat beradi. Supabase'da ochiq ro'yxatdan o'tish (signup) o'chiq bo'lishi shart.
+- `profiles`: barcha xodimlar o'qiy oladi, yozish/o'zgartirish/o'chirish faqat Owner'ga (`public.is_owner()` funksiyasi, migratsiya `profiles_only_owner_can_write`). Rol qiymatlari: Owner, Menejer, Zamershik, Usta, Kassir, Operator (bosh harf bilan).
+- Supabase'da ochiq ro'yxatdan o'tish (signup) o'chiq bo'lishi kerak.
 
 ## Ish tartibi (Boris Cherny usuli)
 1. **Avval o'qi, keyin yoz.** Kerakli joyni `grep` bilan top (`erp.html` 3500+ qator — butun faylni o'qima).
